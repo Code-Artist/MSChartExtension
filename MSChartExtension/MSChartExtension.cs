@@ -3,8 +3,19 @@ using System.ComponentModel;
 
 namespace System.Windows.Forms.DataVisualization.Charting
 {
+
     public static class MSChartExtension
     {
+        public delegate void CursorPositionChanged(double x, double y);
+
+        public enum ChartToolState
+        {
+            Unknown,
+            Select,
+            Zoom,
+            Pan
+        }
+
         /// <summary>
         /// Speed up MSChart data points clear operations.
         /// </summary>
@@ -15,18 +26,36 @@ namespace System.Windows.Forms.DataVisualization.Charting
             while (sender.Points.Count > 0)
                 sender.Points.RemoveAt(sender.Points.Count - 1);
             sender.Points.ResumeUpdates();
+            sender.Points.Clear(); //Force refresh.
         }
+
         /// <summary>
         /// Enable Zoom and Pan Controls.
         /// </summary>
-        /// <param name="sender"></param>
         public static void EnableZoomAndPanControls(this Chart sender)
+        {
+            EnableZoomAndPanControls(sender, null, null);
+        }
+
+        /// <summary>
+        /// Enable Zoom and Pan Controls.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="selectionChanged">Selection changed callabck. Triggered when user select a point with selec tool.</param>
+        /// <param name="cursorMoved">Cursor moved callabck. Triggered when user move the mouse in chart area.</param>
+        /// <remarks>Callback are optional.</remarks>
+        public static void EnableZoomAndPanControls(this Chart sender,
+            CursorPositionChanged selectionChanged,
+            CursorPositionChanged cursorMoved)
         {
             if (ChartContextMenuStrip == null) CreateChartContextMenu();
             if (!ChartTool.ContainsKey(sender))
             {
                 ChartTool[sender] = new ChartData(sender);
-                ChartTool[sender].Backup();
+                ChartData ptrChartData = ChartTool[sender];
+                ptrChartData.Backup();
+                ptrChartData.SelectionChangedCallback = selectionChanged;
+                ptrChartData.CursorMovedCallback = cursorMoved;
 
                 //Populate Context menu
                 Chart ptrChart = sender;
@@ -35,10 +64,17 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 ptrChart.MouseMove += ChartControl_MouseMove;
                 ptrChart.MouseUp += ChartControl_MouseUp;
 
-                ptrChart.ChartAreas[0].CursorX.AutoScroll = false;
-                ptrChart.ChartAreas[0].CursorX.Interval = 1e-06;
-                ptrChart.ChartAreas[0].CursorY.AutoScroll = false;
-                ptrChart.ChartAreas[0].CursorY.Interval = 1e-06;
+                //Override settings.
+                ChartArea ptrChartArea = ptrChart.ChartAreas[0];
+                ptrChartArea.CursorX.AutoScroll = false;
+                ptrChartArea.CursorX.Interval = 1e-06;
+                ptrChartArea.CursorY.AutoScroll = false;
+                ptrChartArea.CursorY.Interval = 1e-06;
+
+                ptrChartArea.AxisX.ScrollBar.Enabled = false;
+                ptrChartArea.AxisX2.ScrollBar.Enabled = false;
+                ptrChartArea.AxisY.ScrollBar.Enabled = false;
+                ptrChartArea.AxisY2.ScrollBar.Enabled = false;
 
                 SetChartControlState(sender, ChartToolState.Select);
             }
@@ -60,6 +96,19 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 ChartTool[ptrChart].Restore();
                 ChartTool.Remove(ptrChart);
             }
+        }
+        /// <summary>
+        /// Get current control state.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <returns></returns>
+        public static ChartToolState GetChartToolState(this Chart sender)
+        {
+            if (!ChartTool.ContainsKey(sender))
+                return ChartToolState.Unknown;
+            else
+                return ChartTool[sender].ToolState;
+
         }
 
         #region [ Chart Context Menu ]
@@ -187,6 +236,8 @@ namespace System.Windows.Forms.DataVisualization.Charting
             public ChartData(Chart chartSource) { Source = chartSource; }
 
             public ChartToolState ToolState { get; set; }
+            public CursorPositionChanged SelectionChangedCallback;
+            public CursorPositionChanged CursorMovedCallback;
 
             public void Backup()
             {
@@ -199,6 +250,10 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 CursorYInterval = ptrChartArea.CursorY.Interval;
                 CursorXAutoScroll = ptrChartArea.CursorX.AutoScroll;
                 CursorYAutoScroll = ptrChartArea.CursorY.AutoScroll;
+                ScrollBarX = ptrChartArea.AxisX.ScrollBar.Enabled;
+                ScrollBarX2 = ptrChartArea.AxisX2.ScrollBar.Enabled;
+                ScrollBarY = ptrChartArea.AxisY.ScrollBar.Enabled;
+                ScrollBarY2 = ptrChartArea.AxisY2.ScrollBar.Enabled;
             }
             public void Restore()
             {
@@ -211,6 +266,10 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 ptrChartArea.CursorY.Interval = CursorYInterval;
                 ptrChartArea.CursorX.AutoScroll = CursorXAutoScroll;
                 ptrChartArea.CursorY.AutoScroll = CursorYAutoScroll;
+                ptrChartArea.AxisX.ScrollBar.Enabled = ScrollBarX;
+                ptrChartArea.AxisX2.ScrollBar.Enabled = ScrollBarX2;
+                ptrChartArea.AxisY.ScrollBar.Enabled = ScrollBarY;
+                ptrChartArea.AxisY2.ScrollBar.Enabled = ScrollBarY2;
             }
 
             #region [ Backup Data ]
@@ -220,14 +279,8 @@ namespace System.Windows.Forms.DataVisualization.Charting
             private System.Windows.Forms.Cursor Cursor;
             private double CursorXInterval, CursorYInterval;
             private bool CursorXAutoScroll, CursorYAutoScroll;
+            private bool ScrollBarX, ScrollBarX2, ScrollBarY, ScrollBarY2;
             #endregion
-        }
-        private enum ChartToolState
-        {
-            Unknown,
-            Select,
-            Zoom,
-            Pan
         }
         private static Dictionary<Chart, ChartData> ChartTool = new Dictionary<Chart, ChartData>();
         private static void SetChartControlState(Chart sender, ChartToolState state)
@@ -270,7 +323,13 @@ namespace System.Windows.Forms.DataVisualization.Charting
             ptrChartArea.CursorX.SelectionEnd = ptrChartArea.CursorX.SelectionStart;
             ptrChartArea.CursorY.SelectionEnd = ptrChartArea.CursorY.SelectionStart;
 
-            //ToDo: Update coordinate
+            if (ChartTool[(Chart)sender].SelectionChangedCallback != null)
+            {
+                ChartTool[(Chart)sender].SelectionChangedCallback(
+                    ptrChartArea.CursorX.SelectionStart,
+                    ptrChartArea.CursorY.SelectionStart);
+            }
+
         }
         private static void ChartControl_MouseMove(object sender, MouseEventArgs e)
         {
@@ -281,7 +340,9 @@ namespace System.Windows.Forms.DataVisualization.Charting
             {
                 selX = ptrChart.ChartAreas[0].AxisX.PixelPositionToValue(e.Location.X);
                 selY = ptrChart.ChartAreas[0].AxisY.PixelPositionToValue(e.Location.Y);
-                //ToDo: Update coordinate
+
+                if (ChartTool[(Chart)sender].CursorMovedCallback != null)
+                    ChartTool[(Chart)sender].CursorMovedCallback(selX, selY);
             }
             catch (Exception) { /*ToDo: Set coordinate to 0,0 */ return; } //Handle exception when scrolled out of range.
 
