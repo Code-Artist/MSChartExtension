@@ -1,0 +1,228 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FxCopProject Version="1.36" Name="My FxCop Project">
+ <ProjectOptions>
+  <SharedProject>True</SharedProject>
+  <Stylesheet Apply="False">c:\program files (x86)\microsoft fxcop 1.36\Xml\FxCopReport.xsl</Stylesheet>
+  <SaveMessages>
+   <Project Status="Active, Excluded" NewOnly="False" />
+   <Report Status="Active" NewOnly="False" />
+  </SaveMessages>
+  <ProjectFile Compress="True" DefaultTargetCheck="True" DefaultRuleCheck="True" SaveByRuleGroup="" Deterministic="True" />
+  <EnableMultithreadedLoad>True</EnableMultithreadedLoad>
+  <EnableMultithreadedAnalysis>True</EnableMultithreadedAnalysis>
+  <SourceLookup>True</SourceLookup>
+  <AnalysisExceptionsThreshold>10</AnalysisExceptionsThreshold>
+  <RuleExceptionsThreshold>1</RuleExceptionsThreshold>
+  <Spelling Locale="en-US" />
+  <OverrideRuleVisibilities>False</OverrideRuleVisibilities>
+  <CustomDictionaries SearchFxCopDir="True" SearchUserProfile="True" SearchProjectDir="True" />
+  <SearchGlobalAssemblyCache>False</SearchGlobalAssemblyCache>
+  <DeadlockDetectionTimeout>120</DeadlockDetectionTimeout>
+  <IgnoreGeneratedCode>False</IgnoreGeneratedCode>
+ </ProjectOptions>
+ <Targets>
+  <Target Name="$(ProjectDir)/MSChartExtension/bin/Debug/System.Windows.Forms.DataVisualization.MSChartExtension.dll" Analyze="True" AnalyzeAllChildren="True" />
+ </Targets>
+ <Rules>
+  <RuleFiles>
+   <RuleFile Name="$(FxCopDir)\Rules\DesignRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\GlobalizationRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\InteroperabilityRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\MobilityRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\NamingRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\PerformanceRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\PortabilityRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\SecurityRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\UsageRules.dll" Enabled="True" AllRulesEnabled="True" />
+  </RuleFiles>
+  <Groups />
+  <Settings />
+ </Rules>
+ <FxCopReport Version="1.36">
+  <Targets>
+   <Target Name="$(ProjectDir)/MSChartExtension/bin/Debug/System.Windows.Forms.DataVisualization.MSChartExtension.dll">
+    <Modules>
+     <Module Name="system.windows.forms.datavisualization.mschartextension.dll">
+      <Messages>
+       <Message TypeName="AssembliesShouldHaveValidStrongNames" Category="Microsoft.Design" CheckId="CA2210" Created="2012-03-30 13:40:43Z">
+        <Issue Name="NoStrongName">
+         <Item>'System.Windows.Forms.DataVisualization.MSChartExtension.dll'</Item>
+        </Issue>
+       </Message>
+      </Messages>
+      <Namespaces>
+       <Namespace Name="System.Windows.Forms.DataVisualization.Charting">
+        <Types>
+         <Type Name="MSChartExtension">
+          <Members>
+           <Member Name="#ChartControl_MouseMove(System.Object,System.Windows.Forms.MouseEventArgs)">
+            <Messages>
+             <Message TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031" Created="2012-03-30 13:40:43Z">
+              <Issue>
+               <Item>'MSChartExtension.ChartControl_MouseMove(object, MouseEventArgs)'</Item>
+               <Item>'Exception'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#ClearPoints(System.Windows.Forms.DataVisualization.Charting.Series)">
+            <Messages>
+             <Message TypeName="AvoidUncalledPrivateCode" Category="Microsoft.Performance" CheckId="CA1811" Status="Excluded" Created="2012-03-30 13:40:43Z">
+              <Issue>
+               <Item>'MSChartExtension.ClearPoints(this Series)'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Admin">
+                <Note Id="2" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#CreateChartContextMenu()">
+            <Messages>
+             <Message TypeName="AvoidUncalledPrivateCode" Category="Microsoft.Performance" CheckId="CA1811" Status="Excluded" Created="2012-03-30 13:40:43Z">
+              <Issue>
+               <Item>'MSChartExtension.CreateChartContextMenu()'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Admin">
+                <Note Id="2" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#DisableZoomAndPanControls(System.Windows.Forms.DataVisualization.Charting.Chart)">
+            <Messages>
+             <Message TypeName="AvoidUncalledPrivateCode" Category="Microsoft.Performance" CheckId="CA1811" Status="Excluded" Created="2012-03-30 13:40:43Z">
+              <Issue>
+               <Item>'MSChartExtension.DisableZoomAndPanControls(this Chart)'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Admin">
+                <Note Id="2" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#EnableZoomAndPanControls(System.Windows.Forms.DataVisualization.Charting.Chart)">
+            <Messages>
+             <Message TypeName="AvoidUncalledPrivateCode" Category="Microsoft.Performance" CheckId="CA1811" Status="Excluded" Created="2012-03-30 13:40:43Z">
+              <Issue>
+               <Item>'MSChartExtension.EnableZoomAndPanControls(this Chart)'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Admin">
+                <Note Id="2" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="MSChartExtension+ChartData">
+          <Members>
+           <Member Name="#.ctor(System.Windows.Forms.DataVisualization.Charting.Chart)">
+            <Messages>
+             <Message TypeName="AvoidUncalledPrivateCode" Category="Microsoft.Performance" CheckId="CA1811" Status="Excluded" Created="2012-03-30 13:40:43Z">
+              <Issue>
+               <Item>'MSChartExtension.ChartData.ChartData(Chart)'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Admin">
+                <Note Id="2" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Backup()">
+            <Messages>
+             <Message TypeName="AvoidUncalledPrivateCode" Category="Microsoft.Performance" CheckId="CA1811" Status="Excluded" Created="2012-03-30 13:40:43Z">
+              <Issue>
+               <Item>'MSChartExtension.ChartData.Backup()'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Admin">
+                <Note Id="2" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#ContextMenuStrip">
+            <Accessors>
+             <Accessor Name="#get_ContextMenuStrip()">
+              <Messages>
+               <Message TypeName="AvoidUncalledPrivateCode" Category="Microsoft.Performance" CheckId="CA1811" Status="Excluded" Created="2012-03-30 13:40:43Z">
+                <Issue>
+                 <Item>'MSChartExtension.ChartData.ContextMenuStrip.get()'</Item>
+                </Issue>
+                <Notes>
+                 <User Name="Admin">
+                  <Note Id="2" />
+                 </User>
+                </Notes>
+               </Message>
+              </Messages>
+             </Accessor>
+             <Accessor Name="#set_ContextMenuStrip(System.Windows.Forms.ContextMenuStrip)">
+              <Messages>
+               <Message TypeName="AvoidUncalledPrivateCode" Category="Microsoft.Performance" CheckId="CA1811" Status="Excluded" Created="2012-03-30 13:40:43Z">
+                <Issue>
+                 <Item>'MSChartExtension.ChartData.ContextMenuStrip.set(ContextMenuStrip)'</Item>
+                </Issue>
+                <Notes>
+                 <User Name="Admin">
+                  <Note Id="2" />
+                 </User>
+                </Notes>
+               </Message>
+              </Messages>
+             </Accessor>
+            </Accessors>
+           </Member>
+           <Member Name="#Restore()">
+            <Messages>
+             <Message TypeName="AvoidUncalledPrivateCode" Category="Microsoft.Performance" CheckId="CA1811" Status="Excluded" Created="2012-03-30 13:40:43Z">
+              <Issue>
+               <Item>'MSChartExtension.ChartData.Restore()'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Admin">
+                <Note Id="2" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+        </Types>
+       </Namespace>
+      </Namespaces>
+     </Module>
+    </Modules>
+   </Target>
+  </Targets>
+  <Notes>
+   <User Name="Admin">
+    <Note Id="2" Modified="2012-03-30 13:41:07Z">Extension Functions</Note>
+   </User>
+  </Notes>
+  <Rules>
+   <Rule TypeName="AssembliesShouldHaveValidStrongNames" Category="Microsoft.Design" CheckId="CA2210">
+    <Resolution Name="NoStrongName">Sign {0} with a strong name key.</Resolution>
+   </Rule>
+   <Rule TypeName="AvoidUncalledPrivateCode" Category="Microsoft.Performance" CheckId="CA1811">
+    <Resolution Name="Default">{0} appears to have no upstream public or protected callers.</Resolution>
+   </Rule>
+   <Rule TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031">
+    <Resolution Name="Default">Modify {0} to catch a more specific exception than {1} or rethrow the exception.</Resolution>
+   </Rule>
+  </Rules>
+ </FxCopReport>
+</FxCopProject>
