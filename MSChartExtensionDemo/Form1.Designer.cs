@@ -155,7 +155,7 @@
             this.Controls.Add(this.chart1);
             this.Controls.Add(this.toolStrip1);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "MSChartExtension Demo";
             this.Shown += new System.EventHandler(this.Form1_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
             this.toolStrip1.ResumeLayout(false);

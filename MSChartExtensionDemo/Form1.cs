@@ -46,6 +46,7 @@ namespace MSChartExtensionDemo
             ClearData();
             StartStopWatch();
             PlotData();
+            Application.DoEvents();
             CheckStopWatch("Plot datas");
         }
 
@@ -53,6 +54,7 @@ namespace MSChartExtensionDemo
         {
             StartStopWatch();
             ClearData();
+            Application.DoEvents();
             CheckStopWatch("Clear datas");
         }
 
@@ -61,6 +63,7 @@ namespace MSChartExtensionDemo
             StartStopWatch();
             foreach (Series ptrSeries in chart1.Series)
                 ptrSeries.Points.Clear();
+            Application.DoEvents();
             CheckStopWatch("Clear datas");
         }
 
