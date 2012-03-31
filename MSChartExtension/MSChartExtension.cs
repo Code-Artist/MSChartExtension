@@ -3,16 +3,38 @@ using System.ComponentModel;
 
 namespace System.Windows.Forms.DataVisualization.Charting
 {
-
+    /// <summary>
+    /// Extension class for MSChart
+    /// </summary>
     public static class MSChartExtension
     {
+        /// <summary>
+        /// Chart control delegate function prototype.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
         public delegate void CursorPositionChanged(double x, double y);
 
+        /// <summary>
+        /// MSChart Control States
+        /// </summary>
         public enum ChartToolState
         {
+            /// <summary>
+            /// Undefined
+            /// </summary>
             Unknown,
+            /// <summary>
+            /// Point Select Mode
+            /// </summary>
             Select,
+            /// <summary>
+            /// Zoom
+            /// </summary>
             Zoom,
+            /// <summary>
+            /// Pan
+            /// </summary>
             Pan
         }
 
@@ -36,7 +58,6 @@ namespace System.Windows.Forms.DataVisualization.Charting
         {
             EnableZoomAndPanControls(sender, null, null);
         }
-
         /// <summary>
         /// Enable Zoom and Pan Controls.
         /// </summary>
@@ -79,6 +100,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 SetChartControlState(sender, ChartToolState.Select);
             }
         }
+      
         /// <summary>
         /// Disable Zoom and Pan Controls
         /// </summary>
