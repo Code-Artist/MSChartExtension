@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSChartExtension", "MSChartExtension.csproj", "{D865F90F-8498-4D31-BEAF-21A7D5EA0212}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSChartExtension", "MSChartExtension\MSChartExtension.csproj", "{D865F90F-8498-4D31-BEAF-21A7D5EA0212}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSChartExtensionDemo", "..\MSChartExtensionDemo\MSChartExtensionDemo.csproj", "{4BF8A3F7-DE4C-4675-976C-4CD5952ABB77}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSChartExtensionDemo", "MSChartExtensionDemo\MSChartExtensionDemo.csproj", "{4BF8A3F7-DE4C-4675-976C-4CD5952ABB77}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
