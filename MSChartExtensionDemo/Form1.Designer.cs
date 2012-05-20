@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
@@ -40,15 +41,20 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.txtChartValue = new System.Windows.Forms.ToolStripStatusLabel();
             this.txtChartSelect = new System.Windows.Forms.ToolStripStatusLabel();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.itemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.item2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // chart1
             // 
             chartArea1.Name = "ChartArea1";
             this.chart1.ChartAreas.Add(chartArea1);
+            this.chart1.ContextMenuStrip = this.contextMenuStrip1;
             this.chart1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.chart1.Location = new System.Drawing.Point(0, 25);
             this.chart1.Name = "chart1";
@@ -146,6 +152,26 @@
             this.txtChartSelect.Text = "99.9999, 99.9999";
             this.txtChartSelect.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.itemToolStripMenuItem,
+            this.item2ToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(108, 48);
+            // 
+            // itemToolStripMenuItem
+            // 
+            this.itemToolStripMenuItem.Name = "itemToolStripMenuItem";
+            this.itemToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.itemToolStripMenuItem.Text = "Item 1";
+            // 
+            // item2ToolStripMenuItem
+            // 
+            this.item2ToolStripMenuItem.Name = "item2ToolStripMenuItem";
+            this.item2ToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.item2ToolStripMenuItem.Text = "Item 2";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -162,6 +188,7 @@
             this.toolStrip1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -177,6 +204,9 @@
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel txtChartValue;
         private System.Windows.Forms.ToolStripStatusLabel txtChartSelect;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem itemToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem item2ToolStripMenuItem;
     }
 }
 
