@@ -84,5 +84,35 @@ namespace MSChartExtensionDemo
             txtChartValue.Text = x.ToString("F4") + ", " + y.ToString("F4");
         }
 
+        private void contextMenuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            if (e.ClickedItem.Text.StartsWith("Item"))
+            {
+                ToolStripMenuItem ptrMenu = (ToolStripMenuItem) e.ClickedItem;
+                if (ptrMenu.HasDropDownItems) return;
+                MessageBox.Show(ptrMenu.Text);
+            }
+        }
+
+        private void item11ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Test");
+        }
+
+        private void item12ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Test2");
+        }
+
+        private void item13ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Test3");
+        }
+
+        private void item14ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Test4");
+        }
+
     }
 }

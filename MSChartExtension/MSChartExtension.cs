@@ -92,13 +92,14 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     ContextMenuStrip newMenu = new ContextMenuStrip();
                     newMenu.Items.AddRange(ChartTool[sender].MenuItems.ToArray());
 
-                    foreach (object ptrItem in ptrChart.ContextMenuStrip.Items)
+                    foreach (object ptrItem in ChartTool[sender].ContextMenuStrip.Items)
                     {
                         if (ptrItem is ToolStripMenuItem) newMenu.Items.Add(((ToolStripMenuItem)ptrItem).Clone());
                         else if (ptrItem is ToolStripSeparator) newMenu.Items.Add(new ToolStripSeparator());
                     }
                     newMenu.Items.Add(new ToolStripSeparator());
                     ptrChart.ContextMenuStrip = newMenu;
+                    ptrChart.ContextMenuStrip.AddHandlers(ChartTool[sender].ContextMenuStrip);
                 }
                 ptrChart.ContextMenuStrip.Opening += ChartContext_Opening;
                 ptrChart.ContextMenuStrip.ItemClicked += ChartContext_ItemClicked;

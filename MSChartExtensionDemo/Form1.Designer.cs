@@ -34,6 +34,14 @@
             System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.itemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.item11ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.item12ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.item13ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.item14ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.item2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.btnPlot = new System.Windows.Forms.ToolStripButton();
             this.btnClearDataFast = new System.Windows.Forms.ToolStripButton();
@@ -41,13 +49,10 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.txtChartValue = new System.Windows.Forms.ToolStripStatusLabel();
             this.txtChartSelect = new System.Windows.Forms.ToolStripStatusLabel();
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.itemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.item2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
+            this.contextMenuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
-            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // chart1
@@ -78,6 +83,66 @@
             this.chart1.Size = new System.Drawing.Size(841, 395);
             this.chart1.TabIndex = 0;
             this.chart1.Text = "chart1";
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.itemToolStripMenuItem,
+            this.item2ToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(153, 70);
+            this.contextMenuStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.contextMenuStrip1_ItemClicked);
+            // 
+            // itemToolStripMenuItem
+            // 
+            this.itemToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.item11ToolStripMenuItem,
+            this.item12ToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.item13ToolStripMenuItem,
+            this.item14ToolStripMenuItem});
+            this.itemToolStripMenuItem.Name = "itemToolStripMenuItem";
+            this.itemToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.itemToolStripMenuItem.Text = "Item 1";
+            // 
+            // item11ToolStripMenuItem
+            // 
+            this.item11ToolStripMenuItem.Name = "item11ToolStripMenuItem";
+            this.item11ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.item11ToolStripMenuItem.Text = "Item 1.1";
+            this.item11ToolStripMenuItem.Click += new System.EventHandler(this.item11ToolStripMenuItem_Click);
+            // 
+            // item12ToolStripMenuItem
+            // 
+            this.item12ToolStripMenuItem.Name = "item12ToolStripMenuItem";
+            this.item12ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.item12ToolStripMenuItem.Text = "Item 1.2";
+            this.item12ToolStripMenuItem.Click += new System.EventHandler(this.item12ToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+            // 
+            // item13ToolStripMenuItem
+            // 
+            this.item13ToolStripMenuItem.Name = "item13ToolStripMenuItem";
+            this.item13ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.item13ToolStripMenuItem.Text = "Item 1.3";
+            this.item13ToolStripMenuItem.Click += new System.EventHandler(this.item13ToolStripMenuItem_Click);
+            // 
+            // item14ToolStripMenuItem
+            // 
+            this.item14ToolStripMenuItem.Name = "item14ToolStripMenuItem";
+            this.item14ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.item14ToolStripMenuItem.Text = "Item 1.4";
+            this.item14ToolStripMenuItem.Click += new System.EventHandler(this.item14ToolStripMenuItem_Click);
+            // 
+            // item2ToolStripMenuItem
+            // 
+            this.item2ToolStripMenuItem.Name = "item2ToolStripMenuItem";
+            this.item2ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.item2ToolStripMenuItem.Text = "Item 2";
             // 
             // toolStrip1
             // 
@@ -152,26 +217,6 @@
             this.txtChartSelect.Text = "99.9999, 99.9999";
             this.txtChartSelect.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // contextMenuStrip1
-            // 
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.itemToolStripMenuItem,
-            this.item2ToolStripMenuItem});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(108, 48);
-            // 
-            // itemToolStripMenuItem
-            // 
-            this.itemToolStripMenuItem.Name = "itemToolStripMenuItem";
-            this.itemToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
-            this.itemToolStripMenuItem.Text = "Item 1";
-            // 
-            // item2ToolStripMenuItem
-            // 
-            this.item2ToolStripMenuItem.Name = "item2ToolStripMenuItem";
-            this.item2ToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
-            this.item2ToolStripMenuItem.Text = "Item 2";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -184,11 +229,11 @@
             this.Text = "MSChartExtension Demo";
             this.Shown += new System.EventHandler(this.Form1_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
+            this.contextMenuStrip1.ResumeLayout(false);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
-            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -207,6 +252,11 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem itemToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem item2ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem item11ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem item12ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem item13ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem item14ToolStripMenuItem;
     }
 }
 
