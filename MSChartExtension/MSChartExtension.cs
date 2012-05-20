@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using EventHandlerSupport;
+using System.Diagnostics;
 
 namespace System.Windows.Forms.DataVisualization.Charting
 {
@@ -106,6 +107,9 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 ptrChart.MouseDown += ChartControl_MouseDown;
                 ptrChart.MouseMove += ChartControl_MouseMove;
                 ptrChart.MouseUp += ChartControl_MouseUp;
+                ptrChart.MouseWheel += ChartControl_MouseWheel;
+                ptrChart.KeyDown += ChartControl_KeyDown;
+                ptrChart.KeyUp += ChartControl_KeyUp;
 
                 //Override settings.
                 ChartArea ptrChartArea = ptrChart.ChartAreas[0];
@@ -136,6 +140,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 ptrChart.MouseDown -= ChartControl_MouseDown;
                 ptrChart.MouseMove -= ChartControl_MouseMove;
                 ptrChart.MouseUp -= ChartControl_MouseUp;
+                ptrChart.MouseWheel -= ChartControl_MouseWheel;
 
                 ChartTool[ptrChart].Restore();
                 ChartTool.Remove(ptrChart);
@@ -266,6 +271,8 @@ namespace System.Windows.Forms.DataVisualization.Charting
             public CursorPositionChanged SelectionChangedCallback;
             public CursorPositionChanged CursorMovedCallback;
 
+            public bool ZoomEnabled { get; set; }
+
             private void CreateChartContextMenu()
             {
                 ChartToolZoomOut = new ToolStripMenuItem("Zoom Out");
@@ -368,6 +375,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
         #endregion
 
         #region [ Chart - Mouse Events ]
+
         private static bool MouseDowned;
         private static void ChartControl_MouseDown(object sender, MouseEventArgs e)
         {
@@ -481,6 +489,36 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     break;
             }
         }
+        private static void ChartControl_MouseWheel(object sender, MouseEventArgs e)
+        {
+            ChartData ptrData = ChartTool[(Chart)sender];
+            if (ptrData.ZoomEnabled)
+            {
+                Debug.WriteLine("Wheel delta = " + e.Delta.ToString());
+            }
+        }
+        private static void ChartControl_KeyDown(object sender, KeyEventArgs e)
+        {
+            ChartData ptrData = ChartTool[(Chart)sender];
+            if (e.Control && (!ptrData.ZoomEnabled))
+            {
+                //Control key pressed.
+                ptrData.ZoomEnabled = true;
+                Debug.WriteLine("Zoom Enabled.");
+            }
+        }
+        private static void ChartControl_KeyUp(object sender, KeyEventArgs e)
+        {
+            ChartData ptrData = ChartTool[(Chart)sender];
+            if (!e.Control && ptrData.ZoomEnabled)
+            {
+                //Control key released.
+                ChartTool[(Chart)sender].ZoomEnabled = false;
+                Debug.WriteLine("Zoom Disabled.");
+            }
+        }
+
         #endregion
+
     }
 }
