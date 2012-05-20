@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using EventHandlerSupport;
 
 namespace System.Windows.Forms.DataVisualization.Charting
 {
@@ -69,7 +70,6 @@ namespace System.Windows.Forms.DataVisualization.Charting
             CursorPositionChanged selectionChanged,
             CursorPositionChanged cursorMoved)
         {
-            if (ChartContextMenuStrip == null) CreateChartContextMenu();
             if (!ChartTool.ContainsKey(sender))
             {
                 ChartTool[sender] = new ChartData(sender);
@@ -80,7 +80,29 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
                 //Populate Context menu
                 Chart ptrChart = sender;
-                ptrChart.ContextMenuStrip = ChartContextMenuStrip;
+                if (ptrChart.ContextMenuStrip == null)
+                {
+                    //Context menu is empty, use ChartContextMenuStrip directly
+                    ptrChart.ContextMenuStrip = new ContextMenuStrip();
+                    ptrChart.ContextMenuStrip.Items.AddRange(ChartTool[ptrChart].MenuItems.ToArray());
+                }
+                else
+                {
+                    //User assigned context menu to chart. Merge current menu with ChartContextMenuStrip.
+                    ContextMenuStrip newMenu = new ContextMenuStrip();
+                    newMenu.Items.AddRange(ChartTool[sender].MenuItems.ToArray());
+
+                    foreach (object ptrItem in ChartTool[sender].ContextMenuStrip.Items)
+                    {
+                        if (ptrItem is ToolStripMenuItem) newMenu.Items.Add(((ToolStripMenuItem)ptrItem).Clone());
+                        else if (ptrItem is ToolStripSeparator) newMenu.Items.Add(new ToolStripSeparator());
+                    }
+                    newMenu.Items.Add(new ToolStripSeparator());
+                    ptrChart.ContextMenuStrip = newMenu;
+                    ptrChart.ContextMenuStrip.AddHandlers(ChartTool[sender].ContextMenuStrip);
+                }
+                ptrChart.ContextMenuStrip.Opening += ChartContext_Opening;
+                ptrChart.ContextMenuStrip.ItemClicked += ChartContext_ItemClicked;
                 ptrChart.MouseDown += ChartControl_MouseDown;
                 ptrChart.MouseMove += ChartControl_MouseMove;
                 ptrChart.MouseUp += ChartControl_MouseUp;
@@ -100,7 +122,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 SetChartControlState(sender, ChartToolState.Select);
             }
         }
-      
+
         /// <summary>
         /// Disable Zoom and Pan Controls
         /// </summary>
@@ -133,50 +155,26 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
         }
 
-        #region [ Chart Context Menu ]
-        private static ContextMenuStrip ChartContextMenuStrip;
-        private static ToolStripMenuItem ChartToolSelect;
-        private static ToolStripMenuItem ChartToolZoom;
-        private static ToolStripMenuItem ChartToolPan;
-        private static ToolStripMenuItem ChartToolZoomOut;
-        private static ToolStripSeparator ChartToolZoomOutSeparator;
-        private static void CreateChartContextMenu()
-        {
-            ChartContextMenuStrip = new ContextMenuStrip();
-            ChartToolZoomOut = new ToolStripMenuItem("Zoom Out");
-            ChartToolZoomOutSeparator = new ToolStripSeparator();
-            ChartToolSelect = new ToolStripMenuItem("Select");
-            ChartToolZoom = new ToolStripMenuItem("Zoom");
-            ChartToolPan = new ToolStripMenuItem("Pan");
-
-            ChartContextMenuStrip.Items.Add(ChartToolZoomOut);
-            ChartContextMenuStrip.Items.Add(ChartToolZoomOutSeparator);
-            ChartContextMenuStrip.Items.Add(ChartToolSelect);
-            ChartContextMenuStrip.Items.Add(ChartToolZoom);
-            ChartContextMenuStrip.Items.Add(ChartToolPan);
-            ChartContextMenuStrip.Items.Add(new ToolStripSeparator());
-
-            ChartContextMenuStrip.Opening += ChartContext_Opening;
-            ChartContextMenuStrip.ItemClicked += ChartContext_ItemClicked;
-        }
+        #region [ ContextMenu - Event Handler ]
 
         private static void ChartContext_Opening(object sender, CancelEventArgs e)
         {
             ContextMenuStrip menuStrip = (ContextMenuStrip)sender;
             Chart senderChart = (Chart)menuStrip.SourceControl;
+            ChartData ptrData = ChartTool[senderChart];
 
             //Check Zoomed state
             if (senderChart.ChartAreas[0].AxisX.ScaleView.IsZoomed ||
                 senderChart.ChartAreas[0].AxisY.ScaleView.IsZoomed ||
                 senderChart.ChartAreas[0].AxisY2.ScaleView.IsZoomed)
             {
-                ChartToolZoomOut.Visible = true;
-                ChartToolZoomOutSeparator.Visible = true;
+                ptrData.ChartToolZoomOut.Visible = true;
+                ptrData.ChartToolZoomOutSeparator.Visible = true;
             }
             else
             {
-                ChartToolZoomOut.Visible = false;
-                ChartToolZoomOutSeparator.Visible = false;
+                ptrData.ChartToolZoomOut.Visible = false;
+                ptrData.ChartToolZoomOutSeparator.Visible = false;
             }
 
             //Get Chart Control State
@@ -187,19 +185,19 @@ namespace System.Windows.Forms.DataVisualization.Charting
             }
 
             //Update menu based on current state.
-            ChartToolSelect.Checked = false;
-            ChartToolZoom.Checked = false;
-            ChartToolPan.Checked = false;
+            ptrData.ChartToolSelect.Checked = false;
+            ptrData.ChartToolZoom.Checked = false;
+            ptrData.ChartToolPan.Checked = false;
             switch (ChartTool[senderChart].ToolState)
             {
                 case ChartToolState.Select:
-                    ChartToolSelect.Checked = true;
+                    ptrData.ChartToolSelect.Checked = true;
                     break;
                 case ChartToolState.Zoom:
-                    ChartToolZoom.Checked = true;
+                    ptrData.ChartToolZoom.Checked = true;
                     break;
                 case ChartToolState.Pan:
-                    ChartToolPan.Checked = true;
+                    ptrData.ChartToolPan.Checked = true;
                     break;
             }
 
@@ -219,7 +217,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
             SeriesCollection chartSeries = ((Chart)menuStrip.SourceControl).Series;
             foreach (Series ptrSeries in chartSeries)
             {
-                ToolStripItem ptrItem = ChartContextMenuStrip.Items.Add(ptrSeries.Name);
+                ToolStripItem ptrItem = menuStrip.Items.Add(ptrSeries.Name);
                 ToolStripMenuItem ptrMenuItem = (ToolStripMenuItem)ptrItem;
                 ptrMenuItem.Checked = ptrSeries.Enabled;
                 ptrItem.Tag = "Series";
@@ -228,13 +226,13 @@ namespace System.Windows.Forms.DataVisualization.Charting
         private static void ChartContext_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
             ContextMenuStrip ptrMenuStrip = (ContextMenuStrip)sender;
-            if (e.ClickedItem == ChartToolSelect)
-                SetChartControlState((Chart)ChartContextMenuStrip.SourceControl, ChartToolState.Select);
-            else if (e.ClickedItem == ChartToolZoom)
-                SetChartControlState((Chart)ChartContextMenuStrip.SourceControl, ChartToolState.Zoom);
-            else if (e.ClickedItem == ChartToolPan)
-                SetChartControlState((Chart)ChartContextMenuStrip.SourceControl, ChartToolState.Pan);
-            else if (e.ClickedItem == ChartToolZoomOut)
+            if (e.ClickedItem.Text == "Select")
+                SetChartControlState((Chart)ptrMenuStrip.SourceControl, ChartToolState.Select);
+            else if (e.ClickedItem.Text == "Zoom")
+                SetChartControlState((Chart)ptrMenuStrip.SourceControl, ChartToolState.Zoom);
+            else if (e.ClickedItem.Text == "Pan")
+                SetChartControlState((Chart)ptrMenuStrip.SourceControl, ChartToolState.Pan);
+            else if (e.ClickedItem.Text == "Zoom Out")
             {
                 Chart ptrChart = (Chart)ptrMenuStrip.SourceControl;
                 ptrChart.ChartAreas[0].AxisX.ScaleView.ZoomReset();
@@ -249,17 +247,42 @@ namespace System.Windows.Forms.DataVisualization.Charting
             SeriesCollection chartSeries = ((Chart)ptrMenuStrip.SourceControl).Series;
             chartSeries[e.ClickedItem.Text].Enabled = !((ToolStripMenuItem)e.ClickedItem).Checked;
         }
+
         #endregion
 
         #region [ Chart Control State + Events ]
         private class ChartData
         {
+            //Store chart settings. Used to backup and restore chart settings.
+
             private Chart Source;
-            public ChartData(Chart chartSource) { Source = chartSource; }
+            public ChartData(Chart chartSource)
+            {
+                Source = chartSource;
+                CreateChartContextMenu();
+            }
 
             public ChartToolState ToolState { get; set; }
             public CursorPositionChanged SelectionChangedCallback;
             public CursorPositionChanged CursorMovedCallback;
+
+            private void CreateChartContextMenu()
+            {
+                ChartToolZoomOut = new ToolStripMenuItem("Zoom Out");
+                ChartToolZoomOutSeparator = new ToolStripSeparator();
+                ChartToolSelect = new ToolStripMenuItem("Select");
+                ChartToolZoom = new ToolStripMenuItem("Zoom");
+                ChartToolPan = new ToolStripMenuItem("Pan");
+                ChartContextSeparator = new ToolStripSeparator();
+
+                MenuItems = new List<ToolStripItem>();
+                MenuItems.Add(ChartToolZoomOut);
+                MenuItems.Add(ChartToolZoomOutSeparator);
+                MenuItems.Add(ChartToolSelect);
+                MenuItems.Add(ChartToolZoom);
+                MenuItems.Add(ChartToolPan);
+                MenuItems.Add(new ToolStripSeparator());
+            }
 
             public void Backup()
             {
@@ -295,6 +318,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
             }
 
             #region [ Backup Data ]
+
             public ContextMenuStrip ContextMenuStrip { get; set; }
             private bool CursorXUserEnabled;
             private bool CursorYUserEnabled;
@@ -302,7 +326,21 @@ namespace System.Windows.Forms.DataVisualization.Charting
             private double CursorXInterval, CursorYInterval;
             private bool CursorXAutoScroll, CursorYAutoScroll;
             private bool ScrollBarX, ScrollBarX2, ScrollBarY, ScrollBarY2;
+
             #endregion
+
+            #region [ Extended Context Menu ]
+
+            public List<ToolStripItem> MenuItems { get; private set; }
+            public ToolStripMenuItem ChartToolSelect { get; private set; }
+            public ToolStripMenuItem ChartToolZoom { get; private set; }
+            public ToolStripMenuItem ChartToolPan { get; private set; }
+            public ToolStripMenuItem ChartToolZoomOut { get; private set; }
+            public ToolStripSeparator ChartToolZoomOutSeparator { get; private set; }
+            public ToolStripSeparator ChartContextSeparator { get; private set; }
+
+            #endregion
+
         }
         private static Dictionary<Chart, ChartData> ChartTool = new Dictionary<Chart, ChartData>();
         private static void SetChartControlState(Chart sender, ChartToolState state)
