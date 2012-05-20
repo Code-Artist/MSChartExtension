@@ -494,7 +494,24 @@ namespace System.Windows.Forms.DataVisualization.Charting
             ChartData ptrData = ChartTool[(Chart)sender];
             if (ptrData.ZoomEnabled)
             {
+                ChartArea ptrChartArea = ((Chart)sender).ChartAreas[0];
                 Debug.WriteLine("Wheel delta = " + e.Delta.ToString());
+                if (e.Delta > 0)
+                {
+                    //Zoom in
+                    double midX = (ptrChartArea.AxisX.Maximum + ptrChartArea.AxisX.Minimum) / 2;
+                    double midY = (ptrChartArea.AxisY.Maximum + ptrChartArea.AxisY.Minimum) / 2;
+
+                    double minX = (midX + ptrChartArea.AxisX.Minimum) / 2;
+                    double maxX = (midX + ptrChartArea.AxisX.Maximum) / 2;
+
+                    double minY = (midY + ptrChartArea.AxisY.Minimum) / 2;
+                    double maxY = (midY + ptrChartArea.AxisY.Maximum) / 2;
+                }
+                else
+                {
+                    //Zoom out
+                }
             }
         }
         private static void ChartControl_KeyDown(object sender, KeyEventArgs e)
