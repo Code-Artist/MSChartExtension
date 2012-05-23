@@ -33,7 +33,11 @@
     <DocumentationFile>bin\Release\System.Windows.Forms.DataVisualization.MSChartExtension.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Accessibility">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />

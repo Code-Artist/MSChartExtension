@@ -28,7 +28,7 @@ namespace EventHandlerSupport
         /// <summary>
         /// This contains a counter to help make names unique
         /// </summary>
-        private static int menuNameCounter = 0;
+        private static int menuNameCounter;
 
         #endregion
 

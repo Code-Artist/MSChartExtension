@@ -39,6 +39,36 @@
   <Settings />
  </Rules>
  <FxCopReport Version="1.36">
+  <Namespaces>
+   <Namespace Name="EventHandlerSupport">
+    <Messages>
+     <Message TypeName="AvoidNamespacesWithFewTypes" Category="Microsoft.Design" CheckId="CA1020" Status="Excluded" Created="2012-05-23 14:21:46Z">
+      <Issue>
+       <Item>EventHandlerSupport</Item>
+      </Issue>
+      <Notes>
+       <User Name="Admin">
+        <Note Id="3" />
+       </User>
+      </Notes>
+     </Message>
+    </Messages>
+   </Namespace>
+   <Namespace Name="System.Windows.Forms.DataVisualization.Charting">
+    <Messages>
+     <Message TypeName="AvoidNamespacesWithFewTypes" Category="Microsoft.Design" CheckId="CA1020" Status="Excluded" Created="2012-05-23 14:21:46Z">
+      <Issue>
+       <Item>System.Windows.Forms.DataVisualization.Charting</Item>
+      </Issue>
+      <Notes>
+       <User Name="Admin">
+        <Note Id="1" />
+       </User>
+      </Notes>
+     </Message>
+    </Messages>
+   </Namespace>
+  </Namespaces>
   <Targets>
    <Target Name="$(ProjectDir)/MSChartExtension/bin/Debug/System.Windows.Forms.DataVisualization.MSChartExtension.dll">
     <Modules>
@@ -51,8 +81,59 @@
        </Message>
       </Messages>
       <Namespaces>
+       <Namespace Name="EventHandlerSupport">
+        <Types>
+         <Type Name="Extensions">
+          <Members>
+           <Member Name="#Clone(System.Windows.Forms.ToolStripMenuItem)">
+            <Messages>
+             <Message TypeName="DoNotCastUnnecessarily" Category="Microsoft.Performance" CheckId="CA1800" Status="Excluded" Created="2012-05-23 14:14:51Z">
+              <Issue Name="Local">
+               <Item>'item'</Item>
+               <Item>'ToolStripMenuItem'</Item>
+               <Item>'Extensions.Clone(this ToolStripMenuItem)'</Item>
+               <Item>castclass</Item>
+              </Issue>
+              <Notes>
+               <User Name="Admin">
+                <Note Id="4" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+        </Types>
+       </Namespace>
        <Namespace Name="System.Windows.Forms.DataVisualization.Charting">
         <Types>
+         <Type Name="CursorPositionChanged">
+          <Messages>
+           <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2012-05-23 14:21:46Z">
+            <Issue Name="DelegateParameterMoreMeaningfulName">
+             <Item>'CursorPositionChanged'</Item>
+             <Item>'x'</Item>
+            </Issue>
+            <Notes>
+             <User Name="Admin">
+              <Note Id="0" />
+             </User>
+            </Notes>
+           </Message>
+           <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2012-05-23 14:21:46Z">
+            <Issue Name="DelegateParameterMoreMeaningfulName">
+             <Item>'CursorPositionChanged'</Item>
+             <Item>'y'</Item>
+            </Issue>
+            <Notes>
+             <User Name="Admin">
+              <Note Id="0" />
+             </User>
+            </Notes>
+           </Message>
+          </Messages>
+         </Type>
          <Type Name="MSChartExtension">
           <Members>
            <Member Name="#ChartControl_MouseMove(System.Object,System.Windows.Forms.MouseEventArgs)">
@@ -70,20 +151,6 @@
              <Message TypeName="AvoidUncalledPrivateCode" Category="Microsoft.Performance" CheckId="CA1811" Status="Excluded" Created="2012-03-30 13:40:43Z">
               <Issue>
                <Item>'MSChartExtension.ClearPoints(this Series)'</Item>
-              </Issue>
-              <Notes>
-               <User Name="Admin">
-                <Note Id="2" />
-               </User>
-              </Notes>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#CreateChartContextMenu()">
-            <Messages>
-             <Message TypeName="AvoidUncalledPrivateCode" Category="Microsoft.Performance" CheckId="CA1811" Status="Excluded" Created="2012-03-30 13:40:43Z">
-              <Issue>
-               <Item>'MSChartExtension.CreateChartContextMenu()'</Item>
               </Issue>
               <Notes>
                <User Name="Admin">
@@ -116,6 +183,23 @@
               <Notes>
                <User Name="Admin">
                 <Note Id="2" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#EnableZoomAndPanControls(System.Windows.Forms.DataVisualization.Charting.Chart,System.Windows.Forms.DataVisualization.Charting.CursorPositionChanged,System.Windows.Forms.DataVisualization.Charting.CursorPositionChanged)">
+            <Messages>
+             <Message TypeName="DoNotCastUnnecessarily" Category="Microsoft.Performance" CheckId="CA1800" Status="Excluded" Created="2012-05-23 14:21:46Z">
+              <Issue Name="Local">
+               <Item>'ptrItem'</Item>
+               <Item>'ToolStripMenuItem'</Item>
+               <Item>'MSChartExtension.EnableZoomAndPanControls(this Chart, CursorPositionChanged, CursorPositionChanged)'</Item>
+               <Item>castclass</Item>
+              </Issue>
+              <Notes>
+               <User Name="Admin">
+                <Note Id="4" />
                </User>
               </Notes>
              </Message>
@@ -210,18 +294,30 @@
   </Targets>
   <Notes>
    <User Name="Admin">
+    <Note Id="0" Modified="2012-05-23 14:22:46Z">Coordinate</Note>
+    <Note Id="1" Modified="2012-05-23 14:22:52Z">Not applicable</Note>
     <Note Id="2" Modified="2012-03-30 13:41:07Z">Extension Functions</Note>
+    <Note Id="3" Modified="2012-05-23 14:25:07Z">Imported code</Note>
+    <Note Id="4" Modified="2012-05-23 14:25:50Z">Type check</Note>
    </User>
   </Notes>
   <Rules>
    <Rule TypeName="AssembliesShouldHaveValidStrongNames" Category="Microsoft.Design" CheckId="CA2210">
     <Resolution Name="NoStrongName">Sign {0} with a strong name key.</Resolution>
    </Rule>
-   <Rule TypeName="AvoidUncalledPrivateCode" Category="Microsoft.Performance" CheckId="CA1811">
-    <Resolution Name="Default">{0} appears to have no upstream public or protected callers.</Resolution>
+   <Rule TypeName="AvoidNamespacesWithFewTypes" Category="Microsoft.Design" CheckId="CA1020">
+    <Resolution Name="Default">Consider merging the types defined in '{0}' with another namespace.</Resolution>
+   </Rule>
+   <Rule TypeName="AvoidUncalledPrivateCode" Category="Microsoft.Performance" CheckId="CA1811" />
+   <Rule TypeName="DoNotCastUnnecessarily" Category="Microsoft.Performance" CheckId="CA1800">
+    <Resolution Name="Local">{0}, a variable, is cast to type {1} multiple times in method {2}. Cache the result of the 'as' operator or direct cast in order to eliminate the redundant {3} instruction.</Resolution>
    </Rule>
    <Rule TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031">
     <Resolution Name="Default">Modify {0} to catch a more specific exception than {1} or rethrow the exception.</Resolution>
+   </Rule>
+   <Rule TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704">
+    <Resolution Name="DelegateParameterMoreMeaningfulName">In delegate {0}, consider providing a more meaningful name than parameter name {1}.</Resolution>
+    <Resolution Name="Type">Correct the spelling of '{0}' in type name {1}.</Resolution>
    </Rule>
   </Rules>
  </FxCopReport>

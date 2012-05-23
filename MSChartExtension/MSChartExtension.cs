@@ -5,40 +5,40 @@ using EventHandlerSupport;
 namespace System.Windows.Forms.DataVisualization.Charting
 {
     /// <summary>
+    /// Chart control delegate function prototype.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    public delegate void CursorPositionChanged(double x, double y);
+
+    /// <summary>
+    /// MSChart Control Extension's States
+    /// </summary>
+    public enum MSChartExtensionToolState
+    {
+        /// <summary>
+        /// Undefined
+        /// </summary>
+        Unknown,
+        /// <summary>
+        /// Point Select Mode
+        /// </summary>
+        Select,
+        /// <summary>
+        /// Zoom
+        /// </summary>
+        Zoom,
+        /// <summary>
+        /// Pan
+        /// </summary>
+        Pan
+    }
+
+    /// <summary>
     /// Extension class for MSChart
     /// </summary>
     public static class MSChartExtension
     {
-        /// <summary>
-        /// Chart control delegate function prototype.
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        public delegate void CursorPositionChanged(double x, double y);
-
-        /// <summary>
-        /// MSChart Control States
-        /// </summary>
-        public enum ChartToolState
-        {
-            /// <summary>
-            /// Undefined
-            /// </summary>
-            Unknown,
-            /// <summary>
-            /// Point Select Mode
-            /// </summary>
-            Select,
-            /// <summary>
-            /// Zoom
-            /// </summary>
-            Zoom,
-            /// <summary>
-            /// Pan
-            /// </summary>
-            Pan
-        }
-
         /// <summary>
         /// Speed up MSChart data points clear operations.
         /// </summary>
@@ -119,7 +119,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 ptrChartArea.AxisY.ScrollBar.Enabled = false;
                 ptrChartArea.AxisY2.ScrollBar.Enabled = false;
 
-                SetChartControlState(sender, ChartToolState.Select);
+                SetChartControlState(sender, MSChartExtensionToolState.Select);
             }
         }
 
@@ -146,10 +146,10 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// </summary>
         /// <param name="sender"></param>
         /// <returns></returns>
-        public static ChartToolState GetChartToolState(this Chart sender)
+        public static MSChartExtensionToolState GetChartToolState(this Chart sender)
         {
             if (!ChartTool.ContainsKey(sender))
-                return ChartToolState.Unknown;
+                return MSChartExtensionToolState.Unknown;
             else
                 return ChartTool[sender].ToolState;
 
@@ -181,7 +181,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
             if (!ChartTool.ContainsKey(senderChart))
             {
                 //Initialize Chart Tool
-                SetChartControlState(senderChart, ChartToolState.Select);
+                SetChartControlState(senderChart, MSChartExtensionToolState.Select);
             }
 
             //Update menu based on current state.
@@ -190,13 +190,13 @@ namespace System.Windows.Forms.DataVisualization.Charting
             ptrData.ChartToolPan.Checked = false;
             switch (ChartTool[senderChart].ToolState)
             {
-                case ChartToolState.Select:
+                case MSChartExtensionToolState.Select:
                     ptrData.ChartToolSelect.Checked = true;
                     break;
-                case ChartToolState.Zoom:
+                case MSChartExtensionToolState.Zoom:
                     ptrData.ChartToolZoom.Checked = true;
                     break;
-                case ChartToolState.Pan:
+                case MSChartExtensionToolState.Pan:
                     ptrData.ChartToolPan.Checked = true;
                     break;
             }
@@ -227,11 +227,11 @@ namespace System.Windows.Forms.DataVisualization.Charting
         {
             ContextMenuStrip ptrMenuStrip = (ContextMenuStrip)sender;
             if (e.ClickedItem.Text == "Select")
-                SetChartControlState((Chart)ptrMenuStrip.SourceControl, ChartToolState.Select);
+                SetChartControlState((Chart)ptrMenuStrip.SourceControl, MSChartExtensionToolState.Select);
             else if (e.ClickedItem.Text == "Zoom")
-                SetChartControlState((Chart)ptrMenuStrip.SourceControl, ChartToolState.Zoom);
+                SetChartControlState((Chart)ptrMenuStrip.SourceControl, MSChartExtensionToolState.Zoom);
             else if (e.ClickedItem.Text == "Pan")
-                SetChartControlState((Chart)ptrMenuStrip.SourceControl, ChartToolState.Pan);
+                SetChartControlState((Chart)ptrMenuStrip.SourceControl, MSChartExtensionToolState.Pan);
             else if (e.ClickedItem.Text == "Zoom Out")
             {
                 Chart ptrChart = (Chart)ptrMenuStrip.SourceControl;
@@ -262,7 +262,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 CreateChartContextMenu();
             }
 
-            public ChartToolState ToolState { get; set; }
+            public MSChartExtensionToolState ToolState { get; set; }
             public CursorPositionChanged SelectionChangedCallback;
             public CursorPositionChanged CursorMovedCallback;
 
@@ -281,7 +281,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 MenuItems.Add(ChartToolSelect);
                 MenuItems.Add(ChartToolZoom);
                 MenuItems.Add(ChartToolPan);
-                MenuItems.Add(new ToolStripSeparator());
+                MenuItems.Add(ChartContextSeparator);
             }
 
             public void Backup()
@@ -343,22 +343,22 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
         }
         private static Dictionary<Chart, ChartData> ChartTool = new Dictionary<Chart, ChartData>();
-        private static void SetChartControlState(Chart sender, ChartToolState state)
+        private static void SetChartControlState(Chart sender, MSChartExtensionToolState state)
         {
             ChartTool[(Chart)sender].ToolState = state;
             switch (state)
             {
-                case ChartToolState.Select:
+                case MSChartExtensionToolState.Select:
                     sender.Cursor = Cursors.Cross;
                     sender.ChartAreas[0].CursorX.IsUserEnabled = true;
                     sender.ChartAreas[0].CursorY.IsUserEnabled = true;
                     break;
-                case ChartToolState.Zoom:
+                case MSChartExtensionToolState.Zoom:
                     sender.Cursor = Cursors.Cross;
                     sender.ChartAreas[0].CursorX.IsUserEnabled = false;
                     sender.ChartAreas[0].CursorY.IsUserEnabled = false;
                     break;
-                case ChartToolState.Pan:
+                case MSChartExtensionToolState.Pan:
                     sender.Cursor = Cursors.Hand;
                     sender.ChartAreas[0].CursorX.IsUserEnabled = false;
                     sender.ChartAreas[0].CursorY.IsUserEnabled = false;
@@ -383,9 +383,9 @@ namespace System.Windows.Forms.DataVisualization.Charting
             ptrChartArea.CursorX.SelectionEnd = ptrChartArea.CursorX.SelectionStart;
             ptrChartArea.CursorY.SelectionEnd = ptrChartArea.CursorY.SelectionStart;
 
-            if (ChartTool[(Chart)sender].SelectionChangedCallback != null)
+            if (ChartTool[ptrChart].SelectionChangedCallback != null)
             {
-                ChartTool[(Chart)sender].SelectionChangedCallback(
+                ChartTool[ptrChart].SelectionChangedCallback(
                     ptrChartArea.CursorX.SelectionStart,
                     ptrChartArea.CursorY.SelectionStart);
             }
@@ -401,14 +401,14 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 selX = ptrChart.ChartAreas[0].AxisX.PixelPositionToValue(e.Location.X);
                 selY = ptrChart.ChartAreas[0].AxisY.PixelPositionToValue(e.Location.Y);
 
-                if (ChartTool[(Chart)sender].CursorMovedCallback != null)
-                    ChartTool[(Chart)sender].CursorMovedCallback(selX, selY);
+                if (ChartTool[ptrChart].CursorMovedCallback != null)
+                    ChartTool[ptrChart].CursorMovedCallback(selX, selY);
             }
             catch (Exception) { /*ToDo: Set coordinate to 0,0 */ return; } //Handle exception when scrolled out of range.
 
             switch (ChartTool[ptrChart].ToolState)
             {
-                case ChartToolState.Zoom:
+                case MSChartExtensionToolState.Zoom:
                     #region [ Zoom Control ]
                     if (MouseDowned)
                     {
@@ -418,7 +418,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     #endregion
                     break;
 
-                case ChartToolState.Pan:
+                case MSChartExtensionToolState.Pan:
                     #region [ Pan Control ]
                     if (MouseDowned)
                     {
@@ -451,7 +451,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
             ChartArea ptrChartArea = ptrChart.ChartAreas[0];
             switch (ChartTool[ptrChart].ToolState)
             {
-                case ChartToolState.Zoom:
+                case MSChartExtensionToolState.Zoom:
                     //Zoom area.
                     double XStart = ptrChartArea.CursorX.SelectionStart;
                     double XEnd = ptrChartArea.CursorX.SelectionEnd;
@@ -477,7 +477,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     ptrChartArea.CursorY.SelectionStart = ptrChartArea.CursorY.SelectionEnd;
                     break;
 
-                case ChartToolState.Pan:
+                case MSChartExtensionToolState.Pan:
                     break;
             }
         }
