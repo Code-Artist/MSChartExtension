@@ -496,21 +496,28 @@ namespace System.Windows.Forms.DataVisualization.Charting
             {
                 ChartArea ptrChartArea = ((Chart)sender).ChartAreas[0];
                 Debug.WriteLine("Wheel delta = " + e.Delta.ToString());
+                double midX = (ptrChartArea.AxisX.Maximum + ptrChartArea.AxisX.Minimum) / 2;
+                double midY = (ptrChartArea.AxisY.Maximum + ptrChartArea.AxisY.Minimum) / 2;
+
+                double minX, maxX, minY, maxY;
                 if (e.Delta > 0)
                 {
                     //Zoom in
-                    double midX = (ptrChartArea.AxisX.Maximum + ptrChartArea.AxisX.Minimum) / 2;
-                    double midY = (ptrChartArea.AxisY.Maximum + ptrChartArea.AxisY.Minimum) / 2;
-
-                    double minX = (midX + ptrChartArea.AxisX.Minimum) / 2;
-                    double maxX = (midX + ptrChartArea.AxisX.Maximum) / 2;
-
-                    double minY = (midY + ptrChartArea.AxisY.Minimum) / 2;
-                    double maxY = (midY + ptrChartArea.AxisY.Maximum) / 2;
+                    minX = (midX + ptrChartArea.AxisX.Minimum) / 2;
+                    maxX = (midX + ptrChartArea.AxisX.Maximum) / 2;
+                    minY = (midY + ptrChartArea.AxisY.Minimum) / 2;
+                    maxY = (midY + ptrChartArea.AxisY.Maximum) / 2;
                 }
                 else
                 {
                     //Zoom out
+                    double dX = midX - ptrChartArea.AxisX.Minimum;
+                    double dY = midY - ptrChartArea.AxisY.Maximum;
+
+                    minX = midX - 2 * dX;
+                    maxX = midY + 2 * dX;
+                    minY = midY - 2 * dY;
+                    maxY = midY + 2 * dY;
                 }
             }
         }

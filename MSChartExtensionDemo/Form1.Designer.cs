@@ -80,7 +80,7 @@
             series2.Name = "Series2";
             this.chart1.Series.Add(series1);
             this.chart1.Series.Add(series2);
-            this.chart1.Size = new System.Drawing.Size(841, 395);
+            this.chart1.Size = new System.Drawing.Size(841, 371);
             this.chart1.TabIndex = 0;
             this.chart1.Text = "chart1";
             // 
@@ -108,33 +108,33 @@
             // item11ToolStripMenuItem
             // 
             this.item11ToolStripMenuItem.Name = "item11ToolStripMenuItem";
-            this.item11ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.item11ToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
             this.item11ToolStripMenuItem.Text = "Item 1.1";
             this.item11ToolStripMenuItem.Click += new System.EventHandler(this.item11ToolStripMenuItem_Click);
             // 
             // item12ToolStripMenuItem
             // 
             this.item12ToolStripMenuItem.Name = "item12ToolStripMenuItem";
-            this.item12ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.item12ToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
             this.item12ToolStripMenuItem.Text = "Item 1.2";
             this.item12ToolStripMenuItem.Click += new System.EventHandler(this.item12ToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(113, 6);
             // 
             // item13ToolStripMenuItem
             // 
             this.item13ToolStripMenuItem.Name = "item13ToolStripMenuItem";
-            this.item13ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.item13ToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
             this.item13ToolStripMenuItem.Text = "Item 1.3";
             this.item13ToolStripMenuItem.Click += new System.EventHandler(this.item13ToolStripMenuItem_Click);
             // 
             // item14ToolStripMenuItem
             // 
             this.item14ToolStripMenuItem.Name = "item14ToolStripMenuItem";
-            this.item14ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.item14ToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
             this.item14ToolStripMenuItem.Text = "Item 1.4";
             this.item14ToolStripMenuItem.Click += new System.EventHandler(this.item14ToolStripMenuItem_Click);
             // 
@@ -222,8 +222,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(841, 420);
-            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.chart1);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.toolStrip1);
             this.Name = "Form1";
             this.Text = "MSChartExtension Demo";
