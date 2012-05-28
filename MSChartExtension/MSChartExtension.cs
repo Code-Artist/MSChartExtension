@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using EventHandlerSupport;
-using System.Runtime.InteropServices;
 
 namespace System.Windows.Forms.DataVisualization.Charting
 {
@@ -236,11 +235,11 @@ namespace System.Windows.Forms.DataVisualization.Charting
             else if (e.ClickedItem.Text == "Zoom Out")
             {
                 Chart ptrChart = (Chart)ptrMenuStrip.SourceControl;
-                SuspendDrawing(ptrChart);
+                WindowMessagesNativeMethods.SuspendDrawing(ptrChart);
                 ptrChart.ChartAreas[0].AxisX.ScaleView.ZoomReset();
                 ptrChart.ChartAreas[0].AxisY.ScaleView.ZoomReset();
                 ptrChart.ChartAreas[0].AxisY2.ScaleView.ZoomReset();
-                ResumeDrawing(ptrChart);
+                WindowMessagesNativeMethods.ResumeDrawing(ptrChart);
             }
 
             if (e.ClickedItem.Tag == null) return;
@@ -484,14 +483,6 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     break;
             }
         }
-        #endregion
-
-        #region [ Suspend / Resume Drawing ]
-        [DllImport("user32.dll")]
-        private static extern int SendMessage(IntPtr hWnd, Int32 wMsg, bool wParam, Int32 lParam);
-        private const int WM_SETREDRAW = 11;
-        private static void SuspendDrawing(Control parent) { SendMessage(parent.Handle, WM_SETREDRAW, false, 0); }
-        private static void ResumeDrawing(Control parent) { SendMessage(parent.Handle, WM_SETREDRAW, true, 0); parent.Refresh(); }
         #endregion
 
     }

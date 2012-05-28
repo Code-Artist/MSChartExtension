@@ -285,6 +285,43 @@
            </Member>
           </Members>
          </Type>
+         <Type Name="WindowMessagesNativeMethods">
+          <Members>
+           <Member Name="#SendMessage(System.IntPtr,System.Int32,System.Boolean,System.Int32)">
+            <Messages>
+             <Message Id="2" TypeName="PInvokeDeclarationsShouldBePortable" Category="Microsoft.Portability" CheckId="CA1901" Created="2012-05-28 13:14:11Z" FixCategory="NonBreaking">
+              <Issue Name="Parameter">
+               <Item>'wParam'</Item>
+               <Item>'WindowMessagesNativeMethods.SendMessage(IntPtr, int, bool, int)'</Item>
+               <Item>4</Item>
+               <Item>64-bit</Item>
+               <Item>8</Item>
+               <Item>'bool'</Item>
+              </Issue>
+             </Message>
+             <Message Id="3" TypeName="PInvokeDeclarationsShouldBePortable" Category="Microsoft.Portability" CheckId="CA1901" Created="2012-05-28 13:14:11Z" FixCategory="NonBreaking">
+              <Issue Name="Parameter">
+               <Item>'lParam'</Item>
+               <Item>'WindowMessagesNativeMethods.SendMessage(IntPtr, int, bool, int)'</Item>
+               <Item>4</Item>
+               <Item>64-bit</Item>
+               <Item>8</Item>
+               <Item>'int'</Item>
+              </Issue>
+             </Message>
+             <Message Id="return" TypeName="PInvokeDeclarationsShouldBePortable" Category="Microsoft.Portability" CheckId="CA1901" Created="2012-05-28 13:14:11Z" FixCategory="NonBreaking">
+              <Issue Name="Return">
+               <Item>'WindowMessagesNativeMethods.SendMessage(IntPtr, int, bool, int)'</Item>
+               <Item>8</Item>
+               <Item>32-bit</Item>
+               <Item>4</Item>
+               <Item>'long'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
         </Types>
        </Namespace>
       </Namespaces>
@@ -308,7 +345,9 @@
    <Rule TypeName="AvoidNamespacesWithFewTypes" Category="Microsoft.Design" CheckId="CA1020">
     <Resolution Name="Default">Consider merging the types defined in '{0}' with another namespace.</Resolution>
    </Rule>
-   <Rule TypeName="AvoidUncalledPrivateCode" Category="Microsoft.Performance" CheckId="CA1811" />
+   <Rule TypeName="AvoidUncalledPrivateCode" Category="Microsoft.Performance" CheckId="CA1811">
+    <Resolution Name="Default" />
+   </Rule>
    <Rule TypeName="DoNotCastUnnecessarily" Category="Microsoft.Performance" CheckId="CA1800">
     <Resolution Name="Local">{0}, a variable, is cast to type {1} multiple times in method {2}. Cache the result of the 'as' operator or direct cast in order to eliminate the redundant {3} instruction.</Resolution>
    </Rule>
@@ -317,7 +356,10 @@
    </Rule>
    <Rule TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704">
     <Resolution Name="DelegateParameterMoreMeaningfulName">In delegate {0}, consider providing a more meaningful name than parameter name {1}.</Resolution>
-    <Resolution Name="Type">Correct the spelling of '{0}' in type name {1}.</Resolution>
+   </Rule>
+   <Rule TypeName="PInvokeDeclarationsShouldBePortable" Category="Microsoft.Portability" CheckId="CA1901">
+    <Resolution Name="Parameter">As it is declared in your code, parameter {0} of P/Invoke {1} will be {2} bytes wide on {3} platforms. This is not correct, as the actual native declaration of this API indicates it should be {4} bytes wide on {3} platforms. Consult the MSDN Platform SDK documentation for help determining what data type should be used instead of {5}.</Resolution>
+    <Resolution Name="Return">As it is declared in your code, the return type of P/Invoke {0} will be {1} bytes wide on {2} platforms. This is not correct, as the actual native declaration of this API indicates it should be {3} bytes wide on {2} platforms. Consult the MSDN Platform SDK documentation for help determining what data type should be used instead of {4}.</Resolution>
    </Rule>
   </Rules>
  </FxCopReport>
