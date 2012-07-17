@@ -114,5 +114,19 @@ namespace MSChartExtensionDemo
             MessageBox.Show("Test4");
         }
 
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            chart1.DrawHorizontalLine(0.5, Color.Green, lineWidth: 3, lineStyle: ChartDashStyle.DashDot);
+            chart1.DrawVerticalLine(750, Color.Orange, lineWidth: 3, lineStyle: ChartDashStyle.Dot);
+            chart1.DrawRectangle(1000, -0.3, 500, 0.6, Color.Lime, lineWidth: 2);
+            chart1.DrawLine(1500, 2000, -1, 1, Color.Pink, lineWidth: 2);
+            chart1.AddText("Test chart message", 1000, 0.3, Color.White, textStyle: TextStyle.Shadow);
+        }
+
+        private void toolStripButton2_Click(object sender, EventArgs e)
+        {
+            chart1.Annotations.Clear();
+        }
+
     }
 }

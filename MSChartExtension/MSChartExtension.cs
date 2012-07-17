@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using EventHandlerSupport;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace System.Windows.Forms.DataVisualization.Charting
 {
@@ -485,5 +486,204 @@ namespace System.Windows.Forms.DataVisualization.Charting
         }
         #endregion
 
+        #region [ Annotations ]
+
+        /// <summary>
+        /// Draw a horizontal line on chart.
+        /// </summary>
+        /// <param name="sender">Source Chart.</param>
+        /// <param name="y">YAxis value.</param>
+        /// <param name="lineColor">Line color.</param>
+        /// <param name="name">Annotation name.</param>
+        /// <param name="lineWidth">Line width</param>
+        /// <param name="lineStyle">Line style</param>
+        public static void DrawHorizontalLine(this Chart sender, double y, 
+            Drawing.Color lineColor, string name = "",
+            int lineWidth = 1, ChartDashStyle lineStyle = ChartDashStyle.Solid)
+        {
+            HorizontalLineAnnotation horzLine = new HorizontalLineAnnotation();
+            string chartAreaName = sender.ChartAreas[0].Name;
+            horzLine.ClipToChartArea = chartAreaName;
+            horzLine.AxisXName = chartAreaName + "\\rX";
+            horzLine.YAxisName = chartAreaName + "\\rY";
+            horzLine.IsInfinitive = true;
+            horzLine.IsSizeAlwaysRelative = false;
+
+            horzLine.Y = y;
+            horzLine.LineColor = lineColor;
+            horzLine.LineWidth = lineWidth;
+            horzLine.LineDashStyle = lineStyle;
+            sender.Annotations.Add(horzLine);
+
+            if (!string.IsNullOrEmpty(name)) horzLine.Name = name;
+        }
+
+        /// <summary>
+        /// Draw a vertical line on chart.
+        /// </summary>
+        /// <param name="sender">Source Chart.</param>
+        /// <param name="x">XAxis value.</param>
+        /// <param name="lineColor">Line color.</param>
+        /// <param name="name">Annotation name.</param>
+        /// <param name="lineWidth">Line width</param>
+        /// <param name="lineStyle">Line style</param>
+        public static void DrawVerticalLine(this Chart sender, double x,
+            Drawing.Color lineColor, string name = "",
+            int lineWidth = 1, ChartDashStyle lineStyle = ChartDashStyle.Solid)
+        {
+
+            VerticalLineAnnotation vertLine = new VerticalLineAnnotation();
+            string chartAreaName = sender.ChartAreas[0].Name;
+            vertLine.ClipToChartArea = chartAreaName;
+            vertLine.AxisXName = chartAreaName + "\\rX";
+            vertLine.YAxisName = chartAreaName + "\\rY";
+            vertLine.IsInfinitive = true;
+            vertLine.IsSizeAlwaysRelative = false;
+
+            vertLine.X = x;
+            vertLine.LineColor = lineColor;
+            vertLine.LineWidth = lineWidth;
+            vertLine.LineDashStyle = lineStyle;
+            sender.Annotations.Add(vertLine);
+
+            if (!string.IsNullOrEmpty(name)) vertLine.Name = name;
+        }
+
+        /// <summary>
+        /// Draw a rectangle on chart.
+        /// </summary>
+        /// <param name="sender">Source Chart.</param>
+        /// <param name="x">XAxis value</param>
+        /// <param name="y">YAxis value</param>
+        /// <param name="width">rectangle width using XAis value.</param>
+        /// <param name="height">rectangle height using YAis value.</param>
+        /// <param name="lineColor">Outline color.</param>
+        /// <param name="name">Annotation name.</param>
+        /// <param name="lineWidth">Line width</param>
+        /// <param name="lineStyle">Line style</param>
+        public static void DrawRectangle(this Chart sender, double x, double y, 
+            double width, double height,
+            Drawing.Color lineColor, string name = "",
+            int lineWidth = 1, ChartDashStyle lineStyle = ChartDashStyle.Solid)
+        {
+            RectangleAnnotation rect = new RectangleAnnotation();
+            string chartAreaName = sender.ChartAreas[0].Name;
+            rect.ClipToChartArea = chartAreaName;
+            rect.AxisXName = chartAreaName + "\\rX";
+            rect.YAxisName = chartAreaName + "\\rY";
+            rect.BackColor = Drawing.Color.Transparent;
+            rect.ForeColor = Drawing.Color.Transparent;
+            rect.IsSizeAlwaysRelative = false;
+
+            rect.LineColor = lineColor;
+            rect.LineWidth = lineWidth;
+            rect.LineDashStyle = lineStyle;
+
+            //Limit rectangle within chart area
+            Axis ptrAxis = sender.ChartAreas[0].AxisX;
+            if (x < ptrAxis.Minimum)
+            {
+                width = width - (ptrAxis.Minimum - x);
+                x = ptrAxis.Minimum;
+            }
+            else if (x > ptrAxis.Maximum)
+            {
+                width = width - (x - ptrAxis.Maximum);
+                x = ptrAxis.Maximum;
+            }
+            if ((x + width) > ptrAxis.Maximum) width = ptrAxis.Maximum -x;
+
+            ptrAxis = sender.ChartAreas[0].AxisY;
+            if (y < ptrAxis.Minimum)
+            {
+                height = height - (ptrAxis.Minimum - y);
+                y = ptrAxis.Minimum;
+            }
+            else if (y > ptrAxis.Maximum)
+            {
+                height = height - (y - ptrAxis.Maximum);
+                y = ptrAxis.Maximum;
+            }
+            if ((y + height) > ptrAxis.Maximum) height = ptrAxis.Maximum - y;
+
+            rect.X = x;
+            rect.Y = y;
+            rect.Width = width;
+            rect.Height = height;
+            rect.LineColor = lineColor;
+            sender.Annotations.Add(rect);
+
+            if (!string.IsNullOrEmpty(name)) rect.Name = name;
+
+        }
+
+        /// <summary>
+        /// Draw a line on chart.
+        /// </summary>
+        /// <param name="sender">Source Chart.</param>
+        /// <param name="x0">First point on XAxis.</param>
+        /// <param name="x1">Second piont on XAxis.</param>
+        /// <param name="y0">First point on YAxis.</param>
+        /// <param name="y1">Second point on YAxis.</param>
+        /// <param name="lineColor">Outline color.</param>
+        /// <param name="name">Annotation name.</param>
+        /// <param name="lineWidth">Line width</param>
+        /// <param name="lineStyle">Line style</param>
+        public static void DrawLine(this Chart sender, double x0, double x1,
+            double y0, double y1, Drawing.Color lineColor, string name = "",
+            int lineWidth = 1, ChartDashStyle lineStyle = ChartDashStyle.Solid)
+        {
+            LineAnnotation line = new LineAnnotation();
+            string chartAreaName = sender.ChartAreas[0].Name;
+            line.ClipToChartArea = chartAreaName;
+            line.AxisXName = chartAreaName + "\\rX";
+            line.YAxisName = chartAreaName + "\\rY";
+            line.IsSizeAlwaysRelative = false;
+
+            line.X = x0;
+            line.Y = y0;
+            line.Height = y1 - y0;
+            line.Width = x1 - x0;
+            line.LineColor = lineColor;
+            line.LineWidth = lineWidth;
+            line.LineDashStyle = lineStyle;
+            sender.Annotations.Add(line);
+
+            if (!string.IsNullOrEmpty(name)) line.Name = name;
+        }
+
+        /// <summary>
+        /// Add text annotation to chart.
+        /// </summary>
+        /// <param name="sender">Source Chart.</param>
+        /// <param name="text">Text to display.</param>
+        /// <param name="x">Text box upper left X Coordinate.</param>
+        /// <param name="y">Text box upper left Y coordinate.</param>
+        /// <param name="textColor">Text color.</param>
+        /// <param name="name">Annotation name.</param>
+        /// <param name="textStyle">Style of text.</param>
+        public static void AddText(this Chart sender, string text, 
+            double x, double y,
+            Drawing.Color textColor, string name = "", 
+            TextStyle textStyle = TextStyle.Default)
+        {
+            TextAnnotation textAnn = new TextAnnotation();
+            string chartAreaName = sender.ChartAreas[0].Name;
+            textAnn.ClipToChartArea = chartAreaName;
+            textAnn.AxisXName = chartAreaName + "\\rX";
+            textAnn.YAxisName = chartAreaName + "\\rY";
+            textAnn.IsSizeAlwaysRelative = false;
+
+            textAnn.Text = text;
+            textAnn.ForeColor = textColor;
+            textAnn.X = x;
+            textAnn.Y = y;
+            textAnn.TextStyle = textStyle;
+
+            sender.Annotations.Add(textAnn);
+            if(!string.IsNullOrEmpty(name)) textAnn.Name = name;
+        }
+        
+        #endregion
     }
 }
