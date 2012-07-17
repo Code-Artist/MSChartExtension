@@ -136,6 +136,37 @@
          </Type>
          <Type Name="MSChartExtension">
           <Members>
+           <Member Name="#AddText(System.Windows.Forms.DataVisualization.Charting.Chart,System.String,System.Double,System.Double,System.Drawing.Color,System.String,System.Windows.Forms.DataVisualization.Charting.TextStyle)">
+            <Messages>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2012-07-17 14:20:01Z">
+              <Issue>
+               <Item>'MSChartExtension.AddText(this Chart, string, double, double, Color, string, TextStyle)'</Item>
+              </Issue>
+             </Message>
+             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2012-07-17 14:20:01Z">
+              <Issue Name="MemberParameterMoreMeaningfulName">
+               <Item>'MSChartExtension.AddText(this Chart, string, double, double, Color, string, TextStyle)'</Item>
+               <Item>'x'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Admin">
+                <Note Id="5" />
+               </User>
+              </Notes>
+             </Message>
+             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2012-07-17 14:20:01Z">
+              <Issue Name="MemberParameterMoreMeaningfulName">
+               <Item>'MSChartExtension.AddText(this Chart, string, double, double, Color, string, TextStyle)'</Item>
+               <Item>'y'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Admin">
+                <Note Id="5" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
            <Member Name="#ChartControl_MouseMove(System.Object,System.Windows.Forms.MouseEventArgs)">
             <Messages>
              <Message TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031" Created="2012-03-30 13:40:43Z">
@@ -169,6 +200,120 @@
               <Notes>
                <User Name="Admin">
                 <Note Id="2" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#DrawHorizontalLine(System.Windows.Forms.DataVisualization.Charting.Chart,System.Double,System.Drawing.Color,System.String,System.Int32,System.Windows.Forms.DataVisualization.Charting.ChartDashStyle)">
+            <Messages>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2012-07-17 14:20:01Z">
+              <Issue>
+               <Item>'MSChartExtension.DrawHorizontalLine(this Chart, double, Color, string, int, ChartDashStyle)'</Item>
+              </Issue>
+             </Message>
+             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2012-07-17 14:20:01Z">
+              <Issue Name="MemberParameterMoreMeaningfulName">
+               <Item>'MSChartExtension.DrawHorizontalLine(this Chart, double, Color, string, int, ChartDashStyle)'</Item>
+               <Item>'y'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Admin">
+                <Note Id="5" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#DrawLine(System.Windows.Forms.DataVisualization.Charting.Chart,System.Double,System.Double,System.Double,System.Double,System.Drawing.Color,System.String,System.Int32,System.Windows.Forms.DataVisualization.Charting.ChartDashStyle)">
+            <Messages>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2012-07-17 14:20:01Z">
+              <Issue>
+               <Item>'MSChartExtension.DrawLine(this Chart, double, double, double, double, Color, string, int, ChartDashStyle)'</Item>
+              </Issue>
+             </Message>
+             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2012-07-17 14:20:01Z">
+              <Issue Name="MemberParameter">
+               <Item>'MSChartExtension.DrawLine(this Chart, double, double, double, double, Color, string, int, ChartDashStyle)'</Item>
+               <Item>x</Item>
+               <Item>'x0'</Item>
+              </Issue>
+              <Issue Name="MemberParameter">
+               <Item>'MSChartExtension.DrawLine(this Chart, double, double, double, double, Color, string, int, ChartDashStyle)'</Item>
+               <Item>x</Item>
+               <Item>'x1'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Admin">
+                <Note Id="5" />
+               </User>
+              </Notes>
+             </Message>
+             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2012-07-17 14:20:01Z">
+              <Issue Name="MemberParameter">
+               <Item>'MSChartExtension.DrawLine(this Chart, double, double, double, double, Color, string, int, ChartDashStyle)'</Item>
+               <Item>y</Item>
+               <Item>'y0'</Item>
+              </Issue>
+              <Issue Name="MemberParameter">
+               <Item>'MSChartExtension.DrawLine(this Chart, double, double, double, double, Color, string, int, ChartDashStyle)'</Item>
+               <Item>y</Item>
+               <Item>'y1'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Admin">
+                <Note Id="5" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#DrawRectangle(System.Windows.Forms.DataVisualization.Charting.Chart,System.Double,System.Double,System.Double,System.Double,System.Drawing.Color,System.String,System.Int32,System.Windows.Forms.DataVisualization.Charting.ChartDashStyle)">
+            <Messages>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2012-07-17 14:20:01Z">
+              <Issue>
+               <Item>'MSChartExtension.DrawRectangle(this Chart, double, double, double, double, Color, string, int, ChartDashStyle)'</Item>
+              </Issue>
+             </Message>
+             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2012-07-17 14:20:01Z">
+              <Issue Name="MemberParameterMoreMeaningfulName">
+               <Item>'MSChartExtension.DrawRectangle(this Chart, double, double, double, double, Color, string, int, ChartDashStyle)'</Item>
+               <Item>'x'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Admin">
+                <Note Id="5" />
+               </User>
+              </Notes>
+             </Message>
+             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2012-07-17 14:20:01Z">
+              <Issue Name="MemberParameterMoreMeaningfulName">
+               <Item>'MSChartExtension.DrawRectangle(this Chart, double, double, double, double, Color, string, int, ChartDashStyle)'</Item>
+               <Item>'y'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Admin">
+                <Note Id="5" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#DrawVerticalLine(System.Windows.Forms.DataVisualization.Charting.Chart,System.Double,System.Drawing.Color,System.String,System.Int32,System.Windows.Forms.DataVisualization.Charting.ChartDashStyle)">
+            <Messages>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2012-07-17 14:20:01Z">
+              <Issue>
+               <Item>'MSChartExtension.DrawVerticalLine(this Chart, double, Color, string, int, ChartDashStyle)'</Item>
+              </Issue>
+             </Message>
+             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2012-07-17 14:20:01Z">
+              <Issue Name="MemberParameterMoreMeaningfulName">
+               <Item>'MSChartExtension.DrawVerticalLine(this Chart, double, Color, string, int, ChartDashStyle)'</Item>
+               <Item>'x'</Item>
+              </Issue>
+              <Notes>
+               <User Name="Admin">
+                <Note Id="5" />
                </User>
               </Notes>
              </Message>
@@ -336,6 +481,7 @@
     <Note Id="2" Modified="2012-03-30 13:41:07Z">Extension Functions</Note>
     <Note Id="3" Modified="2012-05-23 14:25:07Z">Imported code</Note>
     <Note Id="4" Modified="2012-05-23 14:25:50Z">Type check</Note>
+    <Note Id="5" Modified="2012-07-17 14:27:30Z">Ignored.</Note>
    </User>
   </Notes>
   <Rules>
@@ -348,6 +494,9 @@
    <Rule TypeName="AvoidUncalledPrivateCode" Category="Microsoft.Performance" CheckId="CA1811">
     <Resolution Name="Default" />
    </Rule>
+   <Rule TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026">
+    <Resolution Name="Default">Replace method {0} with an overload that supplies all default arguments.</Resolution>
+   </Rule>
    <Rule TypeName="DoNotCastUnnecessarily" Category="Microsoft.Performance" CheckId="CA1800">
     <Resolution Name="Local">{0}, a variable, is cast to type {1} multiple times in method {2}. Cache the result of the 'as' operator or direct cast in order to eliminate the redundant {3} instruction.</Resolution>
    </Rule>
@@ -356,6 +505,8 @@
    </Rule>
    <Rule TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704">
     <Resolution Name="DelegateParameterMoreMeaningfulName">In delegate {0}, consider providing a more meaningful name than parameter name {1}.</Resolution>
+    <Resolution Name="MemberParameter">In method {0}, correct the spelling of '{1}' in parameter name {2} or remove it entirely if it represents any sort of Hungarian notation.</Resolution>
+    <Resolution Name="MemberParameterMoreMeaningfulName">In method {0}, consider providing a more meaningful name than parameter name {1}.</Resolution>
    </Rule>
    <Rule TypeName="PInvokeDeclarationsShouldBePortable" Category="Microsoft.Portability" CheckId="CA1901">
     <Resolution Name="Parameter">As it is declared in your code, parameter {0} of P/Invoke {1} will be {2} bytes wide on {3} platforms. This is not correct, as the actual native declaration of this API indicates it should be {4} bytes wide on {3} platforms. Consult the MSDN Platform SDK documentation for help determining what data type should be used instead of {5}.</Resolution>
