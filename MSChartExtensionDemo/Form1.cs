@@ -127,6 +127,5 @@ namespace MSChartExtensionDemo
         {
             chart1.Annotations.Clear();
         }
-
     }
 }
