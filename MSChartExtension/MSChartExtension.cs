@@ -461,7 +461,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     double YStart = ptrChartArea.CursorY.SelectionStart;
                     double YEnd = ptrChartArea.CursorY.SelectionEnd;
 
-                    //Zoom area for Y2 Axis
+                    //Zoom area for Y Axis
                     double YMin = ptrChartArea.AxisY.ValueToPosition(Math.Min(YStart, YEnd));
                     double YMax = ptrChartArea.AxisY.ValueToPosition(Math.Max(YStart, YEnd));
 
