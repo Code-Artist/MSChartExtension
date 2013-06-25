@@ -30,6 +30,10 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// </summary>
         Zoom,
         /// <summary>
+        /// Zoom only along the X axis.
+        /// </summary>
+        ZoomX,
+        /// <summary>
         /// Pan
         /// </summary>
         Pan
@@ -185,22 +189,19 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 SetChartControlState(senderChart, MSChartExtensionToolState.Select);
             }
 
-            //Update menu based on current state.
-            ptrData.ChartToolSelect.Checked = false;
-            ptrData.ChartToolZoom.Checked = false;
-            ptrData.ChartToolPan.Checked = false;
-            switch (ChartTool[senderChart].ToolState)
+            //Update menu (uncheck all, check current) based on current state.
+            var stateToMenuLookup = new Dictionary<MSChartExtensionToolState, ToolStripMenuItem>
+                {
+                    {MSChartExtensionToolState.Select, ptrData.ChartToolSelect},
+                    {MSChartExtensionToolState.Pan, ptrData.ChartToolPan},
+                    {MSChartExtensionToolState.Zoom, ptrData.ChartToolZoom},
+                    {MSChartExtensionToolState.ZoomX, ptrData.ChartToolZoomX}
+                };
+            foreach (var mItem in stateToMenuLookup.Values)
             {
-                case MSChartExtensionToolState.Select:
-                    ptrData.ChartToolSelect.Checked = true;
-                    break;
-                case MSChartExtensionToolState.Zoom:
-                    ptrData.ChartToolZoom.Checked = true;
-                    break;
-                case MSChartExtensionToolState.Pan:
-                    ptrData.ChartToolPan.Checked = true;
-                    break;
+                mItem.Checked = false;
             }
+            stateToMenuLookup[ChartTool[senderChart].ToolState].Checked = true;
 
             //Update series
             for (int x = 0; x < menuStrip.Items.Count; x++)
@@ -227,27 +228,38 @@ namespace System.Windows.Forms.DataVisualization.Charting
         private static void ChartContext_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
             ContextMenuStrip ptrMenuStrip = (ContextMenuStrip)sender;
-            if (e.ClickedItem.Text == "Select")
-                SetChartControlState((Chart)ptrMenuStrip.SourceControl, MSChartExtensionToolState.Select);
-            else if (e.ClickedItem.Text == "Zoom")
-                SetChartControlState((Chart)ptrMenuStrip.SourceControl, MSChartExtensionToolState.Zoom);
-            else if (e.ClickedItem.Text == "Pan")
-                SetChartControlState((Chart)ptrMenuStrip.SourceControl, MSChartExtensionToolState.Pan);
-            else if (e.ClickedItem.Text == "Zoom Out")
+            var chart = (Chart)ptrMenuStrip.SourceControl;
+            switch (e.ClickedItem.Text)
             {
-                Chart ptrChart = (Chart)ptrMenuStrip.SourceControl;
-                WindowMessagesNativeMethods.SuspendDrawing(ptrChart);
-                ptrChart.ChartAreas[0].AxisX.ScaleView.ZoomReset();
-                ptrChart.ChartAreas[0].AxisY.ScaleView.ZoomReset();
-                ptrChart.ChartAreas[0].AxisY2.ScaleView.ZoomReset();
-                WindowMessagesNativeMethods.ResumeDrawing(ptrChart);
+                case "Select":
+                    SetChartControlState(chart, MSChartExtensionToolState.Select);
+                    break;
+                case "Zoom":
+                    SetChartControlState(chart, MSChartExtensionToolState.Zoom);
+                    break;
+                case "Zoom X":
+                    SetChartControlState(chart, MSChartExtensionToolState.ZoomX);
+                    break;
+                case "Pan":
+                    SetChartControlState(chart, MSChartExtensionToolState.Pan);
+                    break;
+                case "Zoom Out":
+                    {
+                        Chart ptrChart = chart;
+                        WindowMessagesNativeMethods.SuspendDrawing(ptrChart);
+                        ptrChart.ChartAreas[0].AxisX.ScaleView.ZoomReset();
+                        ptrChart.ChartAreas[0].AxisY.ScaleView.ZoomReset();
+                        ptrChart.ChartAreas[0].AxisY2.ScaleView.ZoomReset();
+                        WindowMessagesNativeMethods.ResumeDrawing(ptrChart);
+                    }
+                    break;
             }
 
             if (e.ClickedItem.Tag == null) return;
             if (e.ClickedItem.Tag.ToString() != "Series") return;
 
             //Series enable / disable changed.
-            SeriesCollection chartSeries = ((Chart)ptrMenuStrip.SourceControl).Series;
+            SeriesCollection chartSeries = chart.Series;
             chartSeries[e.ClickedItem.Text].Enabled = !((ToolStripMenuItem)e.ClickedItem).Checked;
         }
 
@@ -275,6 +287,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 ChartToolZoomOutSeparator = new ToolStripSeparator();
                 ChartToolSelect = new ToolStripMenuItem("Select");
                 ChartToolZoom = new ToolStripMenuItem("Zoom");
+                ChartToolZoomX = new ToolStripMenuItem("Zoom X");
                 ChartToolPan = new ToolStripMenuItem("Pan");
                 ChartContextSeparator = new ToolStripSeparator();
 
@@ -283,6 +296,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 MenuItems.Add(ChartToolZoomOutSeparator);
                 MenuItems.Add(ChartToolSelect);
                 MenuItems.Add(ChartToolZoom);
+                MenuItems.Add(ChartToolZoomX);
                 MenuItems.Add(ChartToolPan);
                 MenuItems.Add(ChartContextSeparator);
             }
@@ -337,6 +351,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
             public List<ToolStripItem> MenuItems { get; private set; }
             public ToolStripMenuItem ChartToolSelect { get; private set; }
             public ToolStripMenuItem ChartToolZoom { get; private set; }
+            public ToolStripMenuItem ChartToolZoomX { get; private set; }
             public ToolStripMenuItem ChartToolPan { get; private set; }
             public ToolStripMenuItem ChartToolZoomOut { get; private set; }
             public ToolStripSeparator ChartToolZoomOutSeparator { get; private set; }
@@ -349,6 +364,8 @@ namespace System.Windows.Forms.DataVisualization.Charting
         private static void SetChartControlState(Chart sender, MSChartExtensionToolState state)
         {
             ChartTool[(Chart)sender].ToolState = state;
+            sender.ChartAreas[0].CursorX.IsUserEnabled = false;
+            sender.ChartAreas[0].CursorY.IsUserEnabled = false;
             switch (state)
             {
                 case MSChartExtensionToolState.Select:
@@ -357,14 +374,11 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     sender.ChartAreas[0].CursorY.IsUserEnabled = true;
                     break;
                 case MSChartExtensionToolState.Zoom:
+                case MSChartExtensionToolState.ZoomX:
                     sender.Cursor = Cursors.Cross;
-                    sender.ChartAreas[0].CursorX.IsUserEnabled = false;
-                    sender.ChartAreas[0].CursorY.IsUserEnabled = false;
                     break;
                 case MSChartExtensionToolState.Pan:
                     sender.Cursor = Cursors.Hand;
-                    sender.ChartAreas[0].CursorX.IsUserEnabled = false;
-                    sender.ChartAreas[0].CursorY.IsUserEnabled = false;
                     break;
             }
         }
@@ -420,6 +434,12 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     }
                     #endregion
                     break;
+                case MSChartExtensionToolState.ZoomX:
+                    if (MouseDowned)
+                    {
+                        ptrChart.ChartAreas[0].CursorX.SelectionEnd = selX;
+                    }
+                    break;
 
                 case MSChartExtensionToolState.Pan:
                     #region [ Pan Control ]
@@ -452,9 +472,11 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
             Chart ptrChart = (Chart)sender;
             ChartArea ptrChartArea = ptrChart.ChartAreas[0];
-            switch (ChartTool[ptrChart].ToolState)
+            MSChartExtensionToolState state = ChartTool[ptrChart].ToolState;
+            switch (state)
             {
                 case MSChartExtensionToolState.Zoom:
+                case MSChartExtensionToolState.ZoomX:
                     //Zoom area.
                     double XStart = ptrChartArea.CursorX.SelectionStart;
                     double XEnd = ptrChartArea.CursorX.SelectionEnd;
@@ -464,20 +486,29 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     //Zoom area for Y2 Axis
                     double YMin = ptrChartArea.AxisY.ValueToPosition(Math.Min(YStart, YEnd));
                     double YMax = ptrChartArea.AxisY.ValueToPosition(Math.Max(YStart, YEnd));
-
+                    
                     if ((XStart == XEnd) && (YStart == YEnd)) return;
+                    
                     //Zoom operation
                     ptrChartArea.AxisX.ScaleView.Zoom(
                         Math.Min(XStart, XEnd), Math.Max(XStart, XEnd));
-                    ptrChartArea.AxisY.ScaleView.Zoom(
-                        Math.Min(YStart, YEnd), Math.Max(YStart, YEnd));
-                    ptrChartArea.AxisY2.ScaleView.Zoom(
-                        ptrChartArea.AxisY2.PositionToValue(YMin),
-                        ptrChartArea.AxisY2.PositionToValue(YMax));
+
+                    if (state == MSChartExtensionToolState.Zoom)
+                    {
+                        ptrChartArea.AxisY.ScaleView.Zoom(
+                                        Math.Min(YStart, YEnd), Math.Max(YStart, YEnd));
+                        ptrChartArea.AxisY2.ScaleView.Zoom(
+                            ptrChartArea.AxisY2.PositionToValue(YMin),
+                            ptrChartArea.AxisY2.PositionToValue(YMax));
+
+                    }
 
                     //Clear selection
                     ptrChartArea.CursorX.SelectionStart = ptrChartArea.CursorX.SelectionEnd;
                     ptrChartArea.CursorY.SelectionStart = ptrChartArea.CursorY.SelectionEnd;
+
+                    //TODO: Notify of change
+                    //ZoomChanged()
                     break;
 
                 case MSChartExtensionToolState.Pan:
@@ -497,7 +528,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// <param name="name">Annotation name.</param>
         /// <param name="lineWidth">Line width</param>
         /// <param name="lineStyle">Line style</param>
-        public static void DrawHorizontalLine(this Chart sender, double y, 
+        public static void DrawHorizontalLine(this Chart sender, double y,
             Drawing.Color lineColor, string name = "",
             int lineWidth = 1, ChartDashStyle lineStyle = ChartDashStyle.Solid)
         {
@@ -561,7 +592,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// <param name="name">Annotation name.</param>
         /// <param name="lineWidth">Line width</param>
         /// <param name="lineStyle">Line style</param>
-        public static void DrawRectangle(this Chart sender, double x, double y, 
+        public static void DrawRectangle(this Chart sender, double x, double y,
             double width, double height,
             Drawing.Color lineColor, string name = "",
             int lineWidth = 1, ChartDashStyle lineStyle = ChartDashStyle.Solid)
@@ -591,7 +622,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 width = width - (x - ptrAxis.Maximum);
                 x = ptrAxis.Maximum;
             }
-            if ((x + width) > ptrAxis.Maximum) width = ptrAxis.Maximum -x;
+            if ((x + width) > ptrAxis.Maximum) width = ptrAxis.Maximum - x;
 
             ptrAxis = sender.ChartAreas[0].AxisY;
             if (y < ptrAxis.Minimum)
@@ -662,9 +693,9 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// <param name="textColor">Text color.</param>
         /// <param name="name">Annotation name.</param>
         /// <param name="textStyle">Style of text.</param>
-        public static void AddText(this Chart sender, string text, 
+        public static void AddText(this Chart sender, string text,
             double x, double y,
-            Drawing.Color textColor, string name = "", 
+            Drawing.Color textColor, string name = "",
             TextStyle textStyle = TextStyle.Default)
         {
             TextAnnotation textAnn = new TextAnnotation();
@@ -681,9 +712,9 @@ namespace System.Windows.Forms.DataVisualization.Charting
             textAnn.TextStyle = textStyle;
 
             sender.Annotations.Add(textAnn);
-            if(!string.IsNullOrEmpty(name)) textAnn.Name = name;
+            if (!string.IsNullOrEmpty(name)) textAnn.Name = name;
         }
-        
+
         #endregion
     }
 }
