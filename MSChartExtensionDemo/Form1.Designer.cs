@@ -48,10 +48,10 @@
             this.btnClearDataSlow = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.txtChartValue = new System.Windows.Forms.ToolStripStatusLabel();
             this.txtChartSelect = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -62,6 +62,7 @@
             // 
             chartArea1.Name = "ChartArea1";
             this.chart1.ChartAreas.Add(chartArea1);
+            this.chart1.ContextMenuStrip = this.contextMenuStrip1;
             this.chart1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.chart1.Location = new System.Drawing.Point(0, 25);
             this.chart1.Name = "chart1";
@@ -110,33 +111,33 @@
             // item11ToolStripMenuItem
             // 
             this.item11ToolStripMenuItem.Name = "item11ToolStripMenuItem";
-            this.item11ToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.item11ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.item11ToolStripMenuItem.Text = "Item 1.1";
             this.item11ToolStripMenuItem.Click += new System.EventHandler(this.item11ToolStripMenuItem_Click);
             // 
             // item12ToolStripMenuItem
             // 
             this.item12ToolStripMenuItem.Name = "item12ToolStripMenuItem";
-            this.item12ToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.item12ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.item12ToolStripMenuItem.Text = "Item 1.2";
             this.item12ToolStripMenuItem.Click += new System.EventHandler(this.item12ToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(113, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
             // 
             // item13ToolStripMenuItem
             // 
             this.item13ToolStripMenuItem.Name = "item13ToolStripMenuItem";
-            this.item13ToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.item13ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.item13ToolStripMenuItem.Text = "Item 1.3";
             this.item13ToolStripMenuItem.Click += new System.EventHandler(this.item13ToolStripMenuItem_Click);
             // 
             // item14ToolStripMenuItem
             // 
             this.item14ToolStripMenuItem.Name = "item14ToolStripMenuItem";
-            this.item14ToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.item14ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.item14ToolStripMenuItem.Text = "Item 1.4";
             this.item14ToolStripMenuItem.Click += new System.EventHandler(this.item14ToolStripMenuItem_Click);
             // 
@@ -211,6 +212,16 @@
             this.toolStripButton2.Text = "Clear Annotations";
             this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
             // 
+            // toolStripButton3
+            // 
+            this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton3.Image")));
+            this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton3.Name = "toolStripButton3";
+            this.toolStripButton3.Size = new System.Drawing.Size(53, 22);
+            this.toolStripButton3.Text = "LogTest";
+            this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
+            // 
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -241,16 +252,6 @@
             this.txtChartSelect.Size = new System.Drawing.Size(100, 19);
             this.txtChartSelect.Text = "99.9999, 99.9999";
             this.txtChartSelect.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // toolStripButton3
-            // 
-            this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton3.Image")));
-            this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton3.Name = "toolStripButton3";
-            this.toolStripButton3.Size = new System.Drawing.Size(53, 22);
-            this.toolStripButton3.Text = "LogTest";
-            this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
             // 
             // Form1
             // 
