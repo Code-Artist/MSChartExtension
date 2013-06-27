@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Drawing;
 using EventHandlerSupport;
 using System.Windows.Forms.DataVisualization.Charting;
 
@@ -121,6 +123,21 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 ptrChart.MouseDown += ChartControl_MouseDown;
                 ptrChart.MouseMove += ChartControl_MouseMove;
                 ptrChart.MouseUp += ChartControl_MouseUp;
+                ptrChart.CursorPositionChanging += (sender1, e) =>
+                    {
+                        // Changed event isn't triggered with any zoom or select operations! From looking at the Cursor.cs code, it seems to be a bug.
+                        // Changing event is raised twice, once for each cursor (X, Y)
+                        var axis = e.Axis;
+                    };
+                ptrChart.SelectionRangeChanging += (o, args) =>
+                    {
+                        // Changed event isn't triggered with any zoom or select operations!
+                        // Neither is changed event... odd
+                        Console.WriteLine("SelectionRangeChanging raised " + args.ToString());
+                        var axis = args.Axis;
+                        var chartArea = args.ChartArea;
+                    };
+
 
                 //Override settings.
                 ChartArea ptrChartArea = ptrChart.ChartAreas[0];
@@ -409,13 +426,14 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
             //NOTE: Clicking on the chart in selection mode will draw a cross whether or not the following
             //  code is run (since Cursor.IsUserEnabled is true)
-            // Also, if the selection is never explicitly set, Zoom still works except the start location seems to be stuck on what was previously used.
 
-            // The next two lines seem to be equivalent to the following four lines
             // We must set the selection start because it doesn't seem to get
             //    reset automatically (remove the next two lines and zoom a few times to see)
-            ptrChartArea.CursorX.SetSelectionPixelPosition(e.Location, e.Location, true);
-            ptrChartArea.CursorY.SetSelectionPixelPosition(e.Location, e.Location, true);
+            Point startAndEndPt = e.Location;
+            const bool roundToBoundary = true;
+            ptrChartArea.CursorX.SetSelectionPixelPosition(startAndEndPt, startAndEndPt, roundToBoundary);
+            ptrChartArea.CursorY.SetSelectionPixelPosition(startAndEndPt, startAndEndPt, roundToBoundary);
+            // What's the diff between CursorPosn and SelectionPosn?
 
             // Old way
             //ptrChartArea.CursorX.SelectionStart = ptrChartArea.AxisX.PixelPositionToValue(e.Location.X);
@@ -430,9 +448,6 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 chartData.SelectionChangedCallback(
                     ptrChartArea.CursorX.Position,
                     ptrChartArea.CursorY.Position);
-                //chartData.SelectionChangedCallback(
-                //    ptrChartArea.CursorX.SelectionStart,
-                //    ptrChartArea.CursorY.SelectionStart);
             }
         }
 
@@ -513,7 +528,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     double YEnd = ptrChartArea.CursorY.SelectionEnd;
 
                     //Zoom area for Y Axis
-                    double bottom = Math.Min(YStart, YEnd); // TODO Confirm isbottom
+                    double bottom = Math.Min(YStart, YEnd);
                     double top = Math.Max(YStart, YEnd);
                     double YMin = ptrChartArea.AxisY.ValueToPosition(bottom);
                     double YMax = ptrChartArea.AxisY.ValueToPosition(top);
@@ -535,18 +550,33 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
                     }
 
-                    //Clear selection
-                    ptrChartArea.CursorX.SelectionStart = ptrChartArea.CursorX.SelectionEnd;
-                    ptrChartArea.CursorY.SelectionStart = ptrChartArea.CursorY.SelectionEnd;
+                    //Clear selection (the following seem to be equivalent)
+                    ptrChartArea.CursorX.SetSelectionPosition(0, 0);
+                    ptrChartArea.CursorY.SetSelectionPosition(0, 0);
+                    //ptrChartArea.CursorX.SelectionStart = ptrChartArea.CursorX.SelectionEnd;
+                    //ptrChartArea.CursorY.SelectionStart = ptrChartArea.CursorY.SelectionEnd;
 
-                    //TODO: Notify of change
-                    var extents = new ChartExtents();
-                    data.ZoomChangedCallback(extents);
+                    //TODO: Notify of change everywhere else we zoom
+                    data.ZoomChangedCallback(ExtentsFromCursorPositionOrCursorSelectionValues(left, top, right, bottom));
                     break;
 
                 case MSChartExtensionToolState.Pan:
                     break;
             }
+        }
+
+        private static ChartExtents ExtentsFromCursorPositionOrCursorSelectionValues(double left, double top, double right,
+                                                                                     double bottom)
+        {
+//NOTE: Height needs to be negative because we always 
+            //  specify the *top* left corner
+            var rect = new RectangleF((float) left, (float) top,
+                                      (float) (right - left), (float) (bottom - top));
+            var extents = new ChartExtents
+                {
+                    PrimaryExtents = rect
+                };
+            return extents;
         }
 
         private static ChartData GetDataForChart(Chart ptrChart)

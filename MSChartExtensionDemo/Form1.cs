@@ -12,6 +12,9 @@ namespace MSChartExtensionDemo
 {
     public partial class Form1 : Form
     {
+        private const string ZoomChangedDisplayFormatLeftRightTopBottom = 
+            "{0:F2} < x < {1:F2}; {2:F2} > y > {3:F2}";
+
         public Form1()
         {
             InitializeComponent();
@@ -90,8 +93,9 @@ namespace MSChartExtensionDemo
 
         private void ZoomChanged(ChartExtents extents)
         {
-            //TODO Put info in status bar
-            lblZoomExtents.Text = "<left right> ^top bottom_";
+            RectangleF e = extents.PrimaryExtents;
+            lblZoomExtents.Text = string.Format(ZoomChangedDisplayFormatLeftRightTopBottom, 
+                e.Left, e.Right, e.Top, e.Bottom);
         }
 
         private void contextMenuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)

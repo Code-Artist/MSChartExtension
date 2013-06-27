@@ -1,4 +1,6 @@
-﻿namespace System.Windows.Forms.DataVisualization.Charting
+﻿using System.Drawing;
+
+namespace System.Windows.Forms.DataVisualization.Charting
 {
     /// <summary>
     /// Contains the boundaries (top, bottom, left, right) for the chart
@@ -7,6 +9,6 @@
     /// </summary>
     public class ChartExtents
     {
-
+        public RectangleF PrimaryExtents { get; set; }
     }
 }
