@@ -407,19 +407,35 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
             MouseDowned = true;
 
-            ptrChartArea.CursorX.SelectionStart = ptrChartArea.AxisX.PixelPositionToValue(e.Location.X);
-            ptrChartArea.CursorY.SelectionStart = ptrChartArea.AxisY.PixelPositionToValue(e.Location.Y);
-            ptrChartArea.CursorX.SelectionEnd = ptrChartArea.CursorX.SelectionStart;
-            ptrChartArea.CursorY.SelectionEnd = ptrChartArea.CursorY.SelectionStart;
+            //NOTE: Clicking on the chart in selection mode will draw a cross whether or not the following
+            //  code is run (since Cursor.IsUserEnabled is true)
+            // Also, if the selection is never explicitly set, Zoom still works except the start location seems to be stuck on what was previously used.
 
-            if (ChartTool[ptrChart].SelectionChangedCallback != null)
+            // The next two lines seem to be equivalent to the following four lines
+            // We must set the selection start because it doesn't seem to get
+            //    reset automatically (remove the next two lines and zoom a few times to see)
+            ptrChartArea.CursorX.SetSelectionPixelPosition(e.Location, e.Location, true);
+            ptrChartArea.CursorY.SetSelectionPixelPosition(e.Location, e.Location, true);
+
+            // Old way
+            //ptrChartArea.CursorX.SelectionStart = ptrChartArea.AxisX.PixelPositionToValue(e.Location.X);
+            //ptrChartArea.CursorY.SelectionStart = ptrChartArea.AxisY.PixelPositionToValue(e.Location.Y);
+            //ptrChartArea.CursorX.SelectionEnd = ptrChartArea.CursorX.SelectionStart;
+            //ptrChartArea.CursorY.SelectionEnd = ptrChartArea.CursorY.SelectionStart;
+
+            ChartData chartData = GetDataForChart(ptrChart);
+            if (chartData.SelectionChangedCallback != null)
             {
-                ChartTool[ptrChart].SelectionChangedCallback(
-                    ptrChartArea.CursorX.SelectionStart,
-                    ptrChartArea.CursorY.SelectionStart);
+                // If we use Position, there's no need to set/get the Selection
+                chartData.SelectionChangedCallback(
+                    ptrChartArea.CursorX.Position,
+                    ptrChartArea.CursorY.Position);
+                //chartData.SelectionChangedCallback(
+                //    ptrChartArea.CursorX.SelectionStart,
+                //    ptrChartArea.CursorY.SelectionStart);
             }
-
         }
+
         private static void ChartControl_MouseMove(object sender, MouseEventArgs e)
         {
             Chart ptrChart = (Chart)sender;
@@ -497,19 +513,22 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     double YEnd = ptrChartArea.CursorY.SelectionEnd;
 
                     //Zoom area for Y Axis
-                    double YMin = ptrChartArea.AxisY.ValueToPosition(Math.Min(YStart, YEnd));
-                    double YMax = ptrChartArea.AxisY.ValueToPosition(Math.Max(YStart, YEnd));
+                    double bottom = Math.Min(YStart, YEnd); // TODO Confirm isbottom
+                    double top = Math.Max(YStart, YEnd);
+                    double YMin = ptrChartArea.AxisY.ValueToPosition(bottom);
+                    double YMax = ptrChartArea.AxisY.ValueToPosition(top);
                     
                     if ((XStart == XEnd) && (YStart == YEnd)) return;
                     
                     //Zoom operation
-                    ptrChartArea.AxisX.ScaleView.Zoom(
-                        Math.Min(XStart, XEnd), Math.Max(XStart, XEnd));
+                    double left = Math.Min(XStart, XEnd);
+                    double right = Math.Max(XStart, XEnd);
+                    ptrChartArea.AxisX.ScaleView.Zoom(left, right);
 
                     if (state == MSChartExtensionToolState.Zoom)
                     {
                         ptrChartArea.AxisY.ScaleView.Zoom(
-                                        Math.Min(YStart, YEnd), Math.Max(YStart, YEnd));
+                                        bottom, top);
                         ptrChartArea.AxisY2.ScaleView.Zoom(
                             ptrChartArea.AxisY2.PositionToValue(YMin),
                             ptrChartArea.AxisY2.PositionToValue(YMax));
