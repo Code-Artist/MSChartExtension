@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChartExtents.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="MSChartExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

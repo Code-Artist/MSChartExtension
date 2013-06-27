@@ -13,6 +13,12 @@ namespace System.Windows.Forms.DataVisualization.Charting
     public delegate void CursorPositionChanged(double x, double y);
 
     /// <summary>
+    /// Form of the callback when the user has zoomed the chart.
+    /// </summary>
+    /// <param name="extents"></param>
+    public delegate void ZoomChanged(ChartExtents extents);
+
+    /// <summary>
     /// MSChart Control Extension's States
     /// </summary>
     public enum MSChartExtensionToolState
@@ -64,16 +70,19 @@ namespace System.Windows.Forms.DataVisualization.Charting
         {
             EnableZoomAndPanControls(sender, null, null);
         }
+
         /// <summary>
         /// Enable Zoom and Pan Controls.
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="selectionChanged">Selection changed callabck. Triggered when user select a point with selec tool.</param>
         /// <param name="cursorMoved">Cursor moved callabck. Triggered when user move the mouse in chart area.</param>
+        /// <param name="zoomChanged">Callback triggered when chart has zoomed in or out.</param>
         /// <remarks>Callback are optional.</remarks>
         public static void EnableZoomAndPanControls(this Chart sender,
             CursorPositionChanged selectionChanged,
-            CursorPositionChanged cursorMoved)
+            CursorPositionChanged cursorMoved,
+            ZoomChanged zoomChanged=null)
         {
             if (!ChartTool.ContainsKey(sender))
             {
@@ -82,6 +91,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 ptrChartData.Backup();
                 ptrChartData.SelectionChangedCallback = selectionChanged;
                 ptrChartData.CursorMovedCallback = cursorMoved;
+                ptrChartData.ZoomChangedCallback = zoomChanged;
 
                 //Populate Context menu
                 Chart ptrChart = sender;
@@ -280,6 +290,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
             public MSChartExtensionToolState ToolState { get; set; }
             public CursorPositionChanged SelectionChangedCallback;
             public CursorPositionChanged CursorMovedCallback;
+            public ZoomChanged ZoomChangedCallback { get; set; }
 
             private void CreateChartContextMenu()
             {
@@ -356,6 +367,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
             public ToolStripMenuItem ChartToolZoomOut { get; private set; }
             public ToolStripSeparator ChartToolZoomOutSeparator { get; private set; }
             public ToolStripSeparator ChartContextSeparator { get; private set; }
+
 
             #endregion
 
@@ -472,7 +484,8 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
             Chart ptrChart = (Chart)sender;
             ChartArea ptrChartArea = ptrChart.ChartAreas[0];
-            MSChartExtensionToolState state = ChartTool[ptrChart].ToolState;
+            ChartData data = GetDataForChart(ptrChart);
+            MSChartExtensionToolState state = data.ToolState;
             switch (state)
             {
                 case MSChartExtensionToolState.Zoom:
@@ -508,13 +521,20 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     ptrChartArea.CursorY.SelectionStart = ptrChartArea.CursorY.SelectionEnd;
 
                     //TODO: Notify of change
-                    //ZoomChanged()
+                    var extents = new ChartExtents();
+                    data.ZoomChangedCallback(extents);
                     break;
 
                 case MSChartExtensionToolState.Pan:
                     break;
             }
         }
+
+        private static ChartData GetDataForChart(Chart ptrChart)
+        {
+            return ChartTool[ptrChart];
+        }
+
         #endregion
 
         #region [ Annotations ]
