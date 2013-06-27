@@ -137,5 +137,20 @@ namespace MSChartExtensionDemo
         {
             chart1.Annotations.Clear();
         }
+
+        private void toolStripButton3_Click(object sender, EventArgs e)
+        {
+            chart1.ChartAreas[0].AxisX.IsLogarithmic = !chart1.ChartAreas[0].AxisX.IsLogarithmic;
+            if (chart1.ChartAreas[0].AxisX.IsLogarithmic)
+            {
+                chart1.ChartAreas[0].AxisX.Maximum = 1000;
+                chart1.ChartAreas[0].AxisX.Minimum = 1;
+            }
+            else
+            {
+                chart1.ChartAreas[0].AxisX.Maximum = double.NaN;
+                chart1.ChartAreas[0].AxisX.Minimum = double.NaN;
+            }
+        }
     }
 }
