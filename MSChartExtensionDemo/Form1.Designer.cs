@@ -48,10 +48,10 @@
             this.btnClearDataSlow = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.txtChartValue = new System.Windows.Forms.ToolStripStatusLabel();
             this.txtChartSelect = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.lblZoomExtents = new System.Windows.Forms.ToolStripStatusLabel();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
@@ -212,6 +212,16 @@
             this.toolStripButton2.Text = "Clear Annotations";
             this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
             // 
+            // toolStripButton3
+            // 
+            this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton3.Image")));
+            this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton3.Name = "toolStripButton3";
+            this.toolStripButton3.Size = new System.Drawing.Size(53, 22);
+            this.toolStripButton3.Text = "LogTest";
+            this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
+            // 
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -227,39 +237,34 @@
             // txtChartValue
             // 
             this.txtChartValue.AutoSize = false;
+            this.txtChartValue.AutoToolTip = true;
             this.txtChartValue.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
             this.txtChartValue.BorderStyle = System.Windows.Forms.Border3DStyle.RaisedOuter;
             this.txtChartValue.Name = "txtChartValue";
-            this.txtChartValue.Size = new System.Drawing.Size(100, 19);
-            this.txtChartValue.Text = "99.9999, 99.9999";
+            this.txtChartValue.Size = new System.Drawing.Size(173, 19);
+            this.txtChartValue.Text = "Hover mouse to see point here";
             this.txtChartValue.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // txtChartSelect
             // 
             this.txtChartSelect.AutoSize = false;
+            this.txtChartSelect.AutoToolTip = true;
             this.txtChartSelect.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
             this.txtChartSelect.BorderStyle = System.Windows.Forms.Border3DStyle.RaisedOuter;
             this.txtChartSelect.Name = "txtChartSelect";
-            this.txtChartSelect.Size = new System.Drawing.Size(100, 19);
-            this.txtChartSelect.Text = "99.9999, 99.9999";
+            this.txtChartSelect.Size = new System.Drawing.Size(133, 19);
+            this.txtChartSelect.Text = "Select to see point here";
             this.txtChartSelect.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // toolStripButton3
-            // 
-            this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton3.Image")));
-            this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton3.Name = "toolStripButton3";
-            this.toolStripButton3.Size = new System.Drawing.Size(53, 22);
-            this.toolStripButton3.Text = "LogTest";
-            this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
             // lblZoomExtents
             // 
+            this.lblZoomExtents.AutoSize = false;
+            this.lblZoomExtents.AutoToolTip = true;
             this.lblZoomExtents.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
             this.lblZoomExtents.BorderStyle = System.Windows.Forms.Border3DStyle.RaisedOuter;
             this.lblZoomExtents.Name = "lblZoomExtents";
-            this.lblZoomExtents.Size = new System.Drawing.Size(181, 19);
-            this.lblZoomExtents.Text = "<LEFT RIGHT> ^TOP BOTTOM_";
+            this.lblZoomExtents.Size = new System.Drawing.Size(180, 19);
+            this.lblZoomExtents.Text = "Zoom to see extents here";
             this.lblZoomExtents.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // Form1
