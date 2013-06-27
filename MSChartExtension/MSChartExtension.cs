@@ -190,18 +190,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
             }
 
             //Update menu (uncheck all, check current) based on current state.
-            var stateToMenuLookup = new Dictionary<MSChartExtensionToolState, ToolStripMenuItem>
-                {
-                    {MSChartExtensionToolState.Select, ptrData.ChartToolSelect},
-                    {MSChartExtensionToolState.Pan, ptrData.ChartToolPan},
-                    {MSChartExtensionToolState.Zoom, ptrData.ChartToolZoom},
-                    {MSChartExtensionToolState.ZoomX, ptrData.ChartToolZoomX}
-                };
-            foreach (var mItem in stateToMenuLookup.Values)
-            {
-                mItem.Checked = false;
-            }
-            stateToMenuLookup[ChartTool[senderChart].ToolState].Checked = true;
+            ptrData.UpdateState();
 
             //Update series
             for (int x = 0; x < menuStrip.Items.Count; x++)
@@ -228,24 +217,23 @@ namespace System.Windows.Forms.DataVisualization.Charting
         private static void ChartContext_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
             ContextMenuStrip ptrMenuStrip = (ContextMenuStrip)sender;
-            var chart = (Chart)ptrMenuStrip.SourceControl;
+            Chart ptrChart = (Chart)ptrMenuStrip.SourceControl;
             switch (e.ClickedItem.Text)
             {
                 case "Select":
-                    SetChartControlState(chart, MSChartExtensionToolState.Select);
+                    SetChartControlState(ptrChart, MSChartExtensionToolState.Select);
                     break;
                 case "Zoom":
-                    SetChartControlState(chart, MSChartExtensionToolState.Zoom);
+                    SetChartControlState(ptrChart, MSChartExtensionToolState.Zoom);
                     break;
-                case "Zoom X":
-                    SetChartControlState(chart, MSChartExtensionToolState.ZoomX);
+                case "Zoom XAxis":
+                    SetChartControlState(ptrChart, MSChartExtensionToolState.ZoomX);
                     break;
                 case "Pan":
-                    SetChartControlState(chart, MSChartExtensionToolState.Pan);
+                    SetChartControlState(ptrChart, MSChartExtensionToolState.Pan);
                     break;
                 case "Zoom Out":
                     {
-                        Chart ptrChart = chart;
                         WindowMessagesNativeMethods.SuspendDrawing(ptrChart);
                         ptrChart.ChartAreas[0].AxisX.ScaleView.ZoomReset();
                         ptrChart.ChartAreas[0].AxisY.ScaleView.ZoomReset();
@@ -259,7 +247,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
             if (e.ClickedItem.Tag.ToString() != "Series") return;
 
             //Series enable / disable changed.
-            SeriesCollection chartSeries = chart.Series;
+            SeriesCollection chartSeries = ptrChart.Series;
             chartSeries[e.ClickedItem.Text].Enabled = !((ToolStripMenuItem)e.ClickedItem).Checked;
         }
 
@@ -287,7 +275,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 ChartToolZoomOutSeparator = new ToolStripSeparator();
                 ChartToolSelect = new ToolStripMenuItem("Select");
                 ChartToolZoom = new ToolStripMenuItem("Zoom");
-                ChartToolZoomX = new ToolStripMenuItem("Zoom X");
+                ChartToolZoomX = new ToolStripMenuItem("Zoom XAxis");
                 ChartToolPan = new ToolStripMenuItem("Pan");
                 ChartContextSeparator = new ToolStripSeparator();
 
@@ -299,6 +287,14 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 MenuItems.Add(ChartToolZoomX);
                 MenuItems.Add(ChartToolPan);
                 MenuItems.Add(ChartContextSeparator);
+
+                StateMenu = new Dictionary<MSChartExtensionToolState, ToolStripMenuItem>
+                {
+                    {MSChartExtensionToolState.Select, ChartToolSelect},
+                    {MSChartExtensionToolState.Pan, ChartToolPan},
+                    {MSChartExtensionToolState.Zoom, ChartToolZoom},
+                    {MSChartExtensionToolState.ZoomX, ChartToolZoomX}
+                };                
             }
 
             public void Backup()
@@ -333,6 +329,15 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 ptrChartArea.AxisY.ScrollBar.Enabled = ScrollBarY;
                 ptrChartArea.AxisY2.ScrollBar.Enabled = ScrollBarY2;
             }
+            public void UncheckAllMenuItems()
+            {
+                foreach (ToolStripMenuItem ptrItem in StateMenu.Values) ptrItem.Checked = false;
+            }
+            public void UpdateState()
+            {
+                UncheckAllMenuItems();
+                StateMenu[ToolState].Checked = true;
+            }
 
             #region [ Backup Data ]
 
@@ -356,6 +361,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
             public ToolStripMenuItem ChartToolZoomOut { get; private set; }
             public ToolStripSeparator ChartToolZoomOutSeparator { get; private set; }
             public ToolStripSeparator ChartContextSeparator { get; private set; }
+            private Dictionary<MSChartExtensionToolState, ToolStripMenuItem> StateMenu;
 
             #endregion
 
@@ -434,6 +440,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     }
                     #endregion
                     break;
+
                 case MSChartExtensionToolState.ZoomX:
                     if (MouseDowned)
                     {
@@ -490,13 +497,16 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     if ((XStart == XEnd) && (YStart == YEnd)) return;
                     
                     //Zoom operation
+
+                    //X-Axis
                     ptrChartArea.AxisX.ScaleView.Zoom(
                         Math.Min(XStart, XEnd), Math.Max(XStart, XEnd));
 
+                    //Y-Axis
                     if (state == MSChartExtensionToolState.Zoom)
                     {
                         ptrChartArea.AxisY.ScaleView.Zoom(
-                                        Math.Min(YStart, YEnd), Math.Max(YStart, YEnd));
+                            Math.Min(YStart, YEnd), Math.Max(YStart, YEnd));
                         ptrChartArea.AxisY2.ScaleView.Zoom(
                             ptrChartArea.AxisY2.PositionToValue(YMin),
                             ptrChartArea.AxisY2.PositionToValue(YMax));
