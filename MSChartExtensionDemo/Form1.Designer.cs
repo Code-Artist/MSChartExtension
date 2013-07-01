@@ -63,6 +63,7 @@
             // 
             chartArea1.Name = "ChartArea1";
             this.chart1.ChartAreas.Add(chartArea1);
+            this.chart1.ContextMenuStrip = this.contextMenuStrip1;
             this.chart1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.chart1.Location = new System.Drawing.Point(0, 25);
             this.chart1.Name = "chart1";
@@ -111,33 +112,33 @@
             // item11ToolStripMenuItem
             // 
             this.item11ToolStripMenuItem.Name = "item11ToolStripMenuItem";
-            this.item11ToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.item11ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.item11ToolStripMenuItem.Text = "Item 1.1";
             this.item11ToolStripMenuItem.Click += new System.EventHandler(this.item11ToolStripMenuItem_Click);
             // 
             // item12ToolStripMenuItem
             // 
             this.item12ToolStripMenuItem.Name = "item12ToolStripMenuItem";
-            this.item12ToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.item12ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.item12ToolStripMenuItem.Text = "Item 1.2";
             this.item12ToolStripMenuItem.Click += new System.EventHandler(this.item12ToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(113, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
             // 
             // item13ToolStripMenuItem
             // 
             this.item13ToolStripMenuItem.Name = "item13ToolStripMenuItem";
-            this.item13ToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.item13ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.item13ToolStripMenuItem.Text = "Item 1.3";
             this.item13ToolStripMenuItem.Click += new System.EventHandler(this.item13ToolStripMenuItem_Click);
             // 
             // item14ToolStripMenuItem
             // 
             this.item14ToolStripMenuItem.Name = "item14ToolStripMenuItem";
-            this.item14ToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.item14ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.item14ToolStripMenuItem.Text = "Item 1.4";
             this.item14ToolStripMenuItem.Click += new System.EventHandler(this.item14ToolStripMenuItem_Click);
             // 
