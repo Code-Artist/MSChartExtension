@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using EventHandlerSupport;
-using System.Windows.Forms.DataVisualization.Charting;
 
 namespace System.Windows.Forms.DataVisualization.Charting
 {
@@ -123,20 +121,23 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 ptrChart.MouseDown += ChartControl_MouseDown;
                 ptrChart.MouseMove += ChartControl_MouseMove;
                 ptrChart.MouseUp += ChartControl_MouseUp;
-                ptrChart.CursorPositionChanging += (sender1, e) =>
-                    {
-                        // Changed event isn't triggered with any zoom or select operations! From looking at the Cursor.cs code, it seems to be a bug.
-                        // Changing event is raised twice, once for each cursor (X, Y)
-                        var axis = e.Axis;
-                    };
-                ptrChart.SelectionRangeChanging += (o, args) =>
-                    {
-                        // Changed event isn't triggered with any zoom or select operations!
-                        // Neither is changed event... odd
-                        Console.WriteLine("SelectionRangeChanging raised " + args.ToString());
-                        var axis = args.Axis;
-                        var chartArea = args.ChartArea;
-                    };
+                
+                // The following is for testing out the built-in events. 
+                //  They don't seem to be as reliable as just handling mouse up/move/down
+                //ptrChart.CursorPositionChanging += (sender1, e) =>
+                //    {
+                //        // Changed event isn't triggered with any zoom or select operations! From looking at the Cursor.cs code, it seems to be a bug.
+                //        // Changing event is raised twice, once for each cursor (X, Y)
+                //        var axis = e.Axis;
+                //    };
+                //ptrChart.SelectionRangeChanging += (o, args) =>
+                //    {
+                //        // Changed event isn't triggered with any zoom or select operations!
+                //        // Neither is changed event... odd
+                //        Console.WriteLine("SelectionRangeChanging raised " + args.ToString());
+                //        var axis = args.Axis;
+                //        var chartArea = args.ChartArea;
+                //    };
 
 
                 //Override settings.
