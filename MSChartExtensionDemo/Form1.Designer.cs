@@ -264,7 +264,7 @@
             this.lblZoomExtents.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
             this.lblZoomExtents.BorderStyle = System.Windows.Forms.Border3DStyle.RaisedOuter;
             this.lblZoomExtents.Name = "lblZoomExtents";
-            this.lblZoomExtents.Size = new System.Drawing.Size(180, 19);
+            this.lblZoomExtents.Size = new System.Drawing.Size(230, 19);
             this.lblZoomExtents.Text = "Zoom to see extents here";
             this.lblZoomExtents.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 

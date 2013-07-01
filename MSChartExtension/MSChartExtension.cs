@@ -262,10 +262,13 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 case "Zoom Out":
                     {
                         WindowMessagesNativeMethods.SuspendDrawing(ptrChart);
-                        ptrChart.ChartAreas[0].AxisX.ScaleView.ZoomReset();
-                        ptrChart.ChartAreas[0].AxisY.ScaleView.ZoomReset();
-                        ptrChart.ChartAreas[0].AxisY2.ScaleView.ZoomReset();
+                        ChartArea ptrChartArea = ptrChart.ChartAreas[0];
+                        ptrChartArea.AxisX.ScaleView.ZoomReset();
+                        ptrChartArea.AxisX2.ScaleView.ZoomReset();
+                        ptrChartArea.AxisY.ScaleView.ZoomReset();
+                        ptrChartArea.AxisY2.ScaleView.ZoomReset();
                         WindowMessagesNativeMethods.ResumeDrawing(ptrChart);
+                        OnZoomChanged(ptrChart);
                     }
                     break;
             }
@@ -564,8 +567,8 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     //ptrChartArea.CursorX.SelectionStart = ptrChartArea.CursorX.SelectionEnd;
                     //ptrChartArea.CursorY.SelectionStart = ptrChartArea.CursorY.SelectionEnd;
 
-                    //TODO: Notify of change everywhere else we zoom
-                    data.ZoomChangedCallback(ExtentsFromCursorPositionOrCursorSelectionValues(left, top, right, bottom));
+                    //NOTE: At this point, the scaled view has already been updated to reflect zoom
+                    OnZoomChanged(ptrChart);
                     break;
 
                 case MSChartExtensionToolState.Pan:
@@ -573,7 +576,20 @@ namespace System.Windows.Forms.DataVisualization.Charting
             }
         }
 
-        private static ChartExtents ExtentsFromCursorPositionOrCursorSelectionValues(double left, double top, double right,
+        private static void OnZoomChanged(Chart ptrChart)
+        {
+            //Precondition: At this point, the scaled view has already been updated to reflect zoom
+            ChartArea ptrChartArea = ptrChart.ChartAreas[0];
+            ChartExtents extents = ExtentsFromCurrentView(ptrChartArea);
+            var left = extents.PrimaryExtents.Left;
+            var right = extents.PrimaryExtents.Right;
+            var top = extents.PrimaryExtents.Top;
+            var bottom = extents.PrimaryExtents.Bottom;
+            var data = GetDataForChart(ptrChart);
+            data.ZoomChangedCallback(ExtentsFromDataCoordinates(left, top, right, bottom));
+        }
+
+        private static ChartExtents ExtentsFromDataCoordinates(double left, double top, double right,
                                                                                      double bottom)
         {
 //NOTE: Height needs to be negative because we always 
@@ -590,6 +606,23 @@ namespace System.Windows.Forms.DataVisualization.Charting
         private static ChartData GetDataForChart(Chart ptrChart)
         {
             return ChartTool[ptrChart];
+        }
+
+        private static ChartExtents ExtentsFromCurrentView(ChartArea ptrChartArea)
+        {
+            double left;
+            double right;
+            double bottom;
+            double top;
+            GetViewMinMax(ptrChartArea.AxisX, out left, out right);
+            GetViewMinMax(ptrChartArea.AxisY, out bottom, out top);
+            return ExtentsFromDataCoordinates(left, top, right, bottom);
+        }
+
+        private static void GetViewMinMax(Axis axis, out double viewMin, out double viewMax)
+        {
+            viewMin = axis.ScaleView.ViewMinimum;
+            viewMax = axis.ScaleView.ViewMaximum;
         }
 
         #endregion
