@@ -77,12 +77,13 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// <param name="sender">The sender.</param>
         /// <param name="selectionChanged">Selection changed callabck. Triggered when user select a point with selec tool.</param>
         /// <param name="cursorMoved">Cursor moved callabck. Triggered when user move the mouse in chart area.</param>
-        /// <param name="zoomChanged">Callback triggered when chart has zoomed in or out.</param>
-        /// <remarks>Callback are optional.</remarks>
+        /// <param name="zoomChanged">Callback triggered when chart has 
+        /// zoomed in or out (and on first painting of the chart).</param>
+        /// <remarks>Callback are optional (pass in null to ignore).</remarks>
         public static void EnableZoomAndPanControls(this Chart sender,
             CursorPositionChanged selectionChanged,
             CursorPositionChanged cursorMoved,
-            ZoomChanged zoomChanged=null)
+            ZoomChanged zoomChanged = null)
         {
             if (!ChartTool.ContainsKey(sender))
             {
@@ -121,6 +122,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 ptrChart.MouseDown += ChartControl_MouseDown;
                 ptrChart.MouseMove += ChartControl_MouseMove;
                 ptrChart.MouseUp += ChartControl_MouseUp;
+                ptrChart.PostPaint += ChartOnPostPaint; // Necessary to kickstart ZoomChanged callback
                 
                 // The following is for testing out the built-in events. 
                 //  They don't seem to be as reliable as just handling mouse up/move/down
@@ -154,6 +156,17 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
                 SetChartControlState(sender, MSChartExtensionToolState.Select);
             }
+        }
+
+        private static void ChartOnPostPaint(object sender, ChartPaintEventArgs chartPaintEventArgs)
+        {
+            // Subscribing to PostPaint allows us to get the correct 
+            //  bounds of the chart to send to the user. Some other events
+            //  don't seem to be sufficient.
+            Chart ptrChart = sender as Chart;
+            if (ptrChart == null) return;
+            OnZoomChanged(ptrChart);
+            ptrChart.PostPaint -= ChartOnPostPaint; // Only run once
         }
 
         /// <summary>
@@ -577,19 +590,28 @@ namespace System.Windows.Forms.DataVisualization.Charting
             }
         }
 
+        /// <summary>
+        /// Gets the boundaries (top, left, bottom, right) of this chart's visible 
+        /// data in the same units as the data. The ZoomChanged callback provides
+        /// the same data.
+        /// </summary>
+        /// <param name="ptrChart">The chart.</param>
+        /// <returns>Boundaries (<see cref="ChartExtents"/>) of the chart.</returns>
+        public static ChartExtents GetBoundariesOfVisibleData(this Chart ptrChart)
+        {
+            if (ptrChart.ChartAreas.Count < 1) throw new InvalidOperationException("Missing chart area");
+            ChartArea ptrChartArea = ptrChart.ChartAreas[0];
+            ChartExtents extents = ExtentsFromCurrentView(ptrChartArea);
+            return extents;
+        }
+
         private static void OnZoomChanged(Chart ptrChart)
         {
             var data = GetDataForChart(ptrChart);
             if (data.ZoomChangedCallback == null)
                 return;
             //Precondition: At this point, the scaled view has already been updated to reflect zoom
-            ChartArea ptrChartArea = ptrChart.ChartAreas[0];
-            ChartExtents extents = ExtentsFromCurrentView(ptrChartArea);
-            var left = extents.PrimaryExtents.Left;
-            var right = extents.PrimaryExtents.Right;
-            var top = extents.PrimaryExtents.Top;
-            var bottom = extents.PrimaryExtents.Bottom;
-            data.ZoomChangedCallback(ExtentsFromDataCoordinates(left, top, right, bottom));
+            data.ZoomChangedCallback(ptrChart.GetBoundariesOfVisibleData());
         }
 
         private static ChartExtents ExtentsFromDataCoordinates(double left, double top, double right,
