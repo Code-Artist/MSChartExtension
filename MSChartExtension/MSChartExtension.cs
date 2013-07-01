@@ -579,6 +579,9 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
         private static void OnZoomChanged(Chart ptrChart)
         {
+            var data = GetDataForChart(ptrChart);
+            if (data.ZoomChangedCallback == null)
+                return;
             //Precondition: At this point, the scaled view has already been updated to reflect zoom
             ChartArea ptrChartArea = ptrChart.ChartAreas[0];
             ChartExtents extents = ExtentsFromCurrentView(ptrChartArea);
@@ -586,7 +589,6 @@ namespace System.Windows.Forms.DataVisualization.Charting
             var right = extents.PrimaryExtents.Right;
             var top = extents.PrimaryExtents.Top;
             var bottom = extents.PrimaryExtents.Bottom;
-            var data = GetDataForChart(ptrChart);
             data.ZoomChangedCallback(ExtentsFromDataCoordinates(left, top, right, bottom));
         }
 
