@@ -52,6 +52,7 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.txtChartValue = new System.Windows.Forms.ToolStripStatusLabel();
             this.txtChartSelect = new System.Windows.Forms.ToolStripStatusLabel();
+            this.lblZoomExtents = new System.Windows.Forms.ToolStripStatusLabel();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -226,7 +227,8 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.txtChartValue,
-            this.txtChartSelect});
+            this.txtChartSelect,
+            this.lblZoomExtents});
             this.statusStrip1.Location = new System.Drawing.Point(0, 396);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(841, 24);
@@ -236,22 +238,35 @@
             // txtChartValue
             // 
             this.txtChartValue.AutoSize = false;
+            this.txtChartValue.AutoToolTip = true;
             this.txtChartValue.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
             this.txtChartValue.BorderStyle = System.Windows.Forms.Border3DStyle.RaisedOuter;
             this.txtChartValue.Name = "txtChartValue";
-            this.txtChartValue.Size = new System.Drawing.Size(100, 19);
-            this.txtChartValue.Text = "99.9999, 99.9999";
+            this.txtChartValue.Size = new System.Drawing.Size(173, 19);
+            this.txtChartValue.Text = "Hover mouse to see point here";
             this.txtChartValue.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // txtChartSelect
             // 
             this.txtChartSelect.AutoSize = false;
+            this.txtChartSelect.AutoToolTip = true;
             this.txtChartSelect.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
             this.txtChartSelect.BorderStyle = System.Windows.Forms.Border3DStyle.RaisedOuter;
             this.txtChartSelect.Name = "txtChartSelect";
-            this.txtChartSelect.Size = new System.Drawing.Size(100, 19);
-            this.txtChartSelect.Text = "99.9999, 99.9999";
+            this.txtChartSelect.Size = new System.Drawing.Size(133, 19);
+            this.txtChartSelect.Text = "Select to see point here";
             this.txtChartSelect.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // lblZoomExtents
+            // 
+            this.lblZoomExtents.AutoSize = false;
+            this.lblZoomExtents.AutoToolTip = true;
+            this.lblZoomExtents.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+            this.lblZoomExtents.BorderStyle = System.Windows.Forms.Border3DStyle.RaisedOuter;
+            this.lblZoomExtents.Name = "lblZoomExtents";
+            this.lblZoomExtents.Size = new System.Drawing.Size(230, 19);
+            this.lblZoomExtents.Text = "Zoom to see extents here";
+            this.lblZoomExtents.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // Form1
             // 
@@ -296,6 +311,7 @@
         private System.Windows.Forms.ToolStripButton toolStripButton1;
         private System.Windows.Forms.ToolStripButton toolStripButton2;
         private System.Windows.Forms.ToolStripButton toolStripButton3;
+        private System.Windows.Forms.ToolStripStatusLabel lblZoomExtents;
     }
 }
 

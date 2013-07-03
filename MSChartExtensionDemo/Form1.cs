@@ -12,6 +12,9 @@ namespace MSChartExtensionDemo
 {
     public partial class Form1 : Form
     {
+        private const string ZoomChangedDisplayFormatLeftRightTopBottom = 
+            "{0:F2} < x < {1:F2}; {2:F2} > y > {3:F2}";
+
         public Form1()
         {
             InitializeComponent();
@@ -20,8 +23,9 @@ namespace MSChartExtensionDemo
 
         private void Form1_Shown(object sender, EventArgs e)
         {
-            chart1.EnableZoomAndPanControls(ChartCursorSelected, ChartCursorMoved);
+            chart1.EnableZoomAndPanControls(ChartCursorSelected, ChartCursorMoved, ZoomChanged);
         }
+
         private void PlotData()
         {
             int DataSizeBase = 1000; //Increase this number to plot more points
@@ -68,7 +72,9 @@ namespace MSChartExtensionDemo
         }
 
         System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+
         private void StartStopWatch() { watch.Restart(); }
+
         private void CheckStopWatch(string message)
         {
             watch.Stop();
@@ -79,9 +85,17 @@ namespace MSChartExtensionDemo
         {
             txtChartSelect.Text = x.ToString("F4") + ", " + y.ToString("F4");
         }
+
         private void ChartCursorMoved(double x, double y)
         {
             txtChartValue.Text = x.ToString("F4") + ", " + y.ToString("F4");
+        }
+
+        private void ZoomChanged(ChartExtents extents)
+        {
+            RectangleF e = extents.PrimaryExtents;
+            lblZoomExtents.Text = string.Format(ZoomChangedDisplayFormatLeftRightTopBottom, 
+                e.Left, e.Right, e.Top, e.Bottom);
         }
 
         private void contextMenuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)

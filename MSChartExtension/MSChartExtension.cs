@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using EventHandlerSupport;
-using System.Windows.Forms.DataVisualization.Charting;
 
 namespace System.Windows.Forms.DataVisualization.Charting
 {
@@ -11,6 +11,12 @@ namespace System.Windows.Forms.DataVisualization.Charting
     /// <param name="x"></param>
     /// <param name="y"></param>
     public delegate void CursorPositionChanged(double x, double y);
+
+    /// <summary>
+    /// Form of the callback when the user has zoomed the chart.
+    /// </summary>
+    /// <param name="extents"></param>
+    public delegate void ZoomChanged(ChartExtents extents);
 
     /// <summary>
     /// MSChart Control Extension's States
@@ -64,16 +70,20 @@ namespace System.Windows.Forms.DataVisualization.Charting
         {
             EnableZoomAndPanControls(sender, null, null);
         }
+
         /// <summary>
         /// Enable Zoom and Pan Controls.
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="selectionChanged">Selection changed callabck. Triggered when user select a point with selec tool.</param>
         /// <param name="cursorMoved">Cursor moved callabck. Triggered when user move the mouse in chart area.</param>
-        /// <remarks>Callback are optional.</remarks>
+        /// <param name="zoomChanged">Callback triggered when chart has 
+        /// zoomed in or out (and on first painting of the chart).</param>
+        /// <remarks>Callback are optional (pass in null to ignore).</remarks>
         public static void EnableZoomAndPanControls(this Chart sender,
             CursorPositionChanged selectionChanged,
-            CursorPositionChanged cursorMoved)
+            CursorPositionChanged cursorMoved,
+            ZoomChanged zoomChanged = null)
         {
             if (!ChartTool.ContainsKey(sender))
             {
@@ -82,6 +92,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 ptrChartData.Backup();
                 ptrChartData.SelectionChangedCallback = selectionChanged;
                 ptrChartData.CursorMovedCallback = cursorMoved;
+                ptrChartData.ZoomChangedCallback = zoomChanged;
 
                 //Populate Context menu
                 Chart ptrChart = sender;
@@ -111,6 +122,25 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 ptrChart.MouseDown += ChartControl_MouseDown;
                 ptrChart.MouseMove += ChartControl_MouseMove;
                 ptrChart.MouseUp += ChartControl_MouseUp;
+                ptrChart.PostPaint += ChartOnPostPaint; // Necessary to kickstart ZoomChanged callback
+                
+                // The following is for testing out the built-in events. 
+                //  They don't seem to be as reliable as just handling mouse up/move/down
+                //ptrChart.CursorPositionChanging += (sender1, e) =>
+                //    {
+                //        // Changed event isn't triggered with any zoom or select operations! From looking at the Cursor.cs code, it seems to be a bug.
+                //        // Changing event is raised twice, once for each cursor (X, Y)
+                //        var axis = e.Axis;
+                //    };
+                //ptrChart.SelectionRangeChanging += (o, args) =>
+                //    {
+                //        // Changed event isn't triggered with any zoom or select operations!
+                //        // Neither is changed event... odd
+                //        Console.WriteLine("SelectionRangeChanging raised " + args.ToString());
+                //        var axis = args.Axis;
+                //        var chartArea = args.ChartArea;
+                //    };
+
 
                 //Override settings.
                 ChartArea ptrChartArea = ptrChart.ChartAreas[0];
@@ -126,6 +156,17 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
                 SetChartControlState(sender, MSChartExtensionToolState.Select);
             }
+        }
+
+        private static void ChartOnPostPaint(object sender, ChartPaintEventArgs chartPaintEventArgs)
+        {
+            // Subscribing to PostPaint allows us to get the correct 
+            //  bounds of the chart to send to the user. Some other events
+            //  don't seem to be sufficient.
+            Chart ptrChart = sender as Chart;
+            if (ptrChart == null) return;
+            OnZoomChanged(ptrChart);
+            ptrChart.PostPaint -= ChartOnPostPaint; // Only run once
         }
 
         /// <summary>
@@ -235,10 +276,13 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 case "Zoom Out":
                     {
                         WindowMessagesNativeMethods.SuspendDrawing(ptrChart);
-                        ptrChart.ChartAreas[0].AxisX.ScaleView.ZoomReset();
-                        ptrChart.ChartAreas[0].AxisY.ScaleView.ZoomReset();
-                        ptrChart.ChartAreas[0].AxisY2.ScaleView.ZoomReset();
+                        ChartArea ptrChartArea = ptrChart.ChartAreas[0];
+                        ptrChartArea.AxisX.ScaleView.ZoomReset();
+                        ptrChartArea.AxisX2.ScaleView.ZoomReset();
+                        ptrChartArea.AxisY.ScaleView.ZoomReset();
+                        ptrChartArea.AxisY2.ScaleView.ZoomReset();
                         WindowMessagesNativeMethods.ResumeDrawing(ptrChart);
+                        OnZoomChanged(ptrChart);
                     }
                     break;
             }
@@ -268,6 +312,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
             public MSChartExtensionToolState ToolState { get; set; }
             public CursorPositionChanged SelectionChangedCallback;
             public CursorPositionChanged CursorMovedCallback;
+            public ZoomChanged ZoomChangedCallback { get; set; }
 
             private void CreateChartContextMenu()
             {
@@ -363,6 +408,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
             public ToolStripSeparator ChartContextSeparator { get; private set; }
             private Dictionary<MSChartExtensionToolState, ToolStripMenuItem> StateMenu;
 
+
             #endregion
 
         }
@@ -401,19 +447,33 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
             MouseDowned = true;
 
-            ptrChartArea.CursorX.SelectionStart = ptrChartArea.AxisX.PixelPositionToValue(e.Location.X);
-            ptrChartArea.CursorY.SelectionStart = ptrChartArea.AxisY.PixelPositionToValue(e.Location.Y);
-            ptrChartArea.CursorX.SelectionEnd = ptrChartArea.CursorX.SelectionStart;
-            ptrChartArea.CursorY.SelectionEnd = ptrChartArea.CursorY.SelectionStart;
+            //NOTE: Clicking on the chart in selection mode will draw a cross whether or not the following
+            //  code is run (since Cursor.IsUserEnabled is true)
 
-            if (ChartTool[ptrChart].SelectionChangedCallback != null)
+            // We must set the selection start because it doesn't seem to get
+            //    reset automatically (remove the next two lines and zoom a few times to see)
+            Point startAndEndPt = e.Location;
+            const bool roundToBoundary = true;
+            ptrChartArea.CursorX.SetSelectionPixelPosition(startAndEndPt, startAndEndPt, roundToBoundary);
+            ptrChartArea.CursorY.SetSelectionPixelPosition(startAndEndPt, startAndEndPt, roundToBoundary);
+            // What's the diff between CursorPosn and SelectionPosn?
+
+            // Old way
+            //ptrChartArea.CursorX.SelectionStart = ptrChartArea.AxisX.PixelPositionToValue(e.Location.X);
+            //ptrChartArea.CursorY.SelectionStart = ptrChartArea.AxisY.PixelPositionToValue(e.Location.Y);
+            //ptrChartArea.CursorX.SelectionEnd = ptrChartArea.CursorX.SelectionStart;
+            //ptrChartArea.CursorY.SelectionEnd = ptrChartArea.CursorY.SelectionStart;
+
+            ChartData chartData = GetDataForChart(ptrChart);
+            if (chartData.SelectionChangedCallback != null)
             {
-                ChartTool[ptrChart].SelectionChangedCallback(
-                    ptrChartArea.CursorX.SelectionStart,
-                    ptrChartArea.CursorY.SelectionStart);
+                // If we use Position, there's no need to set/get the Selection
+                chartData.SelectionChangedCallback(
+                    ptrChartArea.CursorX.Position,
+                    ptrChartArea.CursorY.Position);
             }
-
         }
+
         private static void ChartControl_MouseMove(object sender, MouseEventArgs e)
         {
             Chart ptrChart = (Chart)sender;
@@ -479,7 +539,8 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
             Chart ptrChart = (Chart)sender;
             ChartArea ptrChartArea = ptrChart.ChartAreas[0];
-            MSChartExtensionToolState state = ChartTool[ptrChart].ToolState;
+            ChartData data = GetDataForChart(ptrChart);
+            MSChartExtensionToolState state = data.ToolState;
             switch (state)
             {
                 case MSChartExtensionToolState.Zoom:
@@ -491,40 +552,104 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     double YEnd = ptrChartArea.CursorY.SelectionEnd;
 
                     //Zoom area for Y Axis
-                    double YMin = ptrChartArea.AxisY.ValueToPosition(Math.Min(YStart, YEnd));
-                    double YMax = ptrChartArea.AxisY.ValueToPosition(Math.Max(YStart, YEnd));
+                    double bottom = Math.Min(YStart, YEnd);
+                    double top = Math.Max(YStart, YEnd);
+                    double YMin = ptrChartArea.AxisY.ValueToPosition(bottom);
+                    double YMax = ptrChartArea.AxisY.ValueToPosition(top);
                     
                     if ((XStart == XEnd) && (YStart == YEnd)) return;
                     
                     //Zoom operation
-
-                    //X-Axis
-                    ptrChartArea.AxisX.ScaleView.Zoom(
-                        Math.Min(XStart, XEnd), Math.Max(XStart, XEnd));
+                    double left = Math.Min(XStart, XEnd);
+                    double right = Math.Max(XStart, XEnd);
+                    ptrChartArea.AxisX.ScaleView.Zoom(left, right);
 
                     //Y-Axis
                     if (state == MSChartExtensionToolState.Zoom)
                     {
                         ptrChartArea.AxisY.ScaleView.Zoom(
-                            Math.Min(YStart, YEnd), Math.Max(YStart, YEnd));
+                                        bottom, top);
                         ptrChartArea.AxisY2.ScaleView.Zoom(
                             ptrChartArea.AxisY2.PositionToValue(YMin),
                             ptrChartArea.AxisY2.PositionToValue(YMax));
 
                     }
 
-                    //Clear selection
-                    ptrChartArea.CursorX.SelectionStart = ptrChartArea.CursorX.SelectionEnd;
-                    ptrChartArea.CursorY.SelectionStart = ptrChartArea.CursorY.SelectionEnd;
+                    //Clear selection (the following seem to be equivalent)
+                    ptrChartArea.CursorX.SetSelectionPosition(0, 0);
+                    ptrChartArea.CursorY.SetSelectionPosition(0, 0);
+                    //ptrChartArea.CursorX.SelectionStart = ptrChartArea.CursorX.SelectionEnd;
+                    //ptrChartArea.CursorY.SelectionStart = ptrChartArea.CursorY.SelectionEnd;
 
-                    //TODO: Notify of change
-                    //ZoomChanged()
+                    //NOTE: At this point, the scaled view has already been updated to reflect zoom
+                    OnZoomChanged(ptrChart);
                     break;
 
                 case MSChartExtensionToolState.Pan:
                     break;
             }
         }
+
+        /// <summary>
+        /// Gets the boundaries (top, left, bottom, right) of this chart's visible 
+        /// data in the same units as the data. The ZoomChanged callback provides
+        /// the same data.
+        /// </summary>
+        /// <param name="ptrChart">The chart.</param>
+        /// <returns>Boundaries (<see cref="ChartExtents"/>) of the chart.</returns>
+        public static ChartExtents GetBoundariesOfVisibleData(this Chart ptrChart)
+        {
+            if (ptrChart.ChartAreas.Count < 1) throw new InvalidOperationException("Missing chart area");
+            ChartArea ptrChartArea = ptrChart.ChartAreas[0];
+            ChartExtents extents = ExtentsFromCurrentView(ptrChartArea);
+            return extents;
+        }
+
+        private static void OnZoomChanged(Chart ptrChart)
+        {
+            var data = GetDataForChart(ptrChart);
+            if (data.ZoomChangedCallback == null)
+                return;
+            //Precondition: At this point, the scaled view has already been updated to reflect zoom
+            data.ZoomChangedCallback(ptrChart.GetBoundariesOfVisibleData());
+        }
+
+        private static ChartExtents ExtentsFromDataCoordinates(double left, double top, double right,
+                                                                                     double bottom)
+        {
+//NOTE: Height needs to be negative because we always 
+            //  specify the *top* left corner
+            var rect = new RectangleF((float) left, (float) top,
+                                      (float) (right - left), (float) (bottom - top));
+            var extents = new ChartExtents
+                {
+                    PrimaryExtents = rect
+                };
+            return extents;
+        }
+
+        private static ChartData GetDataForChart(Chart ptrChart)
+        {
+            return ChartTool[ptrChart];
+        }
+
+        private static ChartExtents ExtentsFromCurrentView(ChartArea ptrChartArea)
+        {
+            double left;
+            double right;
+            double bottom;
+            double top;
+            GetViewMinMax(ptrChartArea.AxisX, out left, out right);
+            GetViewMinMax(ptrChartArea.AxisY, out bottom, out top);
+            return ExtentsFromDataCoordinates(left, top, right, bottom);
+        }
+
+        private static void GetViewMinMax(Axis axis, out double viewMin, out double viewMax)
+        {
+            viewMin = axis.ScaleView.ViewMinimum;
+            viewMax = axis.ScaleView.ViewMaximum;
+        }
+
         #endregion
 
         #region [ Annotations ]
