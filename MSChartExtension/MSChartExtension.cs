@@ -123,7 +123,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 ptrChart.MouseMove += ChartControl_MouseMove;
                 ptrChart.MouseUp += ChartControl_MouseUp;
                 ptrChart.PostPaint += ChartOnPostPaint; // Necessary to kickstart ZoomChanged callback
-                
+
                 // The following is for testing out the built-in events. 
                 //  They don't seem to be as reliable as just handling mouse up/move/down
                 //ptrChart.CursorPositionChanging += (sender1, e) =>
@@ -165,8 +165,8 @@ namespace System.Windows.Forms.DataVisualization.Charting
             //  don't seem to be sufficient.
             Chart ptrChart = sender as Chart;
             if (ptrChart == null) return;
-            OnZoomChanged(ptrChart);
             ptrChart.PostPaint -= ChartOnPostPaint; // Only run once
+            OnZoomChanged(ptrChart);
         }
 
         /// <summary>
@@ -339,7 +339,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     {MSChartExtensionToolState.Pan, ChartToolPan},
                     {MSChartExtensionToolState.Zoom, ChartToolZoom},
                     {MSChartExtensionToolState.ZoomX, ChartToolZoomX}
-                };                
+                };
             }
 
             public void Backup()
@@ -556,12 +556,13 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     double top = Math.Max(YStart, YEnd);
                     double YMin = ptrChartArea.AxisY.ValueToPosition(bottom);
                     double YMax = ptrChartArea.AxisY.ValueToPosition(top);
-                    
+
                     if ((XStart == XEnd) && (YStart == YEnd)) return;
-                    
+
                     //Zoom operation
                     double left = Math.Min(XStart, XEnd);
                     double right = Math.Max(XStart, XEnd);
+                    // NOTE: left <= right, even if Axis.IsReversed
                     ptrChartArea.AxisX.ScaleView.Zoom(left, right);
 
                     //Y-Axis
@@ -592,17 +593,36 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
         /// <summary>
         /// Gets the boundaries (top, left, bottom, right) of this chart's visible 
-        /// data in the same units as the data. The ZoomChanged callback provides
-        /// the same data.
+        /// data in the same units and direction as the data. 
         /// </summary>
+        /// <remarks>The ZoomChanged callback provides
+        /// the same data. Alternately, if you have the chart area of interest,
+        /// use <see cref="ChartAreaExtensions.GetBoundariesOfData"/>.</remarks>
         /// <param name="ptrChart">The chart.</param>
         /// <returns>Boundaries (<see cref="ChartExtents"/>) of the chart.</returns>
         public static ChartExtents GetBoundariesOfVisibleData(this Chart ptrChart)
         {
-            if (ptrChart.ChartAreas.Count < 1) throw new InvalidOperationException("Missing chart area");
-            ChartArea ptrChartArea = ptrChart.ChartAreas[0];
-            ChartExtents extents = ExtentsFromCurrentView(ptrChartArea);
-            return extents;
+            return CheckAndGetArea(ptrChart).GetBoundariesOfData(justVisible: true);
+        }
+
+        /// <summary>
+        /// Gets the boundaries (top, left, bottom, right) of this chart's
+        /// data in the same units and direction as the data. 
+        /// </summary>
+        /// <remarks>Alternately, if you have the chart area of interest,
+        /// use <see cref="ChartAreaExtensions.GetBoundariesOfData"/>.</remarks>
+        /// <param name="ptrChart">The chart.</param>
+        /// <returns>Boundaries (<see cref="ChartExtents"/>) of the chart.</returns>
+        public static ChartExtents GetBoundariesOfData(this Chart ptrChart)
+        {
+            return CheckAndGetArea(ptrChart).GetBoundariesOfData(justVisible: false);
+        }
+
+        private static ChartArea CheckAndGetArea(Chart ptrChart, int chartAreaIndex=0)
+        {
+            if (ptrChart.ChartAreas.Count <= chartAreaIndex) throw new InvalidOperationException("Missing chart area");
+            ChartArea ptrChartArea = ptrChart.ChartAreas[chartAreaIndex];
+            return ptrChartArea;
         }
 
         private static void OnZoomChanged(Chart ptrChart)
@@ -614,40 +634,9 @@ namespace System.Windows.Forms.DataVisualization.Charting
             data.ZoomChangedCallback(ptrChart.GetBoundariesOfVisibleData());
         }
 
-        private static ChartExtents ExtentsFromDataCoordinates(double left, double top, double right,
-                                                                                     double bottom)
-        {
-//NOTE: Height needs to be negative because we always 
-            //  specify the *top* left corner
-            var rect = new RectangleF((float) left, (float) top,
-                                      (float) (right - left), (float) (bottom - top));
-            var extents = new ChartExtents
-                {
-                    PrimaryExtents = rect
-                };
-            return extents;
-        }
-
         private static ChartData GetDataForChart(Chart ptrChart)
         {
             return ChartTool[ptrChart];
-        }
-
-        private static ChartExtents ExtentsFromCurrentView(ChartArea ptrChartArea)
-        {
-            double left;
-            double right;
-            double bottom;
-            double top;
-            GetViewMinMax(ptrChartArea.AxisX, out left, out right);
-            GetViewMinMax(ptrChartArea.AxisY, out bottom, out top);
-            return ExtentsFromDataCoordinates(left, top, right, bottom);
-        }
-
-        private static void GetViewMinMax(Axis axis, out double viewMin, out double viewMax)
-        {
-            viewMin = axis.ScaleView.ViewMinimum;
-            viewMax = axis.ScaleView.ViewMaximum;
         }
 
         #endregion
@@ -851,5 +840,17 @@ namespace System.Windows.Forms.DataVisualization.Charting
         }
 
         #endregion
+    }
+
+    public static class RectangleExtensions
+    {
+        /// <summary>Returns a string showing left, right, top, and bottom.</summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        public static string ToStringWithBoundaries(this RectangleF value)
+        {
+            const string fmt = "{{Left={0},Right={1},Top={2},Bottom={3}}}";
+            return string.Format(fmt, value.Left, value.Right, value.Top, value.Bottom);
+        }
     }
 }
