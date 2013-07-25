@@ -32,7 +32,6 @@
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.itemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -43,12 +42,15 @@
             this.item14ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.item2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.btnPlot = new System.Windows.Forms.ToolStripButton();
+            this.btnPlot = new System.Windows.Forms.ToolStripSplitButton();
+            this.btnPlotInDescendingOrder = new System.Windows.Forms.ToolStripMenuItem();
             this.btnClearDataFast = new System.Windows.Forms.ToolStripButton();
             this.btnClearDataSlow = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
+            this.btnViewChartExtents = new System.Windows.Forms.ToolStripSplitButton();
+            this.btnUpdateVisibleExtents = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.txtChartValue = new System.Windows.Forms.ToolStripStatusLabel();
             this.txtChartSelect = new System.Windows.Forms.ToolStripStatusLabel();
@@ -112,33 +114,33 @@
             // item11ToolStripMenuItem
             // 
             this.item11ToolStripMenuItem.Name = "item11ToolStripMenuItem";
-            this.item11ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.item11ToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
             this.item11ToolStripMenuItem.Text = "Item 1.1";
             this.item11ToolStripMenuItem.Click += new System.EventHandler(this.item11ToolStripMenuItem_Click);
             // 
             // item12ToolStripMenuItem
             // 
             this.item12ToolStripMenuItem.Name = "item12ToolStripMenuItem";
-            this.item12ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.item12ToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
             this.item12ToolStripMenuItem.Text = "Item 1.2";
             this.item12ToolStripMenuItem.Click += new System.EventHandler(this.item12ToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(113, 6);
             // 
             // item13ToolStripMenuItem
             // 
             this.item13ToolStripMenuItem.Name = "item13ToolStripMenuItem";
-            this.item13ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.item13ToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
             this.item13ToolStripMenuItem.Text = "Item 1.3";
             this.item13ToolStripMenuItem.Click += new System.EventHandler(this.item13ToolStripMenuItem_Click);
             // 
             // item14ToolStripMenuItem
             // 
             this.item14ToolStripMenuItem.Name = "item14ToolStripMenuItem";
-            this.item14ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.item14ToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
             this.item14ToolStripMenuItem.Text = "Item 1.4";
             this.item14ToolStripMenuItem.Click += new System.EventHandler(this.item14ToolStripMenuItem_Click);
             // 
@@ -156,7 +158,8 @@
             this.btnClearDataSlow,
             this.toolStripButton1,
             this.toolStripButton2,
-            this.toolStripButton3});
+            this.toolStripButton3,
+            this.btnViewChartExtents});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(841, 25);
@@ -166,17 +169,24 @@
             // btnPlot
             // 
             this.btnPlot.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.btnPlot.Image = ((System.Drawing.Image)(resources.GetObject("btnPlot.Image")));
+            this.btnPlot.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.btnPlotInDescendingOrder});
             this.btnPlot.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnPlot.Name = "btnPlot";
-            this.btnPlot.Size = new System.Drawing.Size(59, 22);
+            this.btnPlot.Size = new System.Drawing.Size(71, 22);
             this.btnPlot.Text = "Plot Data";
-            this.btnPlot.Click += new System.EventHandler(this.btnPlot_Click);
+            this.btnPlot.ButtonClick += new System.EventHandler(this.btnPlot_Click);
+            // 
+            // btnPlotInDescendingOrder
+            // 
+            this.btnPlotInDescendingOrder.Name = "btnPlotInDescendingOrder";
+            this.btnPlotInDescendingOrder.Size = new System.Drawing.Size(182, 22);
+            this.btnPlotInDescendingOrder.Text = "In &Descending Order";
+            this.btnPlotInDescendingOrder.Click += new System.EventHandler(this.btnPlotInDescendingOrder_Click);
             // 
             // btnClearDataFast
             // 
             this.btnClearDataFast.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.btnClearDataFast.Image = ((System.Drawing.Image)(resources.GetObject("btnClearDataFast.Image")));
             this.btnClearDataFast.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnClearDataFast.Name = "btnClearDataFast";
             this.btnClearDataFast.Size = new System.Drawing.Size(97, 22);
@@ -186,7 +196,6 @@
             // btnClearDataSlow
             // 
             this.btnClearDataSlow.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.btnClearDataSlow.Image = ((System.Drawing.Image)(resources.GetObject("btnClearDataSlow.Image")));
             this.btnClearDataSlow.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnClearDataSlow.Name = "btnClearDataSlow";
             this.btnClearDataSlow.Size = new System.Drawing.Size(101, 22);
@@ -196,7 +205,6 @@
             // toolStripButton1
             // 
             this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
             this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton1.Name = "toolStripButton1";
             this.toolStripButton1.Size = new System.Drawing.Size(96, 22);
@@ -206,7 +214,6 @@
             // toolStripButton2
             // 
             this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
             this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton2.Name = "toolStripButton2";
             this.toolStripButton2.Size = new System.Drawing.Size(106, 22);
@@ -216,12 +223,31 @@
             // toolStripButton3
             // 
             this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton3.Image")));
             this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton3.Name = "toolStripButton3";
             this.toolStripButton3.Size = new System.Drawing.Size(53, 22);
             this.toolStripButton3.Text = "LogTest";
             this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
+            // 
+            // btnViewChartExtents
+            // 
+            this.btnViewChartExtents.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnViewChartExtents.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.btnUpdateVisibleExtents});
+            this.btnViewChartExtents.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnViewChartExtents.Name = "btnViewChartExtents";
+            this.btnViewChartExtents.Size = new System.Drawing.Size(88, 22);
+            this.btnViewChartExtents.Text = "View &Extents";
+            this.btnViewChartExtents.ToolTipText = "Extents are the boundaries (left, right, top, bottom) of the data";
+            this.btnViewChartExtents.ButtonClick += new System.EventHandler(this.btnViewChartExtents_ButtonClick);
+            // 
+            // btnUpdateVisibleExtents
+            // 
+            this.btnUpdateVisibleExtents.Name = "btnUpdateVisibleExtents";
+            this.btnUpdateVisibleExtents.Size = new System.Drawing.Size(189, 22);
+            this.btnUpdateVisibleExtents.Text = "Update &Visible Extents";
+            this.btnUpdateVisibleExtents.ToolTipText = "These are shown in the status bar at the bottom of the screen.";
+            this.btnUpdateVisibleExtents.Click += new System.EventHandler(this.btnUpdateVisibleExtents_Click);
             // 
             // statusStrip1
             // 
@@ -265,7 +291,7 @@
             this.lblZoomExtents.BorderStyle = System.Windows.Forms.Border3DStyle.RaisedOuter;
             this.lblZoomExtents.Name = "lblZoomExtents";
             this.lblZoomExtents.Size = new System.Drawing.Size(230, 19);
-            this.lblZoomExtents.Text = "Zoom to see extents here";
+            this.lblZoomExtents.Text = "Zoom to see visible extents here";
             this.lblZoomExtents.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // Form1
@@ -294,7 +320,6 @@
 
         private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
         private System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.ToolStripButton btnPlot;
         private System.Windows.Forms.ToolStripButton btnClearDataSlow;
         private System.Windows.Forms.ToolStripButton btnClearDataFast;
         private System.Windows.Forms.StatusStrip statusStrip1;
@@ -312,6 +337,10 @@
         private System.Windows.Forms.ToolStripButton toolStripButton2;
         private System.Windows.Forms.ToolStripButton toolStripButton3;
         private System.Windows.Forms.ToolStripStatusLabel lblZoomExtents;
+        private System.Windows.Forms.ToolStripSplitButton btnPlot;
+        private System.Windows.Forms.ToolStripMenuItem btnPlotInDescendingOrder;
+        private System.Windows.Forms.ToolStripSplitButton btnViewChartExtents;
+        private System.Windows.Forms.ToolStripMenuItem btnUpdateVisibleExtents;
     }
 }
 

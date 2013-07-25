@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -12,8 +13,19 @@ namespace MSChartExtensionDemo
 {
     public partial class Form1 : Form
     {
-        private const string ZoomChangedDisplayFormatLeftRightTopBottom = 
-            "{0:F2} < x < {1:F2}; {2:F2} > y > {3:F2}";
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        static void Main()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new Form1());
+        }
+
+        private const string ZoomChangedDisplayFormatLeftRightTopBottom =
+            "L:{0:F2} R:{1:F2} T:{2:F2} B:{3:F2}";
 
         public Form1()
         {
@@ -23,12 +35,23 @@ namespace MSChartExtensionDemo
 
         private void Form1_Shown(object sender, EventArgs e)
         {
-            chart1.EnableZoomAndPanControls(ChartCursorSelected, ChartCursorMoved, ZoomChanged);
+            chart1.EnableZoomAndPanControls(ChartCursorSelected, ChartCursorMoved, UpdateDisplayedExtents);
+
+            // Client interface BUG:
+            // OnAxisViewChang* is only called on Cursor_MouseUp, 
+            //  so the following events are never raised
+            chart1.AxisViewChanging += OnAxisViewChanges;
+            chart1.AxisViewChanged += OnAxisViewChanges;
         }
 
-        private void PlotData()
+        private void OnAxisViewChanges(object sender, ViewEventArgs viewEventArgs)
         {
-            int DataSizeBase = 1000; //Increase this number to plot more points
+            Debug.Fail("Don't worry, this event is never raised.");
+        }
+
+        private void PlotData(bool reverse = false)
+        {
+            const int DataSizeBase = 1000; //Increase this number to plot more points
 
             Series Ser1 = chart1.Series[0];
             for (int x = 0; x < (10 * DataSizeBase); x++)
@@ -37,6 +60,10 @@ namespace MSChartExtensionDemo
             Series Ser2 = chart1.Series[1];
             for (int x = 0; x < (5 * DataSizeBase); x++)
                 Ser2.Points.AddXY(Math.PI * 0.2 * x, Math.Cos(Math.PI * 0.2 * x));
+
+            var chartArea = chart1.ChartAreas.First();
+            chartArea.AxisX.IsReversed = reverse;
+            chartArea.AxisY.IsReversed = reverse;
         }
 
         private void ClearData()
@@ -47,9 +74,19 @@ namespace MSChartExtensionDemo
 
         private void btnPlot_Click(object sender, EventArgs e)
         {
+            OnPlotClicked(false);
+        }
+
+        private void btnPlotInDescendingOrder_Click(object sender, EventArgs e)
+        {
+            OnPlotClicked(true);
+        }
+
+        private void OnPlotClicked(bool dataAsDescending)
+        {
             ClearData();
             StartStopWatch();
-            PlotData();
+            PlotData(dataAsDescending);
             Application.DoEvents();
             CheckStopWatch("Plot datas");
         }
@@ -91,10 +128,10 @@ namespace MSChartExtensionDemo
             txtChartValue.Text = x.ToString("F4") + ", " + y.ToString("F4");
         }
 
-        private void ZoomChanged(ChartExtents extents)
+        private void UpdateDisplayedExtents(ChartExtents extents)
         {
             RectangleF e = extents.PrimaryExtents;
-            lblZoomExtents.Text = string.Format(ZoomChangedDisplayFormatLeftRightTopBottom, 
+            lblZoomExtents.Text = string.Format(ZoomChangedDisplayFormatLeftRightTopBottom,
                 e.Left, e.Right, e.Top, e.Bottom);
         }
 
@@ -102,7 +139,7 @@ namespace MSChartExtensionDemo
         {
             if (e.ClickedItem.Text.StartsWith("Item"))
             {
-                ToolStripMenuItem ptrMenu = (ToolStripMenuItem) e.ClickedItem;
+                ToolStripMenuItem ptrMenu = (ToolStripMenuItem)e.ClickedItem;
                 if (ptrMenu.HasDropDownItems) return;
                 MessageBox.Show(ptrMenu.Text);
             }
@@ -155,6 +192,23 @@ namespace MSChartExtensionDemo
                 chart1.ChartAreas[0].AxisX.Maximum = double.NaN;
                 chart1.ChartAreas[0].AxisX.Minimum = double.NaN;
             }
+        }
+
+        private void btnUpdateVisibleExtents_Click(object sender, EventArgs e)
+        {
+            UpdateDisplayedExtents(chart1.GetBoundariesOfVisibleData());
+        }
+
+        private void btnViewChartExtents_ButtonClick(object sender, EventArgs e)
+        {
+            ChartExtents all = chart1.GetBoundariesOfData();
+            ChartExtents visible = chart1.GetBoundariesOfVisibleData();
+            const string fmt = @"All data
+    {0}
+
+Visible data
+    {1}";
+            MessageBox.Show(string.Format(fmt, all, visible), "Extents/boundaries of the data");
         }
     }
 }
