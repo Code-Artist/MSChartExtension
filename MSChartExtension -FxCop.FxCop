@@ -108,6 +108,57 @@
        </Namespace>
        <Namespace Name="System.Windows.Forms.DataVisualization.Charting">
         <Types>
+         <Type Name="ChartAreaExtensions">
+          <Members>
+           <Member Name="#GetBoundariesOfData(System.Windows.Forms.DataVisualization.Charting.ChartArea,System.Boolean)">
+            <Messages>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-03-04 14:23:27Z">
+              <Issue>
+               <Item>'ChartAreaExtensions.GetBoundariesOfData(this ChartArea, bool)'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="ChartAxisExtensions">
+          <Members>
+           <Member Name="#GetMinMax(System.Windows.Forms.DataVisualization.Charting.Axis,System.Double&amp;,System.Double&amp;,System.Boolean)">
+            <Messages>
+             <Message Id="1#" TypeName="AvoidOutParameters" Category="Microsoft.Design" CheckId="CA1021" Created="2014-03-04 14:23:27Z">
+              <Issue>
+               <Item>'min'</Item>
+              </Issue>
+             </Message>
+             <Message Id="2#" TypeName="AvoidOutParameters" Category="Microsoft.Design" CheckId="CA1021" Created="2014-03-04 14:23:27Z">
+              <Issue>
+               <Item>'max'</Item>
+              </Issue>
+             </Message>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-03-04 14:23:27Z">
+              <Issue>
+               <Item>'ChartAxisExtensions.GetMinMax(this Axis, out double, out double, bool)'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="ChartExtents">
+          <Members>
+           <Member Name="#ToString()">
+            <Messages>
+             <Message Id="System.String.Format(System.String,System.Object,System.Object)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-03-04 14:23:27Z">
+              <Issue>
+               <Item>'string.Format(string, object, object)'</Item>
+               <Item>'ChartExtents.ToString()'</Item>
+               <Item>'string.Format(IFormatProvider, string, params object[])'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
          <Type Name="CursorPositionChanged">
           <Messages>
            <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2012-05-23 14:21:46Z">
@@ -333,20 +384,20 @@
              </Message>
             </Messages>
            </Member>
-           <Member Name="#EnableZoomAndPanControls(System.Windows.Forms.DataVisualization.Charting.Chart,System.Windows.Forms.DataVisualization.Charting.CursorPositionChanged,System.Windows.Forms.DataVisualization.Charting.CursorPositionChanged)">
+           <Member Name="#EnableZoomAndPanControls(System.Windows.Forms.DataVisualization.Charting.Chart,System.Windows.Forms.DataVisualization.Charting.CursorPositionChanged,System.Windows.Forms.DataVisualization.Charting.CursorPositionChanged,System.Windows.Forms.DataVisualization.Charting.ZoomChanged)">
             <Messages>
-             <Message TypeName="DoNotCastUnnecessarily" Category="Microsoft.Performance" CheckId="CA1800" Status="Excluded" Created="2012-05-23 14:21:46Z">
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-03-04 14:23:27Z">
+              <Issue>
+               <Item>'MSChartExtension.EnableZoomAndPanControls(this Chart, CursorPositionChanged, CursorPositionChanged, ZoomChanged)'</Item>
+              </Issue>
+             </Message>
+             <Message TypeName="DoNotCastUnnecessarily" Category="Microsoft.Performance" CheckId="CA1800" Created="2014-03-04 14:23:27Z">
               <Issue Name="Local">
                <Item>'ptrItem'</Item>
                <Item>'ToolStripMenuItem'</Item>
-               <Item>'MSChartExtension.EnableZoomAndPanControls(this Chart, CursorPositionChanged, CursorPositionChanged)'</Item>
+               <Item>'MSChartExtension.EnableZoomAndPanControls(this Chart, CursorPositionChanged, CursorPositionChanged, ZoomChanged)'</Item>
                <Item>castclass</Item>
               </Issue>
-              <Notes>
-               <User Name="Admin">
-                <Note Id="4" />
-               </User>
-              </Notes>
              </Message>
             </Messages>
            </Member>
@@ -430,37 +481,15 @@
            </Member>
           </Members>
          </Type>
-         <Type Name="WindowMessagesNativeMethods">
+         <Type Name="RectangleExtensions">
           <Members>
-           <Member Name="#SendMessage(System.IntPtr,System.Int32,System.Boolean,System.Int32)">
+           <Member Name="#ToStringWithBoundaries(System.Drawing.RectangleF)">
             <Messages>
-             <Message Id="2" TypeName="PInvokeDeclarationsShouldBePortable" Category="Microsoft.Portability" CheckId="CA1901" Created="2012-05-28 13:14:11Z" FixCategory="NonBreaking">
-              <Issue Name="Parameter">
-               <Item>'wParam'</Item>
-               <Item>'WindowMessagesNativeMethods.SendMessage(IntPtr, int, bool, int)'</Item>
-               <Item>4</Item>
-               <Item>64-bit</Item>
-               <Item>8</Item>
-               <Item>'bool'</Item>
-              </Issue>
-             </Message>
-             <Message Id="3" TypeName="PInvokeDeclarationsShouldBePortable" Category="Microsoft.Portability" CheckId="CA1901" Created="2012-05-28 13:14:11Z" FixCategory="NonBreaking">
-              <Issue Name="Parameter">
-               <Item>'lParam'</Item>
-               <Item>'WindowMessagesNativeMethods.SendMessage(IntPtr, int, bool, int)'</Item>
-               <Item>4</Item>
-               <Item>64-bit</Item>
-               <Item>8</Item>
-               <Item>'int'</Item>
-              </Issue>
-             </Message>
-             <Message Id="return" TypeName="PInvokeDeclarationsShouldBePortable" Category="Microsoft.Portability" CheckId="CA1901" Created="2012-05-28 13:14:11Z" FixCategory="NonBreaking">
-              <Issue Name="Return">
-               <Item>'WindowMessagesNativeMethods.SendMessage(IntPtr, int, bool, int)'</Item>
-               <Item>8</Item>
-               <Item>32-bit</Item>
-               <Item>4</Item>
-               <Item>'long'</Item>
+             <Message Id="System.String.Format(System.String,System.Object[])" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-03-04 14:23:27Z">
+              <Issue>
+               <Item>'string.Format(string, params object[])'</Item>
+               <Item>'RectangleExtensions.ToStringWithBoundaries(this RectangleF)'</Item>
+               <Item>'string.Format(IFormatProvider, string, params object[])'</Item>
               </Issue>
              </Message>
             </Messages>
@@ -491,6 +520,9 @@
    <Rule TypeName="AvoidNamespacesWithFewTypes" Category="Microsoft.Design" CheckId="CA1020">
     <Resolution Name="Default">Consider merging the types defined in '{0}' with another namespace.</Resolution>
    </Rule>
+   <Rule TypeName="AvoidOutParameters" Category="Microsoft.Design" CheckId="CA1021">
+    <Resolution Name="Default">Consider a design that does not require that {0} be an out parameter.</Resolution>
+   </Rule>
    <Rule TypeName="AvoidUncalledPrivateCode" Category="Microsoft.Performance" CheckId="CA1811">
     <Resolution Name="Default" />
    </Rule>
@@ -508,9 +540,8 @@
     <Resolution Name="MemberParameter">In method {0}, correct the spelling of '{1}' in parameter name {2} or remove it entirely if it represents any sort of Hungarian notation.</Resolution>
     <Resolution Name="MemberParameterMoreMeaningfulName">In method {0}, consider providing a more meaningful name than parameter name {1}.</Resolution>
    </Rule>
-   <Rule TypeName="PInvokeDeclarationsShouldBePortable" Category="Microsoft.Portability" CheckId="CA1901">
-    <Resolution Name="Parameter">As it is declared in your code, parameter {0} of P/Invoke {1} will be {2} bytes wide on {3} platforms. This is not correct, as the actual native declaration of this API indicates it should be {4} bytes wide on {3} platforms. Consult the MSDN Platform SDK documentation for help determining what data type should be used instead of {5}.</Resolution>
-    <Resolution Name="Return">As it is declared in your code, the return type of P/Invoke {0} will be {1} bytes wide on {2} platforms. This is not correct, as the actual native declaration of this API indicates it should be {3} bytes wide on {2} platforms. Consult the MSDN Platform SDK documentation for help determining what data type should be used instead of {4}.</Resolution>
+   <Rule TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305">
+    <Resolution Name="Default">Because the behavior of {0} could vary based on the current user's locale settings, replace this call in {1} with a call to {2}. If the result of {2} will be displayed to the user, specify 'CultureInfo.CurrentCulture' as the 'IFormatProvider' parameter. Otherwise, if the result will be stored and accessed by software, such as when it is persisted to disk or to a database, specify 'CultureInfo.InvariantCulture'.</Resolution>
    </Rule>
   </Rules>
  </FxCopReport>
