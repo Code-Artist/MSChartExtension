@@ -53,13 +53,15 @@ namespace MSChartExtensionDemo
         {
             const int DataSizeBase = 1000; //Increase this number to plot more points
 
+            //Series 1 used primary YAxis
             Series Ser1 = chart1.Series[0];
             for (int x = 0; x < (10 * DataSizeBase); x++)
                 Ser1.Points.AddXY(Math.PI * 0.1 * x, Math.Sin(Math.PI * 0.1 * x));
 
+            //Series 2 used secondary YAxis 
             Series Ser2 = chart1.Series[1];
             for (int x = 0; x < (5 * DataSizeBase); x++)
-                Ser2.Points.AddXY(Math.PI * 0.2 * x, Math.Cos(Math.PI * 0.2 * x));
+                Ser2.Points.AddXY(0.2 * Math.PI * 0.2 * x, 10 * Math.Cos(Math.PI * 0.2 * x));
 
             var chartArea = chart1.ChartAreas.First();
             chartArea.AxisX.IsReversed = reverse;
@@ -204,10 +206,11 @@ namespace MSChartExtensionDemo
             ChartExtents all = chart1.GetBoundariesOfData();
             ChartExtents visible = chart1.GetBoundariesOfVisibleData();
             const string fmt = @"All data
-    {0}
+{0}
 
 Visible data
-    {1}";
+
+{1}";
             MessageBox.Show(string.Format(fmt, all, visible), "Extents/boundaries of the data");
         }
     }

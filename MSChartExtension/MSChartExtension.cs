@@ -438,6 +438,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
         #region [ Chart - Mouse Events ]
         private static bool MouseDowned;
+        private static double X2Start, Y2Start;
         private static void ChartControl_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button != System.Windows.Forms.MouseButtons.Left) return;
@@ -458,6 +459,9 @@ namespace System.Windows.Forms.DataVisualization.Charting
             ptrChartArea.CursorY.SetSelectionPixelPosition(startAndEndPt, startAndEndPt, roundToBoundary);
             // What's the diff between CursorPosn and SelectionPosn?
 
+            X2Start = ptrChartArea.AxisX2.PixelPositionToValue(e.Location.X);
+            Y2Start = ptrChartArea.AxisY2.PixelPositionToValue(e.Location.Y);
+
             // Old way
             //ptrChartArea.CursorX.SelectionStart = ptrChartArea.AxisX.PixelPositionToValue(e.Location.X);
             //ptrChartArea.CursorY.SelectionStart = ptrChartArea.AxisY.PixelPositionToValue(e.Location.Y);
@@ -477,12 +481,14 @@ namespace System.Windows.Forms.DataVisualization.Charting
         private static void ChartControl_MouseMove(object sender, MouseEventArgs e)
         {
             Chart ptrChart = (Chart)sender;
-            double selX, selY;
-            selX = selY = 0;
+            double selX, selY, selX2, selY2;
+            selX = selY = selX2 = selY2 = 0;
             try
             {
                 selX = ptrChart.ChartAreas[0].AxisX.PixelPositionToValue(e.Location.X);
                 selY = ptrChart.ChartAreas[0].AxisY.PixelPositionToValue(e.Location.Y);
+                selX2 = ptrChart.ChartAreas[0].AxisX2.PixelPositionToValue(e.Location.X);
+                selY2 = ptrChart.ChartAreas[0].AxisY2.PixelPositionToValue(e.Location.Y);
 
                 if (ChartTool[ptrChart].CursorMovedCallback != null)
                     ChartTool[ptrChart].CursorMovedCallback(selX, selY);
@@ -518,13 +524,17 @@ namespace System.Windows.Forms.DataVisualization.Charting
                         {
                             double dx = -selX + ptrChart.ChartAreas[0].CursorX.SelectionStart;
                             double dy = -selY + ptrChart.ChartAreas[0].CursorY.SelectionStart;
+                            double dx2 = -selX2 + X2Start;
+                            double dy2 = -selY2 + Y2Start;
 
                             double newX = ptrChart.ChartAreas[0].AxisX.ScaleView.Position + dx;
                             double newY = ptrChart.ChartAreas[0].AxisY.ScaleView.Position + dy;
-                            double newY2 = ptrChart.ChartAreas[0].AxisY2.ScaleView.Position + dy;
+                            double newX2 = ptrChart.ChartAreas[0].AxisX2.ScaleView.Position + dx2;
+                            double newY2 = ptrChart.ChartAreas[0].AxisY2.ScaleView.Position + dy2;
 
                             ptrChart.ChartAreas[0].AxisX.ScaleView.Scroll(newX);
                             ptrChart.ChartAreas[0].AxisY.ScaleView.Scroll(newY);
+                            ptrChart.ChartAreas[0].AxisX2.ScaleView.Scroll(newX2);
                             ptrChart.ChartAreas[0].AxisY2.ScaleView.Scroll(newY2);
                         }
                     }
@@ -545,31 +555,40 @@ namespace System.Windows.Forms.DataVisualization.Charting
             {
                 case MSChartExtensionToolState.Zoom:
                 case MSChartExtensionToolState.ZoomX:
-                    //Zoom area.
+                    
+                    //Zoom area (Pixel)
                     double XStart = ptrChartArea.CursorX.SelectionStart;
                     double XEnd = ptrChartArea.CursorX.SelectionEnd;
                     double YStart = ptrChartArea.CursorY.SelectionStart;
                     double YEnd = ptrChartArea.CursorY.SelectionEnd;
 
+                    if ((XStart == XEnd) && (YStart == YEnd)) return;
+
+                    //Zoom area for X Axis
+                    double left = Math.Min(XStart, XEnd);
+                    double right = Math.Max(XStart, XEnd);
+                    double XMin = ptrChartArea.AxisX.ValueToPosition(left);
+                    double XMax = ptrChartArea.AxisX.ValueToPosition(right);
+                    
                     //Zoom area for Y Axis
                     double bottom = Math.Min(YStart, YEnd);
                     double top = Math.Max(YStart, YEnd);
                     double YMin = ptrChartArea.AxisY.ValueToPosition(bottom);
                     double YMax = ptrChartArea.AxisY.ValueToPosition(top);
 
-                    if ((XStart == XEnd) && (YStart == YEnd)) return;
 
-                    //Zoom operation
-                    double left = Math.Min(XStart, XEnd);
-                    double right = Math.Max(XStart, XEnd);
                     // NOTE: left <= right, even if Axis.IsReversed
+
+                    //X-Axis
                     ptrChartArea.AxisX.ScaleView.Zoom(left, right);
+                    ptrChartArea.AxisX2.ScaleView.Zoom(
+                        ptrChartArea.AxisX2.PositionToValue(XMin),
+                        ptrChartArea.AxisX2.PositionToValue(XMax));
 
                     //Y-Axis
                     if (state == MSChartExtensionToolState.Zoom)
                     {
-                        ptrChartArea.AxisY.ScaleView.Zoom(
-                                        bottom, top);
+                        ptrChartArea.AxisY.ScaleView.Zoom(bottom, top);
                         ptrChartArea.AxisY2.ScaleView.Zoom(
                             ptrChartArea.AxisY2.PositionToValue(YMin),
                             ptrChartArea.AxisY2.PositionToValue(YMax));
