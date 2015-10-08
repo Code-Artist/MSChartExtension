@@ -5,17 +5,17 @@ namespace System.Windows.Forms.DataVisualization.Charting
     /// <summary>
     /// Contains the boundaries (top, bottom, left, right) for the chart
     /// and provides access to those boundaries in units of the data
-    /// for desired axes.
+    /// for desired axes. Works with (X-Y Charts only)
     /// </summary>
     public class ChartExtents
     {
         /// <summary>Gets or sets the boundaries of the primary axis.</summary>
         /// <value>The primary extents.</value>
-        public RectangleF PrimaryExtents { get; set; }
+        public RectangleF PrimaryExtents { get; private set; }
 
         /// <summary>Gets or sets the boundaries of the secondary axis.</summary>
         /// <value>The secondary extents.</value>
-        public RectangleF SecondaryExtents { get; set; }
+        public RectangleF SecondaryExtents { get; private set; }
 
         public override string ToString()
         {

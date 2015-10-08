@@ -457,16 +457,6 @@ namespace System.Windows.Forms.DataVisualization.Charting
             const bool roundToBoundary = true;
             ptrChartArea.CursorX.SetSelectionPixelPosition(startAndEndPt, startAndEndPt, roundToBoundary);
             ptrChartArea.CursorY.SetSelectionPixelPosition(startAndEndPt, startAndEndPt, roundToBoundary);
-            // What's the diff between CursorPosn and SelectionPosn?
-
-            X2Start = ptrChartArea.AxisX2.PixelPositionToValue(e.Location.X);
-            Y2Start = ptrChartArea.AxisY2.PixelPositionToValue(e.Location.Y);
-
-            // Old way
-            //ptrChartArea.CursorX.SelectionStart = ptrChartArea.AxisX.PixelPositionToValue(e.Location.X);
-            //ptrChartArea.CursorY.SelectionStart = ptrChartArea.AxisY.PixelPositionToValue(e.Location.Y);
-            //ptrChartArea.CursorX.SelectionEnd = ptrChartArea.CursorX.SelectionStart;
-            //ptrChartArea.CursorY.SelectionEnd = ptrChartArea.CursorY.SelectionStart;
 
             ChartData chartData = GetDataForChart(ptrChart);
             if (chartData.SelectionChangedCallback != null)
