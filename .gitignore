@@ -216,3 +216,4 @@ pip-log.txt
 
 #TortoiseHg (Mercurial)
 .hg*
+NUGet Packages/MSChartExtension.1.4.1.nupkg
