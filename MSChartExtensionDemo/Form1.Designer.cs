@@ -30,8 +30,10 @@
         {
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.itemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -54,6 +56,7 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.txtChartValue = new System.Windows.Forms.ToolStripStatusLabel();
             this.txtChartSelect = new System.Windows.Forms.ToolStripStatusLabel();
+            this.txtCursorDelta = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblZoomExtents = new System.Windows.Forms.ToolStripStatusLabel();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
@@ -64,7 +67,9 @@
             // chart1
             // 
             chartArea1.Name = "ChartArea1";
+            chartArea2.Name = "ChartArea2";
             this.chart1.ChartAreas.Add(chartArea1);
+            this.chart1.ChartAreas.Add(chartArea2);
             this.chart1.ContextMenuStrip = this.contextMenuStrip1;
             this.chart1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.chart1.Location = new System.Drawing.Point(0, 25);
@@ -77,6 +82,7 @@
             series1.MarkerColor = System.Drawing.Color.Red;
             series1.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Square;
             series1.Name = "Series1";
+            series1.YValuesPerPoint = 3;
             series2.ChartArea = "ChartArea1";
             series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
             series2.Color = System.Drawing.Color.Blue;
@@ -86,8 +92,12 @@
             series2.Name = "Series2";
             series2.XAxisType = System.Windows.Forms.DataVisualization.Charting.AxisType.Secondary;
             series2.YAxisType = System.Windows.Forms.DataVisualization.Charting.AxisType.Secondary;
+            series3.ChartArea = "ChartArea2";
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series3.Name = "Series3";
             this.chart1.Series.Add(series1);
             this.chart1.Series.Add(series2);
+            this.chart1.Series.Add(series3);
             this.chart1.Size = new System.Drawing.Size(841, 371);
             this.chart1.TabIndex = 0;
             this.chart1.Text = "chart1";
@@ -209,7 +219,7 @@
             this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(96, 22);
+            this.toolStripButton1.Size = new System.Drawing.Size(95, 22);
             this.toolStripButton1.Text = "Annotation Test";
             this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
@@ -227,7 +237,7 @@
             this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton3.Name = "toolStripButton3";
-            this.toolStripButton3.Size = new System.Drawing.Size(53, 22);
+            this.toolStripButton3.Size = new System.Drawing.Size(52, 22);
             this.toolStripButton3.Text = "LogTest";
             this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
             // 
@@ -256,6 +266,7 @@
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.txtChartValue,
             this.txtChartSelect,
+            this.txtCursorDelta,
             this.lblZoomExtents});
             this.statusStrip1.Location = new System.Drawing.Point(0, 396);
             this.statusStrip1.Name = "statusStrip1";
@@ -284,6 +295,17 @@
             this.txtChartSelect.Size = new System.Drawing.Size(133, 19);
             this.txtChartSelect.Text = "Select to see point here";
             this.txtChartSelect.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // txtCursorDelta
+            // 
+            this.txtCursorDelta.AutoSize = false;
+            this.txtCursorDelta.AutoToolTip = true;
+            this.txtCursorDelta.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+            this.txtCursorDelta.BorderStyle = System.Windows.Forms.Border3DStyle.RaisedOuter;
+            this.txtCursorDelta.Name = "txtCursorDelta";
+            this.txtCursorDelta.Size = new System.Drawing.Size(133, 19);
+            this.txtCursorDelta.Text = "Cursor Delta";
+            this.txtCursorDelta.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblZoomExtents
             // 
@@ -343,6 +365,7 @@
         private System.Windows.Forms.ToolStripMenuItem btnPlotInDescendingOrder;
         private System.Windows.Forms.ToolStripSplitButton btnViewChartExtents;
         private System.Windows.Forms.ToolStripMenuItem btnUpdateVisibleExtents;
+        private System.Windows.Forms.ToolStripStatusLabel txtCursorDelta;
     }
 }
 
