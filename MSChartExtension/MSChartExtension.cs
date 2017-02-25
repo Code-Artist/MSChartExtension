@@ -142,7 +142,6 @@ namespace System.Windows.Forms.DataVisualization.Charting
             AboutSeparator = new ToolStripSeparator();
             About = new ToolStripMenuItem("About...");
             About.Image = Properties.Resources.MSChartExtensionLogo;
-            ChartContextSeparator = new ToolStripSeparator();
 
             MenuItems = new List<ToolStripItem>();
             MenuItems.Add(ChartToolZoomOut);
@@ -156,7 +155,6 @@ namespace System.Windows.Forms.DataVisualization.Charting
             MenuItems.Add(ChartToolPan);
             MenuItems.Add(AboutSeparator);
             MenuItems.Add(About);
-            MenuItems.Add(ChartContextSeparator);
 
             StateMenu = new Dictionary<MSChartExtensionToolState, ToolStripMenuItem>
                 {
@@ -383,6 +381,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     //User assigned context menu to chart. Merge current menu with ChartContextMenuStrip.
                     ContextMenuStrip newMenu = new ContextMenuStrip();
                     newMenu.Items.AddRange(ChartTool[sender].MenuItems.ToArray());
+                    newMenu.Items.Add(new ToolStripSeparator());
 
                     foreach (object ptrItem in ChartTool[sender].ContextMenuStrip.Items)
                     {
