@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace System.Windows.Forms.DataVisualization.Charting
 {
-    public partial class AboutDialog : Form
+    internal partial class AboutDialog : Form
     {
         public string WebsiteLink { get; set; }
         public string FacebookLink { get; set; }

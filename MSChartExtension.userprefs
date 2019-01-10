@@ -1,0 +1,14 @@
+﻿<Properties StartupItem="MSChartExtensionDemo/MSChartExtensionDemo.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|Mixed Platforms" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="MSChartExtensionDemo/Form1.Designer.cs">
+    <Files>
+      <File FileName="MSChartExtensionDemo/Form1.Designer.cs" Line="72" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/media/sf_Programming/ClassLibraryNET/MSChartExtension/MSChartExtensionDemo/Form1.Designer.cs" line="61" column="1" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

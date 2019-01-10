@@ -271,11 +271,11 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// <summary>
         /// Round value on XAxis to number of decimal place
         /// </summary>
-        public int XAxisPrecision { get; set; } = -999;
+        public int XAxisPrecision { get; set; } = -1;
         /// <summary>
         /// Round value on YAxis to number of decimal place
         /// </summary>
-        public int YAxisPrecision { get; set; } = -999;
+        public int YAxisPrecision { get; set; } = -1;
         /// <summary>
         /// Cursor 1 Color, default is <see cref="Color.Red"/> 
         /// </summary>
@@ -975,7 +975,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     ChartOption option = ptrChartData.Option;
                     double left = Math.Min(XStart, XEnd);
                     double right = Math.Max(XStart, XEnd);
-                    if (option.XAxisPrecision != -1)
+                    if (option.XAxisPrecision > 0)
                     {
                         //Precision Correction
                         left = Math.Round(left, option.XAxisPrecision);
@@ -987,7 +987,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     //Zoom area for Y Axis
                     double bottom = Math.Min(YStart, YEnd);
                     double top = Math.Max(YStart, YEnd);
-                    if (option.YAxisPrecision != -1)
+                    if (option.YAxisPrecision > 0)
                     {
                         //Precision Correction
                         top = Math.Round(top, option.YAxisPrecision);
