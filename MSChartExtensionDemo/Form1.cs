@@ -37,7 +37,8 @@ namespace MSChartExtensionDemo
         {
             chart1.EnableZoomAndPanControls(ChartCursorSelected, ChartCursorMoved,
                 zoomChanged,
-                new ChartOption() {
+                new ChartOption()
+                {
                     ContextMenuAllowToHideSeries = true,
                     XAxisPrecision = 0,
                     YAxisPrecision = 2
@@ -48,6 +49,7 @@ namespace MSChartExtensionDemo
             //  so the following events are never raised
             chart1.AxisViewChanging += OnAxisViewChanges;
             chart1.AxisViewChanged += OnAxisViewChanges;
+
         }
 
         private void OnAxisViewChanges(object sender, ViewEventArgs viewEventArgs)
@@ -61,7 +63,7 @@ namespace MSChartExtensionDemo
 
             //Series 1 used primary YAxis
             Series Ser1 = chart1.Series[0];
-            for (int x = 0; x < (1 * DataSizeBase); x++)
+            for (int x = DataSizeBase - 1; x != 0; x--)
                 Ser1.Points.AddXY(Math.PI * 0.1 * x, Math.Sin(Math.PI * 0.1 * x));
 
             //Series 2 used secondary YAxis 
@@ -77,6 +79,11 @@ namespace MSChartExtensionDemo
             var chartArea = chart1.ChartAreas.First();
             chartArea.AxisX.IsReversed = reverse;
             chartArea.AxisY.IsReversed = reverse;
+
+            Series ptrSeries = chart2.Series[0];
+            ptrSeries.Points.AddXY(1, 1);
+            ptrSeries.Points.AddXY(2, 2);
+            ptrSeries.Points.AddXY(3, 3);
         }
 
         private void ClearData()
@@ -134,8 +141,6 @@ namespace MSChartExtensionDemo
         private void ChartCursorSelected(Chart sender, ChartCursor e)
         {
             txtChartSelect.Text = e.X.ToString("F4") + ", " + e.Y.ToString("F4");
-            Debug.WriteLine("Cursor Position: " + txtChartSelect.Text + " @ " + e.ChartArea.Name);
-
             PointF diff = sender.CursorsDiff();
             txtCursorDelta.Text = diff.X.ToString("F4") + ", " + diff.Y.ToString("F4");
         }
@@ -183,10 +188,10 @@ namespace MSChartExtensionDemo
         {
             chart1.DrawHorizontalLine(0.5, Color.Green, lineWidth: 3, lineStyle: ChartDashStyle.DashDot);
             chart1.DrawVerticalLine(750, Color.Orange, lineWidth: 3, lineStyle: ChartDashStyle.Dot);
-            chart1.DrawRectangle(1000, -0.3, 500, 0.6, Color.Lime, lineWidth: 2);
+            chart1.DrawRectangle(1000, -0.3, 500, 0.6, Color.Lime, lineWidth: 3);
             chart1.DrawLine(1500, 2000, -1, 1, Color.Pink, lineWidth: 2);
             chart1.DrawLine(1500, 2000, -1, 1, Color.Red, lineWidth: 2, chartArea: chart1.ChartAreas[1]);
-            chart1.AddText("Test chart message", 1000, 0.3, Color.White, textStyle: TextStyle.Shadow);
+            chart1.AddText("Test chart message", 100, 14, Color.Black, textStyle: TextStyle.Shadow, axis: AxisType.Secondary);
         }
 
         private void toolStripButton2_Click(object sender, EventArgs e)
@@ -225,7 +230,7 @@ Visible data
 {1}";
             MessageBox.Show(string.Format(fmt, all.ToStringWithBoundaries(), visible.ToStringWithBoundaries()), "Extents/boundaries of the data");
 
-            
+
         }
     }
 

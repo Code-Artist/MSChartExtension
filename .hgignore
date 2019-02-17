@@ -5,3 +5,4 @@ bin
 .gitignore
 .git
 .vs
+*.userprefs

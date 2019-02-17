@@ -18,6 +18,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
             ptrChartArea = sender;
             cbAxisType.SelectedIndex = 0;
             cbAxisType_SelectedIndexChanged(this, null);
+
         }
 
         private void cbAxisType_SelectedIndexChanged(object sender, EventArgs e)
