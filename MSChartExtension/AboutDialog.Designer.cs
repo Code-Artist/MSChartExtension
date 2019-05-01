@@ -50,19 +50,20 @@
             this.flowLayoutPanel1.Controls.Add(this.bloggerIcon);
             this.flowLayoutPanel1.Controls.Add(this.facebookIcon);
             this.flowLayoutPanel1.Controls.Add(this.githubIcon);
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(353, 235);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(471, 288);
             this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(78, 26);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(105, 33);
             this.flowLayoutPanel1.TabIndex = 0;
             // 
             // bloggerIcon
             // 
             this.bloggerIcon.Cursor = System.Windows.Forms.Cursors.Hand;
             this.bloggerIcon.Image = global::System.Windows.Forms.DataVisualization.Charting.Properties.Resources.CAELogoSmall;
-            this.bloggerIcon.Location = new System.Drawing.Point(3, 3);
+            this.bloggerIcon.Location = new System.Drawing.Point(4, 4);
+            this.bloggerIcon.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.bloggerIcon.Name = "bloggerIcon";
-            this.bloggerIcon.Size = new System.Drawing.Size(20, 20);
+            this.bloggerIcon.Size = new System.Drawing.Size(27, 25);
             this.bloggerIcon.TabIndex = 0;
             this.bloggerIcon.TabStop = false;
             this.bloggerIcon.Click += new System.EventHandler(this.IconClick);
@@ -71,9 +72,10 @@
             // 
             this.facebookIcon.Cursor = System.Windows.Forms.Cursors.Hand;
             this.facebookIcon.Image = global::System.Windows.Forms.DataVisualization.Charting.Properties.Resources.FacebookIcon;
-            this.facebookIcon.Location = new System.Drawing.Point(29, 3);
+            this.facebookIcon.Location = new System.Drawing.Point(39, 4);
+            this.facebookIcon.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.facebookIcon.Name = "facebookIcon";
-            this.facebookIcon.Size = new System.Drawing.Size(20, 20);
+            this.facebookIcon.Size = new System.Drawing.Size(27, 25);
             this.facebookIcon.TabIndex = 1;
             this.facebookIcon.TabStop = false;
             this.facebookIcon.Click += new System.EventHandler(this.IconClick);
@@ -82,9 +84,10 @@
             // 
             this.githubIcon.Cursor = System.Windows.Forms.Cursors.Hand;
             this.githubIcon.Image = global::System.Windows.Forms.DataVisualization.Charting.Properties.Resources.GithubIcon;
-            this.githubIcon.Location = new System.Drawing.Point(55, 3);
+            this.githubIcon.Location = new System.Drawing.Point(74, 4);
+            this.githubIcon.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.githubIcon.Name = "githubIcon";
-            this.githubIcon.Size = new System.Drawing.Size(20, 20);
+            this.githubIcon.Size = new System.Drawing.Size(27, 25);
             this.githubIcon.TabIndex = 2;
             this.githubIcon.TabStop = false;
             this.githubIcon.Click += new System.EventHandler(this.IconClick);
@@ -93,9 +96,10 @@
             // 
             this.btOK.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.btOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btOK.Location = new System.Drawing.Point(353, 268);
+            this.btOK.Location = new System.Drawing.Point(471, 330);
+            this.btOK.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btOK.Name = "btOK";
-            this.btOK.Size = new System.Drawing.Size(78, 23);
+            this.btOK.Size = new System.Drawing.Size(104, 28);
             this.btOK.TabIndex = 1;
             this.btOK.Text = "OK";
             this.btOK.UseVisualStyleBackColor = true;
@@ -105,9 +109,10 @@
             this.lbVersion.BackColor = System.Drawing.Color.Black;
             this.lbVersion.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbVersion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(164)))), ((int)(((byte)(222)))), ((int)(((byte)(234)))));
-            this.lbVersion.Location = new System.Drawing.Point(326, 29);
+            this.lbVersion.Location = new System.Drawing.Point(435, 36);
+            this.lbVersion.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lbVersion.Name = "lbVersion";
-            this.lbVersion.Size = new System.Drawing.Size(94, 19);
+            this.lbVersion.Size = new System.Drawing.Size(125, 23);
             this.lbVersion.TabIndex = 2;
             this.lbVersion.Text = "Vx.x.x.x";
             this.lbVersion.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -115,15 +120,17 @@
             // AboutDialog
             // 
             this.AcceptButton = this.btOK;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = global::System.Windows.Forms.DataVisualization.Charting.Properties.Resources.AboutDlgBackground;
-            this.ClientSize = new System.Drawing.Size(442, 298);
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.ClientSize = new System.Drawing.Size(589, 367);
             this.Controls.Add(this.lbVersion);
             this.Controls.Add(this.btOK);
             this.Controls.Add(this.flowLayoutPanel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "AboutDialog";

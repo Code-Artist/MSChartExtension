@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
@@ -44,17 +40,9 @@ namespace MSChartExtensionDemo
                     YAxisPrecision = 2
                 });
 
-            // Client interface BUG:
-            // OnAxisViewChang* is only called on Cursor_MouseUp, 
-            //  so the following events are never raised
-            chart1.AxisViewChanging += OnAxisViewChanges;
-            chart1.AxisViewChanged += OnAxisViewChanges;
+            chart2.EnableZoomAndPanControls();
 
-        }
-
-        private void OnAxisViewChanges(object sender, ViewEventArgs viewEventArgs)
-        {
-            Debug.Fail("Don't worry, this event is never raised.");
+            chart3.EnableZoomAndPanControls();
         }
 
         private void PlotData(bool reverse = false)
@@ -68,7 +56,7 @@ namespace MSChartExtensionDemo
 
             //Series 2 used secondary YAxis 
             Series Ser2 = chart1.Series[1];
-            for (int x = 0; x < (1 * DataSizeBase); x++)
+            for (int x = 0; x < (2 * DataSizeBase); x++)
                 Ser2.Points.AddXY(0.2 * Math.PI * 0.2 * x, 10 * Math.Cos(Math.PI * 0.2 * x));
 
             //Series 3 used
@@ -84,6 +72,14 @@ namespace MSChartExtensionDemo
             ptrSeries.Points.AddXY(1, 1);
             ptrSeries.Points.AddXY(2, 2);
             ptrSeries.Points.AddXY(3, 3);
+
+            //Date Time Series
+            Series dateSeries = chart3.Series[0];
+            DateTime today = DateTime.Today;
+            for(int x=0; x < 10; x++)
+            {
+                dateSeries.Points.AddXY(today.AddDays(x), x);
+            }
         }
 
         private void ClearData()
@@ -191,7 +187,7 @@ namespace MSChartExtensionDemo
             chart1.DrawRectangle(1000, -0.3, 500, 0.6, Color.Lime, lineWidth: 3);
             chart1.DrawLine(1500, 2000, -1, 1, Color.Pink, lineWidth: 2);
             chart1.DrawLine(1500, 2000, -1, 1, Color.Red, lineWidth: 2, chartArea: chart1.ChartAreas[1]);
-            chart1.AddText("Test chart message", 100, 14, Color.Black, textStyle: TextStyle.Shadow, axis: AxisType.Secondary);
+            chart1.AddText("Test chart message", 100, 14, Color.Black, textStyle: TextStyle.Shadow, xAxisType: AxisType.Secondary, yAxisType: AxisType.Secondary);
         }
 
         private void toolStripButton2_Click(object sender, EventArgs e)

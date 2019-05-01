@@ -77,6 +77,42 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// </summary>
         public double Y { get; set; } = double.NaN;
         /// <summary>
+        /// Return X Value as string based on <see cref="Series.XValueType"/>.
+        /// <see cref="NumberLabelFormat"/> for numeric type.
+        /// </summary>
+        /// <returns></returns>
+        public string FormatXValue() { return FormatValue(X, SelectedChartSeries.XValueType); }
+        /// <summary>
+        /// Return Y Value as string based on <see cref="Series.YValueType"/>
+        /// <see cref="NumberLabelFormat"/> for numeric type.
+        /// </summary>
+        /// <returns></returns>
+        public string FormatYValue() { return FormatValue(Y, SelectedChartSeries.YValueType); }
+
+        private string FormatValue(double value, ChartValueType valueType)
+        {
+            switch (valueType)
+            {
+                case ChartValueType.Auto: return value.ToString();
+                case ChartValueType.Double:
+                case ChartValueType.Single:
+                case ChartValueType.Int32:
+                case ChartValueType.Int64:
+                case ChartValueType.UInt32:
+                case ChartValueType.UInt64:
+                    return value.ToString(NumberLabelFormat);
+                case ChartValueType.String:
+                    return value.ToString(); //Not Supported as X Value always 0 if string label is used.
+                case ChartValueType.DateTime:
+                case ChartValueType.Date:
+                case ChartValueType.Time:
+                case ChartValueType.DateTimeOffset:
+                    return DateTime.FromOADate(value).ToString();
+            }
+            return value.ToString();
+        }
+
+        /// <summary>
         /// ChartArea where the cursor is located.
         /// </summary>
         public ChartArea ChartArea { get; set; } = null;
@@ -86,8 +122,11 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// <returns></returns>
         public object Clone()
         {
-            return new ChartCursor() {
-                X = this.X, Y = this.Y, ChartArea = this.ChartArea,
+            return new ChartCursor()
+            {
+                X = this.X,
+                Y = this.Y,
+                ChartArea = this.ChartArea,
                 SelectedChartSeries = this.SelectedChartSeries,
                 CursorIndex = this.CursorIndex
             };
@@ -96,6 +135,11 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// Selected Chart Series
         /// </summary>
         public Series SelectedChartSeries { get; set; } = null;
+        /// <summary>
+        /// String format for X and Y value if value type is number.
+        /// Assigned by <see cref="ChartOption"/>
+        /// </summary>
+        public string NumberLabelFormat { get; internal set; }
     }
 
     /// <summary>
@@ -123,6 +167,8 @@ namespace System.Windows.Forms.DataVisualization.Charting
             ScrollBarX2 = new bool[x];
             ScrollBarY = new bool[x];
             ScrollBarY2 = new bool[x];
+            ScrollBarXPositionInside = new bool[x];
+            ScrollBarX2PositionInside = new bool[x];
             SupportedChartArea = new List<ChartArea>();
 
             Cursor1 = new ChartCursor() { CursorIndex = 1 };
@@ -155,6 +201,8 @@ namespace System.Windows.Forms.DataVisualization.Charting
             ChartToolSelect2.Tag = this;
             ChartToolClearCursor = new ToolStripMenuItem("Clear Cursors...");
             AboutSeparator = new ToolStripSeparator();
+            AboutSeparator.Name = "AboutMenu";
+            Clear = new ToolStripMenuItem("Clear");
             About = new ToolStripMenuItem("About...");
             About.Image = Properties.Resources.MSChartExtensionLogo;
 
@@ -170,6 +218,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
             MenuItems.Add(ChartToolSelect2);
             MenuItems.Add(ChartToolClearCursor);
             MenuItems.Add(AboutSeparator);
+            MenuItems.Add(Clear);
             MenuItems.Add(About);
 
             StateMenu = new Dictionary<MSChartExtensionToolState, ToolStripMenuItem>
@@ -205,6 +254,8 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 ScrollBarX2[x] = ptrChartArea.AxisX2.ScrollBar.Enabled;
                 ScrollBarY[x] = ptrChartArea.AxisY.ScrollBar.Enabled;
                 ScrollBarY2[x] = ptrChartArea.AxisY2.ScrollBar.Enabled;
+                ScrollBarXPositionInside[x] = ptrChartArea.AxisX.ScrollBar.IsPositionedInside;
+                ScrollBarX2PositionInside[x] = ptrChartArea.AxisX2.ScrollBar.IsPositionedInside;
                 x++;
             }
         }
@@ -229,6 +280,8 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 ptrChartArea.AxisX2.ScrollBar.Enabled = ScrollBarX2[x];
                 ptrChartArea.AxisY.ScrollBar.Enabled = ScrollBarY[x];
                 ptrChartArea.AxisY2.ScrollBar.Enabled = ScrollBarY2[x];
+                ptrChartArea.AxisX.ScrollBar.IsPositionedInside = ScrollBarXPositionInside[x];
+                ptrChartArea.AxisX2.ScrollBar.IsPositionedInside = ScrollBarX2PositionInside[x];
                 x++;
             }
         }
@@ -245,12 +298,13 @@ namespace System.Windows.Forms.DataVisualization.Charting
         #region [ Backup Data ]
 
         public ContextMenuStrip ContextMenuStrip { get; set; }
-        private bool[] CursorXUserEnabled;
-        private bool[] CursorYUserEnabled;
-        private System.Windows.Forms.Cursor[] Cursor;
-        private double[] CursorXInterval, CursorYInterval;
-        private bool[] CursorXAutoScroll, CursorYAutoScroll;
-        private bool[] ScrollBarX, ScrollBarX2, ScrollBarY, ScrollBarY2;
+        private readonly bool[] CursorXUserEnabled;
+        private readonly bool[] CursorYUserEnabled;
+        private readonly Forms.Cursor[] Cursor;
+        private readonly double[] CursorXInterval, CursorYInterval;
+        private readonly bool[] CursorXAutoScroll, CursorYAutoScroll;
+        private readonly bool[] ScrollBarX, ScrollBarX2, ScrollBarY, ScrollBarY2;
+        private readonly bool[] ScrollBarXPositionInside, ScrollBarX2PositionInside;
 
         #endregion
 
@@ -269,6 +323,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
         public ToolStripSeparator ChartToolZoomOutSeparator { get; private set; }
         public ToolStripSeparator ChartContextSeparator { get; private set; }
         public ToolStripSeparator AboutSeparator { get; private set; }
+        public ToolStripMenuItem Clear { get; private set; }
         public ToolStripMenuItem About { get; private set; }
         private Dictionary<MSChartExtensionToolState, ToolStripMenuItem> StateMenu;
 
@@ -322,6 +377,18 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// This feature is enabled by default.
         /// </summary>
         public bool SnapCursorToData { get; set; } = true;
+        /// <summary>
+        /// Define string format of cussors value. Default is "F4", 4 digits fixed decimal.
+        /// <see cref="double.ToString(string)"/>
+        /// Property assigned to cursor in function <see cref="MSChartExtension.EnableZoomAndPanControls(Chart, CursorPositionChanged, CursorPositionChanged, ZoomChanged, ChartOption)"/> called.
+        /// Only valid for numeric type value.
+        /// </summary>
+        /// <remarks>More details regarding string format at https://docs.microsoft.com/en-us/dotnet/standard/base-types/standard-numeric-format-strings </remarks>
+        public string CursorLabelStringFormat { get; set; } = "F4";
+        /// <summary>
+        /// Display cursor value on chart
+        /// </summary>
+        public bool ShowCursorValue { get; set; } = true;
     }
 
     /// <summary>
@@ -369,6 +436,8 @@ namespace System.Windows.Forms.DataVisualization.Charting
             {
                 ChartData ptrChartData = ChartTool[sender] = new ChartData(sender);
                 ptrChartData.Option = (option == null) ? new ChartOption() : option;
+                ptrChartData.Cursor1.NumberLabelFormat = ptrChartData.Option.CursorLabelStringFormat;
+                ptrChartData.Cursor2.NumberLabelFormat = ptrChartData.Option.CursorLabelStringFormat;
                 ptrChartData.Backup();
 
                 //Scan through series to identify valid ChartArea
@@ -430,15 +499,18 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 //Override settings.
                 foreach (ChartArea ptrChartArea in ptrChart.ChartAreas)
                 {
-                    ptrChartArea.CursorX.AutoScroll = false;
+                    ptrChartArea.CursorX.AutoScroll = true;
                     ptrChartArea.CursorX.Interval = 1e-06;
                     ptrChartArea.CursorY.AutoScroll = false;
                     ptrChartArea.CursorY.Interval = 1e-06;
 
-                    ptrChartArea.AxisX.ScrollBar.Enabled = false;
-                    ptrChartArea.AxisX2.ScrollBar.Enabled = false;
+                    ptrChartArea.AxisX.ScrollBar.Enabled = true;
+                    ptrChartArea.AxisX2.ScrollBar.Enabled = true;
                     ptrChartArea.AxisY.ScrollBar.Enabled = false;
                     ptrChartArea.AxisY2.ScrollBar.Enabled = false;
+
+                    ptrChartArea.AxisX.ScrollBar.IsPositionedInside = true;
+                    ptrChartArea.AxisX2.ScrollBar.IsPositionedInside = true;
                 }
                 SetChartControlState(sender, MSChartExtensionToolState.Select);
             }
@@ -537,8 +609,9 @@ namespace System.Windows.Forms.DataVisualization.Charting
             SeriesCollection chartSeries = ((Chart)menuStrip.SourceControl).Series;
             if (ptrChartData.ActiveChartArea != null)
             {
+                int tIndex = menuStrip.Items.IndexOfKey("AboutMenu");
                 ToolStripSeparator separator = new ToolStripSeparator();
-                menuStrip.Items.Add(separator);
+                menuStrip.Items.Insert(tIndex++, separator);
                 separator.Tag = "Series";
 
                 foreach (Series ptrSeries in chartSeries)
@@ -548,10 +621,10 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     ChartSeries.Add(ptrSeries);
                     if (ptrChartData.Option.ContextMenuAllowToHideSeries) //Option to show / hide series controls
                     {
-                        ToolStripItem ptrItem = menuStrip.Items.Add(ptrSeries.Name);
-                        ToolStripMenuItem ptrMenuItem = (ToolStripMenuItem)ptrItem;
+                        ToolStripMenuItem ptrMenuItem = new ToolStripMenuItem(ptrSeries.Name);
+                        menuStrip.Items.Insert(tIndex++, ptrMenuItem);
                         ptrMenuItem.Checked = ptrSeries.Enabled;
-                        ptrItem.Tag = "Series";
+                        ptrMenuItem.Tag = "Series";
                     }
                 }
 
@@ -670,10 +743,12 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     SetChartControlState(ptrChart, MSChartExtensionToolState.Select2);
                     break;
                 case "Clear Cursors...":
-                    ptrChart.RemoveAnnotation("Cursor_1X");
-                    ptrChart.RemoveAnnotation("Cursor_2X");
-                    ptrChart.RemoveAnnotation("Cursor_1Y");
-                    ptrChart.RemoveAnnotation("Cursor_2Y");
+                    ptrChart.RemoveAnnotation(ptrChartArea.Name + "Cursor_1X");
+                    ptrChart.RemoveAnnotation(ptrChartArea.Name + "Cursor_2X");
+                    ptrChart.RemoveAnnotation(ptrChartArea.Name + "Cursor_1Y");
+                    ptrChart.RemoveAnnotation(ptrChartArea.Name + "Cursor_2Y");
+                    ptrChart.RemoveAnnotation(ptrChartArea.Name + "cursor1_Label");
+                    ptrChart.RemoveAnnotation(ptrChartArea.Name + "cursor2_Label");
                     ptrChartData.Cursor1.X = double.NaN;
                     ptrChartData.Cursor1.Y = double.NaN;
                     ptrChartData.PositionChangedCallback(ptrChart, ptrChartData.Cursor1);
@@ -713,7 +788,9 @@ namespace System.Windows.Forms.DataVisualization.Charting
                         }
                     }
                     break;
-
+                case "Clear":
+                    ptrChartArea.Clear();
+                    break;
                 case "About...":
                     using (AboutDialog dlg = new AboutDialog("MSChart Extension"))
                     {
@@ -879,6 +956,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
             ChartArea ptrChartArea = ChartTool[ptrChart].ActiveChartArea;
 
             if (ptrChartArea == null) return;
+            if (!ptrChartData.Enabled) return;
             MouseDowned = true;
 
             //NOTE: Clicking on the chart in selection mode will draw a cross whether or not the following
@@ -908,15 +986,27 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     double XStart = ptrXAxis.PixelPositionToValue(e.Location.X);
                     double YStart = ptrYAxis.PixelPositionToValue(e.Location.Y);
 
-                    if (ptrChartData.Option.SnapCursorToData) SnapToNearestData(sender, ptrSeries, ptrXAxis, ptrYAxis, e, ref XStart, ref YStart);
+                    if (ptrChartArea.ChartAreaBoundaryTest(ptrXAxis, ptrYAxis, XStart, YStart))
+                    {
+                        if (ptrChartData.Option.SnapCursorToData) SnapToNearestData(sender, ptrSeries, ptrXAxis, ptrYAxis, e, ref XStart, ref YStart);
 
-                    DrawVerticalLine(ptrChart, XStart, cursorColor, "Cursor_1X", lineWidth, cursorDashStyle, ptrChartArea, ptrSeries.XAxisType);
-                    DrawHorizontalLine(ptrChart, YStart, cursorColor, "Cursor_1Y", lineWidth, cursorDashStyle, ptrChartArea, ptrSeries.YAxisType);
-                    ptrChartData.Cursor1.X = XStart;
-                    ptrChartData.Cursor1.Y = YStart;
-                    ptrChartData.Cursor1.ChartArea = ptrChartArea;
+                        RemoveAnnotation(ptrChart, ptrChartArea.Name + "cursor1_Label");
 
-                    ptrChartData.PositionChangedCallback?.Invoke(ptrChart, ptrChartData.Cursor1.Clone() as ChartCursor);
+                        DrawVerticalLine(ptrChart, XStart, cursorColor, ptrChartArea.Name + "Cursor_1X", lineWidth, cursorDashStyle, ptrChartArea, ptrSeries.XAxisType);
+                        DrawHorizontalLine(ptrChart, YStart, cursorColor, ptrChartArea.Name + "Cursor_1Y", lineWidth, cursorDashStyle, ptrChartArea, ptrSeries.YAxisType);
+                        ptrChartData.Cursor1.X = XStart;
+                        ptrChartData.Cursor1.Y = YStart;
+                        ptrChartData.Cursor1.ChartArea = ptrChartArea;
+
+                        if (ptrChartData.Option.ShowCursorValue)
+                        {
+                            //Add Cursor Value : X, Y
+                            string cursorValue = ptrChartData.Cursor1.FormatXValue() + "," + ptrChartData.Cursor1.FormatYValue();
+                            AddText(ptrChart, cursorValue, XStart, YStart, cursorColor, ptrChartArea.Name + "cursor1_Label", TextStyle.Default, ptrChartArea, ptrSeries.XAxisType, ptrSeries.YAxisType);
+                        }
+
+                        ptrChartData.PositionChangedCallback?.Invoke(ptrChart, ptrChartData.Cursor1.Clone() as ChartCursor);
+                    }
                 }
             }
             else if (ptrChartData.ToolState == MSChartExtensionToolState.Select2)
@@ -933,15 +1023,28 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     double XStart = ptrXAxis.PixelPositionToValue(e.Location.X);
                     double YStart = ptrYAxis.PixelPositionToValue(e.Location.Y);
 
-                    if (ptrChartData.Option.SnapCursorToData) SnapToNearestData(sender, ptrSeries, ptrXAxis, ptrYAxis, e, ref XStart, ref YStart);
+                    if (ptrChartArea.ChartAreaBoundaryTest(ptrXAxis, ptrYAxis, XStart, YStart))
+                    {
+                        if (ptrChartData.Option.SnapCursorToData) SnapToNearestData(sender, ptrSeries, ptrXAxis, ptrYAxis, e, ref XStart, ref YStart);
 
-                    DrawVerticalLine(ptrChart, XStart, cursorColor, "Cursor_2X", lineWidth, cursorDashStyle, ptrChartArea, ptrSeries.XAxisType);
-                    DrawHorizontalLine(ptrChart, YStart, cursorColor, "Cursor_2Y", lineWidth, cursorDashStyle, ptrChartArea, ptrSeries.YAxisType);
-                    ptrChartData.Cursor2.X = XStart;
-                    ptrChartData.Cursor2.Y = YStart;
-                    ptrChartData.Cursor2.ChartArea = ptrChartArea;
+                        RemoveAnnotation(ptrChart, ptrChartArea.Name + "cursor2_Label");
 
-                    ptrChartData.PositionChangedCallback?.Invoke(ptrChart, ptrChartData.Cursor2.Clone() as ChartCursor);
+                        DrawVerticalLine(ptrChart, XStart, cursorColor, ptrChartArea.Name + "Cursor_2X", lineWidth, cursorDashStyle, ptrChartArea, ptrSeries.XAxisType);
+                        DrawHorizontalLine(ptrChart, YStart, cursorColor, ptrChartArea.Name + "Cursor_2Y", lineWidth, cursorDashStyle, ptrChartArea, ptrSeries.YAxisType);
+                        ptrChartData.Cursor2.X = XStart;
+                        ptrChartData.Cursor2.Y = YStart;
+                        ptrChartData.Cursor2.ChartArea = ptrChartArea;
+
+                        if (ptrChartData.Option.ShowCursorValue)
+                        {
+                            //Add Cursor Value : X, Y
+                            string format = ptrChartData.Option.CursorLabelStringFormat;
+                            string cursorValue = ptrChartData.Cursor2.FormatXValue() + "," + ptrChartData.Cursor2.FormatYValue();
+                            AddText(ptrChart, cursorValue, XStart, YStart, cursorColor, ptrChartArea.Name + "cursor2_Label", TextStyle.Default, ptrChartArea, ptrSeries.XAxisType, ptrSeries.YAxisType);
+                        }
+
+                        ptrChartData.PositionChangedCallback?.Invoke(ptrChart, ptrChartData.Cursor2.Clone() as ChartCursor);
+                    }
                 }
             }
         }
@@ -993,6 +1096,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
             #endregion
 
             ChartArea ptrChartArea = ptrChartData.ActiveChartArea;
+
             if (ptrChartArea == null)
             {
                 ptrChartData.CursorMovedCallback?.Invoke(ptrChart, new ChartCursor() { X = Double.NaN, Y = Double.NaN });
@@ -1009,12 +1113,13 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 selX2 = ptrChartArea.AxisX2.PixelPositionToValue(e.Location.X);
                 selY2 = ptrChartArea.AxisY2.PixelPositionToValue(e.Location.Y);
 
+                if (!ptrChartArea.ChartAreaBoundaryTest(ptrChartArea.AxisX, ptrChartArea.AxisY, selX, selY)) return; //Pointer outside boundary.
                 ChartTool[ptrChart].CursorMovedCallback?.Invoke(ptrChart, new ChartCursor() { X = selX, Y = selY, ChartArea = ptrChartArea });
             }
             catch (Exception)
             {
                 //Handle exception when scrolled out of range.
-                //Set coordinate to 0,0
+                //Set coordinate to NaN
                 ChartTool[ptrChart].CursorMovedCallback?.Invoke(ptrChart, new ChartCursor() { X = Double.NaN, Y = Double.NaN });
                 return;
             }
@@ -1109,6 +1214,19 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     }
                     double XMin = ptrChartArea.AxisX.ValueToPosition(left);
                     double XMax = ptrChartArea.AxisX.ValueToPosition(right);
+                    if ((XMin == XMax) || (left < ptrChartArea.AxisX.Minimum) || (right > ptrChartArea.AxisX.Maximum))
+                    {
+                        //Handle conditions which caused exception on zoom operation
+                        ptrChartArea.CursorX.SetSelectionPosition(0, 0);
+                        ptrChartArea.CursorY.SetSelectionPosition(0, 0);
+                        return;
+                    }
+
+                    Debug.WriteLine("Left = " + left.ToString());
+                    Debug.WriteLine("Right = " + right.ToString());
+                    Debug.WriteLine("XMin = " + XMin.ToString());
+                    Debug.WriteLine("XMax = " + XMax.ToString());
+                    Application.DoEvents();
 
                     //Zoom area for Y Axis
                     double bottom = Math.Min(YStart, YEnd);
@@ -1121,6 +1239,18 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     }
                     double YMin = ptrChartArea.AxisY.ValueToPosition(bottom);
                     double YMax = ptrChartArea.AxisY.ValueToPosition(top);
+                    if ((YMin == YMax) || (bottom < ptrChartArea.AxisY.Minimum) || (top > ptrChartArea.AxisY.Maximum))
+                    {
+                        //Handle conditions which caused exception on zoom operation
+                        ptrChartArea.CursorX.SetSelectionPosition(0, 0);
+                        ptrChartArea.CursorY.SetSelectionPosition(0, 0);
+                        return;
+                    }
+
+                    Debug.WriteLine("top = " + top.ToString());
+                    Debug.WriteLine("bottom = " + bottom.ToString());
+                    Debug.WriteLine("YMin = " + YMin.ToString());
+                    Debug.WriteLine("YMax = " + YMax.ToString());
 
                     // NOTE: left <= right, even if Axis.IsReversed
                     //X-Axis
@@ -1143,6 +1273,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     //Clear selection (the following seem to be equivalent)
                     ptrChartArea.CursorX.SetSelectionPosition(0, 0);
                     ptrChartArea.CursorY.SetSelectionPosition(0, 0);
+
 
                     ptrChartData.ZoomChangedCallback?.Invoke(ptrChart);
                     break;
@@ -1216,6 +1347,8 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 }
             }
 
+            //Search out of range.... iLower = iUpper
+
             //Distance = x^2 + y^2
             double distLower = Math.Pow(datas[iLower].XValue - xTarget, 2) + Math.Pow(datas[iLower].YValues[0] - yTarget, 2);
             double distUpper = Math.Pow(datas[iUpper].XValue - xTarget, 2) + Math.Pow(datas[iUpper].YValues[0] - yTarget, 2);
@@ -1232,31 +1365,9 @@ namespace System.Windows.Forms.DataVisualization.Charting
             }
         }
 
-        private static double FindMinDistance(double target, double[] values)
-        {
-            double diff;
-            double diffMin = Double.MaxValue;
-            double minValue = Double.MaxValue;
-
-            if (values == null) return minValue;
-            if (values.Length == 1) return values[0];
-
-            foreach (double v in values)
-            {
-                diff = Math.Abs(target - v);
-                if (diff < diffMin)
-                {
-                    diffMin = diff;
-                    minValue = v;
-                }
-            }
-            return minValue;
-        }
-
-
         #endregion
 
-        #region [ Series ]
+        #region [ Clear Data ]
 
         /// <summary>
         /// Speed up MSChart data points clear operations.
@@ -1269,6 +1380,54 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 sender.Points.RemoveAt(sender.Points.Count - 1);
             sender.Points.ResumeUpdates();
             sender.Points.Clear(); //Force refresh.
+        }
+        /// <summary>
+        /// Clear all series and Annotations
+        /// </summary>
+        /// <param name="sender"></param>
+        public static void Clear(this Chart sender)
+        {
+            sender.SuspendLayout();
+            foreach (Series s in sender.Series)
+            {
+                s.ClearPoints();
+            }
+            sender.Annotations.Clear();
+            sender.ResumeLayout();
+        }
+        /// <summary>
+        /// Clear all series and Annotations in selected chart area
+        /// </summary>
+        /// <param name="sender"></param>
+        public static void Clear(this ChartArea sender)
+        {
+            Chart ptrChart = null;
+            ChartData ptrChartData = null;
+
+            //Reverse search for ChartData  
+            foreach (KeyValuePair<Chart, ChartData> c in ChartTool)
+            {
+                if (c.Key.ChartAreas.Contains(sender))
+                {
+                    ptrChart = c.Key;
+                    ptrChartData = c.Value;
+                    break;
+                }
+            }
+            if (ptrChart == null) return; //null check
+
+            foreach (Series s in ptrChart.Series)
+            {
+                if (s.ChartArea.Equals(sender.Name)) s.ClearPoints();
+            }
+
+            for (int x = 0; x < ptrChart.Annotations.Count; x++)
+            {
+                if (ptrChart.Annotations[x].ClipToChartArea.Equals(sender.Name))
+                {
+                    ptrChart.Annotations.RemoveAt(x--);
+                }
+            }
         }
 
         #endregion
@@ -1391,11 +1550,13 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// <param name="lineWidth">Line width</param>
         /// <param name="lineStyle">Line style</param>
         /// <param name="chartArea">Target ChartArea where annotation should be displayed. Default to first ChartArea if not defined.</param>
-        /// <param name="axis">Select Primary or Secondary Axis. Default value is Primary Axis.</param>
+        /// <param name="xAxisType">Select Primary or Secondary for X Axis. Default value is Primary Axis.</param>
+        /// <param name="yAxisType">Select Primary or Secondary for Y Axis. Default value is Primary Axis.</param>
         public static Annotation DrawRectangle(this Chart sender, double x, double y,
             double width, double height,
             Drawing.Color lineColor, string name = "",
-            int lineWidth = 1, ChartDashStyle lineStyle = ChartDashStyle.Solid, ChartArea chartArea = null, AxisType axis = AxisType.Primary)
+            int lineWidth = 1, ChartDashStyle lineStyle = ChartDashStyle.Solid, ChartArea chartArea = null,
+            AxisType xAxisType = AxisType.Primary, AxisType yAxisType = AxisType.Primary)
         {
             RectangleAnnotation rect = new RectangleAnnotation();
             ChartArea ptrChartArea = (chartArea == null) ? sender.ChartAreas[0] : chartArea;
@@ -1403,11 +1564,8 @@ namespace System.Windows.Forms.DataVisualization.Charting
             rect.ClipToChartArea = chartAreaName;
             rect.AxisXName = chartAreaName + "\\rX";
             rect.YAxisName = chartAreaName + "\\rY";
-            if (axis == AxisType.Secondary)
-            {
-                rect.AxisXName += "2";
-                rect.YAxisName += "2";
-            }
+            if (xAxisType == AxisType.Secondary) rect.AxisXName += "2";
+            if (yAxisType == AxisType.Secondary) rect.YAxisName += "2";
             rect.BackColor = Drawing.Color.Transparent;
             rect.ForeColor = Drawing.Color.Transparent;
             rect.IsSizeAlwaysRelative = false;
@@ -1470,21 +1628,20 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// <param name="lineWidth">Line width</param>
         /// <param name="lineStyle">Line style</param>
         /// <param name="chartArea">Target ChartArea where annotation should be displayed. Default to first ChartArea if not defined.</param>
-        /// <param name="axis">Select Primary or Secondary Axis. Default value is Primary Axis.</param>
+        /// <param name="xAxisType">Select Primary or Secondary for X Axis. Default value is Primary Axis.</param>
+        /// <param name="yAxisType">Select Primary or Secondary for Y Axis. Default value is Primary Axis.</param>
         public static Annotation DrawLine(this Chart sender, double x0, double x1,
             double y0, double y1, Drawing.Color lineColor, string name = "",
-            int lineWidth = 1, ChartDashStyle lineStyle = ChartDashStyle.Solid, ChartArea chartArea = null, AxisType axis = AxisType.Primary)
+            int lineWidth = 1, ChartDashStyle lineStyle = ChartDashStyle.Solid, ChartArea chartArea = null,
+            AxisType xAxisType = AxisType.Primary, AxisType yAxisType = AxisType.Primary)
         {
             LineAnnotation line = new LineAnnotation();
             string chartAreaName = (chartArea == null) ? sender.ChartAreas[0].Name : chartArea.Name;
             line.ClipToChartArea = chartAreaName;
             line.AxisXName = chartAreaName + "\\rX";
             line.YAxisName = chartAreaName + "\\rY";
-            if (axis == AxisType.Secondary)
-            {
-                line.AxisXName += "2";
-                line.YAxisName += "2";
-            }
+            if (xAxisType == AxisType.Secondary) line.AxisXName += "2";
+            if (yAxisType == AxisType.Secondary) line.YAxisName += "2";
             line.IsSizeAlwaysRelative = false;
 
             line.X = x0;
@@ -1512,22 +1669,20 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// <param name="name">Annotation name.</param>
         /// <param name="textStyle">Style of text.</param>
         /// <param name="chartArea">Target ChartArea where annotation should be displayed. Default to first ChartArea if not defined.</param>
-        /// <param name="axis">Select Primary or Secondary Axis. Default value is Primary Axis.</param>
+        /// <param name="xAxisType">Select Primary or Secondary for X Axis. Default value is Primary Axis.</param>
+        /// <param name="yAxisType">Select Primary or Secondary for Y Axis. Default value is Primary Axis.</param>
         public static Annotation AddText(this Chart sender, string text,
             double x, double y,
             Drawing.Color textColor, string name = "",
-            TextStyle textStyle = TextStyle.Default, ChartArea chartArea = null, AxisType axis = AxisType.Primary)
+            TextStyle textStyle = TextStyle.Default, ChartArea chartArea = null, AxisType xAxisType = AxisType.Primary, AxisType yAxisType = AxisType.Primary)
         {
             TextAnnotation textAnn = new TextAnnotation();
             string chartAreaName = (chartArea == null) ? sender.ChartAreas[0].Name : chartArea.Name;
             textAnn.ClipToChartArea = chartAreaName;
             textAnn.AxisXName = chartAreaName + "\\rX";
             textAnn.YAxisName = chartAreaName + "\\rY";
-            if (axis == AxisType.Secondary)
-            {
-                textAnn.AxisXName += "2";
-                textAnn.YAxisName += "2";
-            }
+            if (xAxisType == AxisType.Secondary) textAnn.AxisXName += "2";
+            if (yAxisType == AxisType.Secondary) textAnn.YAxisName += "2";
             textAnn.IsSizeAlwaysRelative = false;
 
             textAnn.Text = text;
@@ -1550,31 +1705,35 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// Return the entire chart boundary
         /// </summary>
         /// <param name="sender"></param>
-        /// <param name="primaryAxis"></param>
-        /// <seealso cref="GetChartVisibleAreaBoundary(ChartArea, bool)"/>
+        /// <param name="xAxis">X Axis. Use Primary Axis if null</param>
+        /// <param name="yAxis">Y Axis. Use Primary Axis if null</param>
         /// <returns></returns>
-        public static RectangleF GetChartAreaBoundary(this ChartArea sender, bool primaryAxis = true)
+        public static RectangleF GetChartAreaBoundary(this ChartArea sender, Axis xAxis = null, Axis yAxis = null)
         {
-            return GetChartAreaBoundary(sender, primaryAxis, visibleAreaOnly: false);
+            if (xAxis == null) xAxis = sender.AxisX;
+            if (yAxis == null) yAxis = sender.AxisY;
+            return GetChartAreaBoundary(sender, xAxis, yAxis, visibleAreaOnly: false);
         }
 
         /// <summary>
         /// Return chart boundary for visible area.
         /// </summary>
         /// <param name="sender"></param>
-        /// <param name="primaryAxis"></param>
-        /// <seealso cref="GetChartAreaBoundary(ChartArea, bool)"/>
+        /// <param name="xAxis">X Axis. Use Primary Axis if null</param>
+        /// <param name="yAxis">Y Axis. Use Primary Axis if null</param>
         /// <returns></returns>
-        public static RectangleF GetChartVisibleAreaBoundary(this ChartArea sender, bool primaryAxis = true)
+        public static RectangleF GetChartVisibleAreaBoundary(this ChartArea sender, Axis xAxis = null, Axis yAxis = null)
         {
-            return GetChartAreaBoundary(sender, primaryAxis, visibleAreaOnly: true);
+            if (xAxis == null) xAxis = sender.AxisX;
+            if (yAxis == null) yAxis = sender.AxisY;
+            return GetChartAreaBoundary(sender, xAxis, yAxis, visibleAreaOnly: true);
         }
 
-        private static RectangleF GetChartAreaBoundary(ChartArea sender, bool primaryAxis, bool visibleAreaOnly)
+        private static RectangleF GetChartAreaBoundary(ChartArea sender, Axis xAxis, Axis yAxis, bool visibleAreaOnly)
         {
             RectangleF result = new RectangleF();
-            Axis ptrXAxis = primaryAxis ? sender.AxisX : sender.AxisX2;
-            Axis ptrYAxis = primaryAxis ? sender.AxisY : sender.AxisY2;
+            Axis ptrXAxis = xAxis;
+            Axis ptrYAxis = yAxis;
 
             double xMin, xMax, yMin, yMax;
             if (visibleAreaOnly)
@@ -1603,6 +1762,14 @@ namespace System.Windows.Forms.DataVisualization.Charting
             return result;
         }
 
+        private static bool ChartAreaBoundaryTest(this ChartArea sender, Axis xAxis, Axis yAxis, double x, double y)
+        {
+            RectangleF area = GetChartVisibleAreaBoundary(sender, xAxis, yAxis);
+            if ((x < area.Left) || (x > area.Right)) return false;
+            if ((y < area.Bottom) || (y > area.Top)) return false;
+            return true;
+        }
+
         #endregion
 
         #region [ Utility Functions ]
@@ -1619,7 +1786,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
             return false;
         }
 
-        #endregion  
+        #endregion
     }
 
 }

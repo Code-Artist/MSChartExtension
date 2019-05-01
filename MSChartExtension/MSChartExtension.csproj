@@ -34,6 +34,9 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\System.Windows.Forms.DataVisualization.MSChartExtension.XML</DocumentationFile>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>MSChartExtensionLogo.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Accessibility">
       <EmbedInteropTypes>True</EmbedInteropTypes>
@@ -101,6 +104,9 @@
   <ItemGroup>
     <None Include="Resources\MSChartExtensionLogo.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="MSChartExtensionLogo.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\NuPack.3.4.2\build\NuPack.targets" Condition="Exists('..\packages\NuPack.3.4.2\build\NuPack.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
@@ -109,6 +115,9 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\NuPack.3.4.2\build\NuPack.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NuPack.3.4.2\build\NuPack.targets'))" />
   </Target>
+  <PropertyGroup>
+    <PreBuildEvent>del *.nupkg</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
