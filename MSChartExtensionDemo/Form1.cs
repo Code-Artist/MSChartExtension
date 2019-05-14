@@ -20,9 +20,6 @@ namespace MSChartExtensionDemo
             Application.Run(new Form1());
         }
 
-        private const string ZoomChangedDisplayFormatLeftRightTopBottom =
-            "L:{0:F2} R:{1:F2} T:{2:F2} B:{3:F2}";
-
         public Form1()
         {
             InitializeComponent();
@@ -38,11 +35,12 @@ namespace MSChartExtensionDemo
                     ContextMenuAllowToHideSeries = true,
                     XAxisPrecision = 0,
                     YAxisPrecision = 2
+                    //,Theme = new DarkTheme()
                 });
 
             chart2.EnableZoomAndPanControls();
 
-            chart3.EnableZoomAndPanControls();
+            chart3.EnableZoomAndPanControls(ChartCursorSelected, ChartCursorMoved);
         }
 
         private void PlotData(bool reverse = false)
@@ -124,7 +122,7 @@ namespace MSChartExtensionDemo
             CheckStopWatch("Clear datas");
         }
 
-        System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+        readonly System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
 
         private void StartStopWatch() { watch.Restart(); }
 
@@ -136,14 +134,14 @@ namespace MSChartExtensionDemo
 
         private void ChartCursorSelected(Chart sender, ChartCursor e)
         {
-            txtChartSelect.Text = e.X.ToString("F4") + ", " + e.Y.ToString("F4");
+            txtChartSelect.Text = e.XFormattedString + ", " + e.YFormattedString; //e.X.ToString("F4") + ", " + e.Y.ToString("F4");
             PointF diff = sender.CursorsDiff();
             txtCursorDelta.Text = diff.X.ToString("F4") + ", " + diff.Y.ToString("F4");
         }
 
         private void ChartCursorMoved(Chart sender, ChartCursor e)
         {
-            txtChartValue.Text = e.X.ToString("F4") + ", " + e.Y.ToString("F4");
+            txtChartValue.Text = e.XFormattedString + ", " + e.YFormattedString;
         }
 
         private void zoomChanged(Chart sender)

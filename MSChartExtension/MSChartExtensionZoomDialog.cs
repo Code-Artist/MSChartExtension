@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
+﻿using System.Drawing;
 
 namespace System.Windows.Forms.DataVisualization.Charting
 {
     internal partial class MSChartExtensionZoomDialog : Form
     {
-        private ChartArea ptrChartArea;
+        private readonly ChartArea ptrChartArea;
         private Axis ptrXAxis, ptrYAxis;
         public MSChartExtensionZoomDialog(ChartArea sender)
         {
@@ -91,8 +85,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
         private bool ValidateInput(TextBox sender)
         {
-            double result;
-            bool valid = double.TryParse(sender.Text, out result);
+            bool valid = double.TryParse(sender.Text, out _);
             sender.BackColor = valid ? Color.FromKnownColor(KnownColor.Window) : Color.FromArgb(255, 192, 192);
             return valid;
         }

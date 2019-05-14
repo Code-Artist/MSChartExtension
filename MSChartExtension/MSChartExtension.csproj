@@ -24,6 +24,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\System.Windows.Forms.DataVisualization.MSChartExtension.XML</DocumentationFile>
+    <CodeAnalysisRuleSet>MSChartExtension.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,6 +34,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\System.Windows.Forms.DataVisualization.MSChartExtension.XML</DocumentationFile>
+    <CodeAnalysisRuleSet>MSChartExtension.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>MSChartExtensionLogo.ico</ApplicationIcon>
@@ -40,6 +42,9 @@
   <ItemGroup>
     <Reference Include="Accessibility">
       <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Cyotek.Windows.Forms.ColorPicker, Version=1.0.0.0, Culture=neutral, PublicKeyToken=58daa28b0b2de221, processorArchitecture=MSIL">
+      <HintPath>..\packages\Cyotek.Windows.Forms.ColorPicker.1.7.2\lib\net35\Cyotek.Windows.Forms.ColorPicker.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -60,6 +65,17 @@
     <Compile Include="AboutDialog.Designer.cs">
       <DependentUpon>AboutDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="ChartCursor.cs" />
+    <Compile Include="ChartData.cs" />
+    <Compile Include="ChartOption.cs" />
+    <Compile Include="ConfigurationDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ConfigurationDialog.Designer.cs">
+      <DependentUpon>ConfigurationDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Theme\DefaultTheme.cs" />
+    <Compile Include="Theme\DarkTheme.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="MSChartExtension.cs" />
     <Compile Include="MSChartExtensionZoomDialog.cs">
@@ -74,11 +90,16 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Theme\ThemeBase.cs" />
+    <Compile Include="Theme\ThemeManager.cs" />
     <Compile Include="WindowMessagesNativeMethods.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="AboutDialog.resx">
       <DependentUpon>AboutDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ConfigurationDialog.resx">
+      <DependentUpon>ConfigurationDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MSChartExtensionZoomDialog.resx">
       <DependentUpon>MSChartExtensionZoomDialog.cs</DependentUpon>
@@ -91,6 +112,7 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Resources\CAELogoSmall.png" />
+    <None Include="MSChartExtension.ruleset" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\FacebookIcon.png" />
