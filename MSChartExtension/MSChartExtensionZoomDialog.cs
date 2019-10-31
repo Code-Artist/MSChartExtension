@@ -66,19 +66,14 @@ namespace System.Windows.Forms.DataVisualization.Charting
             double yEnd = Convert.ToDouble(txtYMax.Text);
 
             //Perform ZOOM
-            double XMin = ptrXAxis.ValueToPixelPosition(xStart);
-            double XMax = ptrXAxis.ValueToPixelPosition(xEnd);
-            double YMin = ptrYAxis.ValueToPixelPosition(yStart);
-            double YMax = ptrYAxis.ValueToPixelPosition(yEnd);
-
             ptrXAxis.ScaleView.Zoom(xStart, xEnd);
             ptrYAxis.ScaleView.Zoom(yStart, yEnd);
 
-            //Swtich to next axis
+            //Switch to next axis
             ptrXAxis = (ptrXAxis == ptrChartArea.AxisX) ? ptrChartArea.AxisX2 : ptrChartArea.AxisX;
             ptrYAxis = (ptrYAxis == ptrChartArea.AxisY) ? ptrChartArea.AxisY2 : ptrChartArea.AxisY;
-            ptrXAxis.ScaleView.Zoom(ptrXAxis.PixelPositionToValue(XMin), ptrXAxis.PixelPositionToValue(XMax));
-            ptrYAxis.ScaleView.Zoom(ptrYAxis.PixelPositionToValue(YMin), ptrYAxis.PixelPositionToValue(YMax));
+            ptrXAxis.ScaleView.Zoom(xStart, xEnd);
+            ptrYAxis.ScaleView.Zoom(yStart, yEnd);
 
             DialogResult = DialogResult.OK;
         }

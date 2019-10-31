@@ -33,8 +33,8 @@ namespace MSChartExtensionDemo
                 new ChartOption()
                 {
                     ContextMenuAllowToHideSeries = true,
-                    XAxisPrecision = 0,
-                    YAxisPrecision = 2
+                    //XAxisPrecision = 4,
+                    //YAxisPrecision = 4
                     //,Theme = new DarkTheme()
                 });
 
@@ -45,6 +45,7 @@ namespace MSChartExtensionDemo
 
         private void PlotData(bool reverse = false)
         {
+            chart1.Series[3].ClearPoints();
             const int DataSizeBase = 1000; //Increase this number to plot more points
 
             //Series 1 used primary YAxis

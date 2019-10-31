@@ -497,13 +497,13 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     ptrChartArea.Clear();
                     break;
                 case "Settings...":
-                    using (ConfigurationDialog dialog = new ConfigurationDialog(ptrChartData.Option))
+                    using (ConfigurationDialog dialog = new ConfigurationDialog(ptrChart, ptrChartData.Option))
                     {
                         if (dialog.ShowDialog() == DialogResult.OK)
                         {
                             ptrChartData.Option = dialog.Option;
 
-                            //ToDo: Settings Changed. Update Chart to reflect settings.
+                            //Settings Changed. Update Chart to reflect settings.
                             foreach (ChartArea area in ptrChart.ChartAreas)
                             {
                                 //Update Cursor 1
@@ -786,6 +786,10 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     double XStart = ptrXAxis.PixelPositionToValue(e.Location.X);
                     double YStart = ptrYAxis.PixelPositionToValue(e.Location.Y);
 
+                    //Sanity check - make sure XStart and YStart within limit
+                    if (!SanityCheck(ptrXAxis, XStart)) return;
+                    if (!SanityCheck(ptrYAxis, YStart)) return;
+
                     if (ptrChartArea.ChartAreaBoundaryTest(ptrXAxis, ptrYAxis, XStart, YStart))
                     {
                         if (ptrChartData.Option.SnapCursorToData) SnapToNearestData(ptrChart, ptrSeries, ptrXAxis, ptrYAxis, e, ref XStart, ref YStart);
@@ -825,6 +829,10 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     double XStart = ptrXAxis.PixelPositionToValue(e.Location.X);
                     double YStart = ptrYAxis.PixelPositionToValue(e.Location.Y);
 
+                    //Sanity check - make sure XStart and YStart within limit
+                    if (!SanityCheck(ptrXAxis, XStart)) return;
+                    if (!SanityCheck(ptrYAxis, YStart)) return;
+
                     if (ptrChartArea.ChartAreaBoundaryTest(ptrXAxis, ptrYAxis, XStart, YStart))
                     {
                         if (ptrChartData.Option.SnapCursorToData) SnapToNearestData(ptrChart, ptrSeries, ptrXAxis, ptrYAxis, e, ref XStart, ref YStart);
@@ -851,6 +859,13 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 }
             }
         }
+
+        private static bool SanityCheck(Axis axis, double value)
+        {
+            if ((value >= axis.Minimum) && (value <= axis.Maximum)) return true;
+            return false;
+        }
+
 
         private static void ChartControl_MouseMove(object sender, MouseEventArgs e)
         {
@@ -918,6 +933,8 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 selY = ptrChartArea.AxisY.PixelPositionToValue(e.Location.Y);
                 selX2 = ptrChartArea.AxisX2.PixelPositionToValue(e.Location.X);
                 selY2 = ptrChartArea.AxisY2.PixelPositionToValue(e.Location.Y);
+
+                //Debug.WriteLine(String.Format("Selection: {0}, {1}, {2}, {3}", selX, selX2, selY, selY2));
 
                 if (!ptrChartArea.ChartAreaBoundaryTest(ptrChartArea.AxisX, ptrChartArea.AxisY, selX, selY)) return; //Pointer outside boundary.
 
@@ -1032,14 +1049,6 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     }
                     double XMin = ptrChartArea.AxisX.ValueToPosition(left);
                     double XMax = ptrChartArea.AxisX.ValueToPosition(right);
-                    if ((XMin == XMax) || (left < ptrChartArea.AxisX.Minimum) || (right > ptrChartArea.AxisX.Maximum))
-                    {
-                        //Handle conditions which caused exception on zoom operation
-                        ptrChartArea.CursorX.SetSelectionPosition(0, 0);
-                        ptrChartArea.CursorY.SetSelectionPosition(0, 0);
-                        return;
-                    }
-
                     //Zoom area for Y Axis
                     double bottom = Math.Min(YStart, YEnd);
                     double top = Math.Max(YStart, YEnd);
@@ -1051,18 +1060,19 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     }
                     double YMin = ptrChartArea.AxisY.ValueToPosition(bottom);
                     double YMax = ptrChartArea.AxisY.ValueToPosition(top);
-                    if ((YMin == YMax) || (bottom < ptrChartArea.AxisY.Minimum) || (top > ptrChartArea.AxisY.Maximum))
-                    {
-                        //Handle conditions which caused exception on zoom operation
-                        ptrChartArea.CursorX.SetSelectionPosition(0, 0);
-                        ptrChartArea.CursorY.SetSelectionPosition(0, 0);
-                        return;
-                    }
 
                     // NOTE: left <= right, even if Axis.IsReversed
                     //X-Axis
                     if ((state == MSChartExtensionToolState.Zoom) || (state == MSChartExtensionToolState.ZoomX))
                     {
+                        if ((XMin == XMax) || (left < ptrChartArea.AxisX.Minimum) || (right > ptrChartArea.AxisX.Maximum))
+                        {
+                            //Handle conditions which caused exception on zoom operation
+                            ptrChartArea.CursorX.SetSelectionPosition(0, 0);
+                            ptrChartArea.CursorY.SetSelectionPosition(0, 0);
+                            return;
+                        }
+
                         ptrChartArea.AxisX.ScaleView.Zoom(left, right);
                         ptrChartArea.AxisX2.ScaleView.Zoom(
                             ptrChartArea.AxisX2.PositionToValue(XMin),
@@ -1071,6 +1081,14 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     //Y-Axis
                     if ((state == MSChartExtensionToolState.Zoom) || (state == MSChartExtensionToolState.ZoomY))
                     {
+                        if ((YMin == YMax) || (bottom < ptrChartArea.AxisY.Minimum) || (top > ptrChartArea.AxisY.Maximum))
+                        {
+                            //Handle conditions which caused exception on zoom operation
+                            ptrChartArea.CursorX.SetSelectionPosition(0, 0);
+                            ptrChartArea.CursorY.SetSelectionPosition(0, 0);
+                            return;
+                        }
+
                         ptrChartArea.AxisY.ScaleView.Zoom(bottom, top);
                         ptrChartArea.AxisY2.ScaleView.Zoom(
                             ptrChartArea.AxisY2.PositionToValue(YMin),
@@ -1104,8 +1122,8 @@ namespace System.Windows.Forms.DataVisualization.Charting
         private static void SnapToNearestData(Chart chart, Series series, Axis xAxis, Axis yAxis, MouseEventArgs e,
             ref double XResult, ref double YResult)
         {
-            XResult = YResult = Double.MaxValue;
             if (series.Points.Count == 0) return;
+            XResult = YResult = Double.MaxValue;
 
             ChartData ptrChartData = ChartTool[chart];
             ChartArea ptrChartArea = ChartTool[chart].ActiveChartArea;

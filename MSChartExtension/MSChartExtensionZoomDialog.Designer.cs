@@ -193,6 +193,7 @@
             this.Controls.Add(this.txtXMin);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "MSChartExtensionZoomDialog";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Zoom Settings...";
             this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);

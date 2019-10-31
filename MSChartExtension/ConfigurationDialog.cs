@@ -16,9 +16,13 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
         public ChartOption Option { get; private set; }
 
-        public ConfigurationDialog(ChartOption chartOption)
+        private Chart ChartHandler { get; set; }
+
+        public ConfigurationDialog(Chart chart, ChartOption chartOption)
         {
             InitializeComponent();
+
+            ChartHandler = chart;
             Option = chartOption;
             //Create List of Dash Style, skip NOTSET option.
             cbCursor1DashStyle.Items.AddRange(Enum.GetNames(typeof(ChartDashStyle)).Skip(1).ToArray());
@@ -29,6 +33,13 @@ namespace System.Windows.Forms.DataVisualization.Charting
             cbTheme.Items.AddRange(Themes.Keys.ToArray());
 
             ReadSettings();
+
+            chkSeriesList.Items.Clear();
+            chkSeriesList.Items.AddRange(chart.Series.Select(x => x.Name).ToArray());
+            for(int x=0; x < chkSeriesList.Items.Count; x++)
+            {
+                chkSeriesList.SetItemChecked(x, chart.Series[x].Enabled);
+            }
         }
 
         private void ReadSettings()
@@ -44,7 +55,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
             cbCursor2DashStyle.SelectedIndex = (int)Option.Cursor2DashStyle - 1;
 
             if (Option.Theme == null) cbTheme.SelectedIndex = 0;
-            else { cbTheme.SelectedIndex = cbTheme.Items.IndexOf(Option.Theme.GetType().Name); }
+            else { cbTheme.SelectedIndex = cbTheme.Items.IndexOf(Option.Theme.Name); }
         }
 
         private void WriteSettings()
@@ -59,11 +70,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
             Option.Cursor1DashStyle = (ChartDashStyle)(cbCursor1DashStyle.SelectedIndex + 1);
             Option.Cursor2DashStyle = (ChartDashStyle)(cbCursor2DashStyle.SelectedIndex + 1);
 
-            if (cbTheme.SelectedIndex == 0) Option.Theme = null; //No theme
-            else
-            {
-                Option.Theme = Themes[cbTheme.Text];
-            }
+            Option.Theme = Themes[cbTheme.Text];
         }
 
         private void BtCursor1Color_Click(object sender, EventArgs e)
@@ -89,9 +96,33 @@ namespace System.Windows.Forms.DataVisualization.Charting
             }
         }
 
+        private void UpdateSeriesVisibleState()
+        {
+            for(int x=0; x < chkSeriesList.Items.Count; x++)
+            {
+                ChartHandler.Series[x].Enabled = chkSeriesList.GetItemChecked(x);
+            }
+        }
+
         private void BtOK_Click(object sender, EventArgs e)
         {
             WriteSettings();
+            UpdateSeriesVisibleState();
+        }
+
+        private void ChkAllowToHideSeries_CheckedChanged(object sender, EventArgs e)
+        {
+            chkSeriesList.Enabled = chkAllowToHideSeries.Enabled;
+        }
+
+        private void BtCheckAll_Click(object sender, EventArgs e)
+        {
+            for (int x = 0; x < chkSeriesList.Items.Count; x++) chkSeriesList.SetItemChecked(x, true);
+        }
+
+        private void BtCheckNone_Click(object sender, EventArgs e)
+        {
+            for (int x = 0; x < chkSeriesList.Items.Count; x++) chkSeriesList.SetItemChecked(x, false);
         }
     }
 }
