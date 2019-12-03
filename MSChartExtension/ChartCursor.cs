@@ -10,6 +10,10 @@
         /// </summary>
         public int CursorIndex { get; set; }
         /// <summary>
+        /// Data point index, -1 if invalid or not found.
+        /// </summary>
+        public int DataIndex { get; set; }
+        /// <summary>
         /// X Value based on primary Axis
         /// </summary>
         public double X { get; internal set; } = double.NaN;
@@ -42,6 +46,7 @@
             {
                 X = this.X,
                 Y = this.Y,
+                DataIndex = this.DataIndex,
                 ChartArea = this.ChartArea,
                 SelectedChartSeries = this.SelectedChartSeries,
                 CursorIndex = this.CursorIndex

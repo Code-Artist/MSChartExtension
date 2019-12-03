@@ -18,6 +18,8 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
         private Chart ChartHandler { get; set; }
 
+        private int ThemeIndex;
+
         public ConfigurationDialog(Chart chart, ChartOption chartOption)
         {
             InitializeComponent();
@@ -36,7 +38,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
             chkSeriesList.Items.Clear();
             chkSeriesList.Items.AddRange(chart.Series.Select(x => x.Name).ToArray());
-            for(int x=0; x < chkSeriesList.Items.Count; x++)
+            for (int x = 0; x < chkSeriesList.Items.Count; x++)
             {
                 chkSeriesList.SetItemChecked(x, chart.Series[x].Enabled);
             }
@@ -55,7 +57,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
             cbCursor2DashStyle.SelectedIndex = (int)Option.Cursor2DashStyle - 1;
 
             if (Option.Theme == null) cbTheme.SelectedIndex = 0;
-            else { cbTheme.SelectedIndex = cbTheme.Items.IndexOf(Option.Theme.Name); }
+            else { ThemeIndex = cbTheme.SelectedIndex = cbTheme.Items.IndexOf(Option.Theme.Name); }
         }
 
         private void WriteSettings()
@@ -70,7 +72,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
             Option.Cursor1DashStyle = (ChartDashStyle)(cbCursor1DashStyle.SelectedIndex + 1);
             Option.Cursor2DashStyle = (ChartDashStyle)(cbCursor2DashStyle.SelectedIndex + 1);
 
-            Option.Theme = Themes[cbTheme.Text];
+            if (cbTheme.SelectedIndex != ThemeIndex) Option.Theme = Themes[cbTheme.Text];
         }
 
         private void BtCursor1Color_Click(object sender, EventArgs e)
@@ -98,7 +100,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
         private void UpdateSeriesVisibleState()
         {
-            for(int x=0; x < chkSeriesList.Items.Count; x++)
+            for (int x = 0; x < chkSeriesList.Items.Count; x++)
             {
                 ChartHandler.Series[x].Enabled = chkSeriesList.GetItemChecked(x);
             }

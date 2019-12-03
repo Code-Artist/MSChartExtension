@@ -24,6 +24,7 @@ namespace MSChartExtensionDemo
         {
             InitializeComponent();
             PlotData();
+            new ChartForm().Show();
         }
 
         private void Form1_Shown(object sender, EventArgs e)
@@ -226,6 +227,16 @@ Visible data
             MessageBox.Show(string.Format(fmt, all.ToStringWithBoundaries(), visible.ToStringWithBoundaries()), "Extents/boundaries of the data");
 
 
+        }
+
+        private void Chart1_KeyDown(object sender, KeyEventArgs e)
+        {
+            Debug.WriteLine("Chart Key Down");
+        }
+
+        private void Chart1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            Debug.WriteLine("Chart Preview Key Down");
         }
     }
 
