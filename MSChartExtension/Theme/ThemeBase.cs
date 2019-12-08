@@ -11,6 +11,10 @@ namespace System.Windows.Forms.DataVisualization.Charting
     /// </summary>
     public abstract class ThemeBase
     {
+        /// <summary>
+        /// Base Constructor, create new theme.
+        /// </summary>
+        /// <param name="name">Display name</param>
         public ThemeBase(string name) { Name = name; }
         /// <summary>
         /// User Friendly Name

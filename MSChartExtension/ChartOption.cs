@@ -50,11 +50,82 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// </summary>
         public bool SnapCursorToData { get; set; } = true;
         /// <summary>
-        /// Define string format of cussors value. Default is "F4", 4 digits fixed decimal.
+        /// Define string format of cursor value. Default is "F4", 4 digits fixed decimal.
         /// <see cref="double.ToString(string)"/>
+        /// Properties split into X1, X2, Y1, Y2 from Version 3.2.0 onwards. Writting to this properties update all 4 properties listed below.
+        /// Read from this properties return value from <see cref="CursorLabelStringFormatY1"/>
+        /// For cursor moved callback, <see cref="CursorLabelStringFormatX1"/> and <see cref="CursorLabelStringFormatY1"/> will be use to format label string.
+        /// <para><see cref="CursorLabelStringFormatX1"/></para>
+        /// <para><see cref="CursorLabelStringFormatX2"/></para>
+        /// <para><see cref="CursorLabelStringFormatY1"/></para>
+        /// <para><see cref="CursorLabelStringFormatY2"/></para>
         /// </summary>
         /// <remarks>More details regarding string format at https://docs.microsoft.com/en-us/dotnet/standard/base-types/standard-numeric-format-strings </remarks>
-        public string CursorLabelStringFormat { get; set; } = "F4";
+
+        public string CursorLabelStringFormat
+        {
+            get => CursorLabelStringFormatY1;
+            set
+            {
+                CursorLabelStringFormatX1 = CursorLabelStringFormatX2 = value;
+                CursorLabelStringFormatY1 = CursorLabelStringFormatY2 = value;
+            }
+        }
+        /// <summary>
+        /// Define string format for cursor value which use X primary axis.
+        /// </summary>
+        /// <remarks>More details regarding string format at https://docs.microsoft.com/en-us/dotnet/standard/base-types/standard-numeric-format-strings </remarks>
+        public string CursorLabelStringFormatX1 { get; set; } = "F4";
+        /// <summary>
+        /// Define string format for cursor value which use X secondary axis.
+        /// </summary>
+        /// <remarks>More details regarding string format at https://docs.microsoft.com/en-us/dotnet/standard/base-types/standard-numeric-format-strings </remarks>
+        public string CursorLabelStringFormatX2 { get; set; } = "F4";
+        /// <summary>
+        /// Define string format for cursor value which use Y primary axis.
+        /// </summary>
+        /// <remarks>More details regarding string format at https://docs.microsoft.com/en-us/dotnet/standard/base-types/standard-numeric-format-strings </remarks>
+        public string CursorLabelStringFormatY1 { get; set; } = "F4";
+        /// <summary>
+        /// Define string format for cursor value which use Y secondary axis.
+        /// </summary>
+        /// <remarks>More details regarding string format at https://docs.microsoft.com/en-us/dotnet/standard/base-types/standard-numeric-format-strings </remarks>
+        public string CursorLabelStringFormatY2 { get; set; } = "F4";
+
+        /// <summary>
+        /// Assign prefix on label string, default is empty
+        /// </summary>
+        public string CursorLabelPrefixX1 { get; set; }
+        /// <summary>
+        /// Assign prefix on label string, default is empty
+        /// </summary>
+        public string CursorLabelPrefixX2 { get; set; }
+        /// <summary>
+        /// Assign prefix on label string, default is empty
+        /// </summary>
+        public string CursorLabelPrefixY1 { get; set; }
+        /// <summary>
+        /// Assign prefix on label string, default is empty
+        /// </summary>
+        public string CursorLabelPrefixY2 { get; set; }
+
+        /// <summary>
+        /// Assign postfix on label string, default is empty
+        /// </summary>
+        public string CursorLabelPostfixX1 { get; set; }
+        /// <summary>
+        /// Assign postfix on label string, default is empty
+        /// </summary>
+        public string CursorLabelPostfixX2 { get; set; }
+        /// <summary>
+        /// Assign postfix on label string, default is empty
+        /// </summary>
+        public string CursorLabelPostfixY1 { get; set; }
+        /// <summary>
+        /// Assign postfix on label string, default is empty
+        /// </summary>
+        public string CursorLabelPostfixY2 { get; set; }
+
         /// <summary>
         /// Display cursor value on chart
         /// </summary>

@@ -37,6 +37,10 @@ namespace MSChartExtensionDemo
                     //XAxisPrecision = 4,
                     //YAxisPrecision = 4
                     //,Theme = new DarkTheme()
+                    CursorLabelStringFormatX1 = "F0",
+                    CursorLabelPrefixX1 = "X=",
+                    CursorLabelPrefixY1 = "Y ",
+                    CursorLabelPostfixY1 = "V"
                 });
 
             chart2.EnableZoomAndPanControls();
