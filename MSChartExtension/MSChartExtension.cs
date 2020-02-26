@@ -459,10 +459,10 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     ptrChart.RemoveAnnotation(ptrChartArea.Name + "cursor2_Label");
                     ptrChartData.Cursor1.X = double.NaN;
                     ptrChartData.Cursor1.Y = double.NaN;
-                    ptrChartData.PositionChangedCallback(ptrChart, ptrChartData.Cursor1);
+                    ptrChartData.PositionChangedCallback?.Invoke(ptrChart, ptrChartData.Cursor1);
                     ptrChartData.Cursor2.X = double.NaN;
                     ptrChartData.Cursor2.Y = double.NaN;
-                    ptrChartData.PositionChangedCallback(ptrChart, ptrChartData.Cursor2);
+                    ptrChartData.PositionChangedCallback?.Invoke(ptrChart, ptrChartData.Cursor2);
                     break;
                 case "Zoom Window":
                     SetChartControlState(ptrChart, MSChartExtensionToolState.Zoom);
