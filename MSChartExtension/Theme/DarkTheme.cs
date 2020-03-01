@@ -18,6 +18,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
         {
             BackColor = ChartAreaBackColor = Color.Black;
             AxisLineColor = AxisMajorGridColor = AxisLabelColor = TitleColor = Color.Gray;
+            AxisLabelColor = TitleColor = Color.LightGray;
 
         }
     }

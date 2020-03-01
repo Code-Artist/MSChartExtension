@@ -65,15 +65,15 @@ namespace System.Windows.Forms.DataVisualization.Charting
             double yStart = Convert.ToDouble(txtYMin.Text);
             double yEnd = Convert.ToDouble(txtYMax.Text);
 
-            //Perform ZOOM
-            ptrXAxis.ScaleView.Zoom(xStart, xEnd);
-            ptrYAxis.ScaleView.Zoom(yStart, yEnd);
+            //Adjust Axis
+            if (xStart < ptrXAxis.Minimum) ptrXAxis.Minimum = xStart;
+            if (xEnd > ptrXAxis.Maximum) ptrXAxis.Maximum = xEnd;
+            if (yStart < ptrYAxis.Minimum) ptrYAxis.Minimum = yStart;
+            if (yEnd > ptrYAxis.Maximum) ptrYAxis.Maximum = yEnd;
 
-            //Switch to next axis
-            ptrXAxis = (ptrXAxis == ptrChartArea.AxisX) ? ptrChartArea.AxisX2 : ptrChartArea.AxisX;
-            ptrYAxis = (ptrYAxis == ptrChartArea.AxisY) ? ptrChartArea.AxisY2 : ptrChartArea.AxisY;
-            ptrXAxis.ScaleView.Zoom(xStart, xEnd);
-            ptrYAxis.ScaleView.Zoom(yStart, yEnd);
+            //Perform ZOOM
+            if ((xStart > ptrXAxis.Minimum) || (xEnd < ptrXAxis.Maximum)) ptrXAxis.ScaleView.Zoom(xStart, xEnd);
+            if ((yStart > ptrYAxis.Minimum) || (yEnd < ptrYAxis.Maximum)) ptrYAxis.ScaleView.Zoom(yStart, yEnd);
 
             DialogResult = DialogResult.OK;
         }

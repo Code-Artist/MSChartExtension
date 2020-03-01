@@ -247,6 +247,11 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     x.TitleForeColor = theme.AxisLabelColor;
                 }
             }
+            foreach(Legend l in sender.Legends)
+            {
+                l.BackColor = theme.BackColor;
+                l.ForeColor = theme.AxisLabelColor;
+            }
         }
 
         #endregion
@@ -1024,7 +1029,10 @@ namespace System.Windows.Forms.DataVisualization.Charting
                             //Add Cursor Value : X, Y
                             string cursorValue = xPrefix + ptrChartData.Cursor1.XFormattedString + xPostfix + "," +
                                                     yPrefix + ptrChartData.Cursor1.YFormattedString + yPostfix;
-                            AddText(ptrChart, cursorValue, XStart, YStart, cursorColor, ptrChartArea.Name + "cursor1_Label", TextStyle.Default, ptrChartArea, ptrSeries.XAxisType, ptrSeries.YAxisType);
+
+                            TextAnnotation ptrTextAnnotation = AddText(ptrChart, cursorValue, XStart, YStart, cursorColor, ptrChartArea.Name + "cursor1_Label",
+                                                                    TextStyle.Default, ptrChartArea, ptrSeries.XAxisType, ptrSeries.YAxisType) as TextAnnotation;
+                            CheckAndUpdateTextAnnotationLocation(ptrTextAnnotation, ptrXAxis, ptrYAxis, XStart, YStart);
                         }
 
                         ptrChartData.PositionChangedCallback?.Invoke(ptrChart, ptrChartData.Cursor1.Clone() as ChartCursor);
@@ -1095,13 +1103,40 @@ namespace System.Windows.Forms.DataVisualization.Charting
                             //Add Cursor Value : X, Y
                             string cursorValue = xPrefix + ptrChartData.Cursor2.XFormattedString + xPostfix + "," +
                                                     yPrefix + ptrChartData.Cursor2.YFormattedString + yPostfix;
-                            AddText(ptrChart, cursorValue, XStart, YStart, cursorColor, ptrChartArea.Name + "cursor2_Label", TextStyle.Default, ptrChartArea, ptrSeries.XAxisType, ptrSeries.YAxisType);
+                            TextAnnotation ptrTextAnnotation = AddText(ptrChart, cursorValue, XStart, YStart, cursorColor, ptrChartArea.Name + "cursor2_Label",
+                                                                TextStyle.Default, ptrChartArea, ptrSeries.XAxisType, ptrSeries.YAxisType) as TextAnnotation;
+                            CheckAndUpdateTextAnnotationLocation(ptrTextAnnotation, ptrXAxis, ptrYAxis, XStart, YStart);
                         }
 
                         ptrChartData.PositionChangedCallback?.Invoke(ptrChart, ptrChartData.Cursor2.Clone() as ChartCursor);
                     }
                 }
                 ptrChart.Focus();
+            }
+        }
+
+        private static void CheckAndUpdateTextAnnotationLocation(TextAnnotation sender, Axis xAxis, Axis yAxis, double xStart, double yStart)
+        {
+            Size textSize = TextRenderer.MeasureText(sender.Text, sender.Font);
+            double xMin = xAxis.ValueToPixelPosition(xAxis.ScaleView.ViewMinimum);
+            double xMax = xAxis.ValueToPixelPosition(xAxis.ScaleView.ViewMaximum);
+            double yMin = yAxis.ValueToPixelPosition(yAxis.ScaleView.ViewMaximum);
+            double yMax = yAxis.ValueToPixelPosition(yAxis.ScaleView.ViewMinimum);
+
+            double xStartPixel = xAxis.ValueToPixelPosition(xStart);
+            double yStartPixel = yAxis.ValueToPixelPosition(yStart);
+
+            //Check if Text is out of sight
+            if ((xStartPixel < xMin) || (xStartPixel > xMax)) return;
+            if ((yStartPixel < yMin) || (yStartPixel > yMax)) return;
+
+            if (((xStartPixel + textSize.Width) > xMax) ||
+                ((yStartPixel + textSize.Height) < yMin))
+            {
+                double newXStart = xAxis.PixelPositionToValue(xStartPixel - textSize.Width - 4);
+                double newYStart = yAxis.PixelPositionToValue(yStartPixel - textSize.Height - 4);
+                sender.X = newXStart;
+                sender.Y = newYStart;
             }
         }
 
@@ -1748,7 +1783,8 @@ namespace System.Windows.Forms.DataVisualization.Charting
         public static Annotation AddText(this Chart sender, string text,
             double x, double y,
             Drawing.Color textColor, string name = "",
-            TextStyle textStyle = TextStyle.Default, ChartArea chartArea = null, AxisType xAxisType = AxisType.Primary, AxisType yAxisType = AxisType.Primary)
+            TextStyle textStyle = TextStyle.Default, ChartArea chartArea = null,
+            AxisType xAxisType = AxisType.Primary, AxisType yAxisType = AxisType.Primary)
         {
             TextAnnotation textAnn = new TextAnnotation();
             string chartAreaName = (chartArea == null) ? sender.ChartAreas[0].Name : chartArea.Name;

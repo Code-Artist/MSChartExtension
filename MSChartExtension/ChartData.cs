@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Drawing;
+using System.Collections.Generic;
 
 namespace System.Windows.Forms.DataVisualization.Charting
 {
@@ -40,7 +41,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
         public CursorPositionChanged CursorMovedCallback;
         public ZoomChanged ZoomChangedCallback { get; set; }
         public ChartOption Option { get; set; }
-        public List<ChartArea> SupportedChartArea;
+        public List<ChartArea> SupportedChartArea { get; set; }
         public bool Enabled { get; set; } = true;
         public ChartArea ActiveChartArea { get; set; }
         public ChartCursor Cursor1 { get; private set; }

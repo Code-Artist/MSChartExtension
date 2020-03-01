@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Code Art Engineering")]
 [assembly: AssemblyProduct("MSChartExtension")]
-[assembly: AssemblyCopyright("Copyright © Code Art Engineering 2012 - 2019")]
+[assembly: AssemblyCopyright("Copyright © Code Art Engineering 2012 - 2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: System.CLSCompliant(true)]
@@ -33,5 +33,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("3.2.1.0")]
-[assembly: AssemblyFileVersion("3.2.1.0")]
+[assembly: AssemblyVersion("3.3.0")]
+[assembly: AssemblyFileVersion("3.3.0")]

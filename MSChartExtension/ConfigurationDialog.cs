@@ -56,7 +56,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
             cbCursor1DashStyle.SelectedIndex = (int)Option.Cursor1DashStyle - 1;
             cbCursor2DashStyle.SelectedIndex = (int)Option.Cursor2DashStyle - 1;
 
-            if (Option.Theme == null) cbTheme.SelectedIndex = 0;
+            if (Option.Theme == null) cbTheme.SelectedIndex = ThemeIndex = -1;
             else { ThemeIndex = cbTheme.SelectedIndex = cbTheme.Items.IndexOf(Option.Theme.Name); }
         }
 

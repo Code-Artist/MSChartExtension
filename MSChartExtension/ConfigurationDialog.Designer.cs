@@ -54,11 +54,13 @@
             this.btCheckNone = new System.Windows.Forms.Button();
             this.btCheckAll = new System.Windows.Forms.Button();
             this.chkSeriesList = new System.Windows.Forms.CheckedListBox();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cursor1LineWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cursor2LineWidth)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
@@ -275,7 +277,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(102, 205);
+            this.label8.Location = new System.Drawing.Point(21, 21);
             this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(40, 13);
@@ -286,18 +288,16 @@
             // 
             this.cbTheme.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbTheme.FormattingEnabled = true;
-            this.cbTheme.Location = new System.Drawing.Point(145, 203);
+            this.cbTheme.Location = new System.Drawing.Point(65, 18);
             this.cbTheme.Margin = new System.Windows.Forms.Padding(2);
             this.cbTheme.Name = "cbTheme";
-            this.cbTheme.Size = new System.Drawing.Size(92, 21);
+            this.cbTheme.Size = new System.Drawing.Size(173, 21);
             this.cbTheme.TabIndex = 21;
             // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.label4);
-            this.groupBox1.Controls.Add(this.cbTheme);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.label8);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.cursor2LineWidth);
             this.groupBox1.Controls.Add(this.label3);
@@ -313,7 +313,7 @@
             this.groupBox1.Controls.Add(this.btCursor2Color);
             this.groupBox1.Location = new System.Drawing.Point(340, 10);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(251, 240);
+            this.groupBox1.Size = new System.Drawing.Size(251, 209);
             this.groupBox1.TabIndex = 22;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Cursors";
@@ -359,6 +359,17 @@
             this.chkSeriesList.Size = new System.Drawing.Size(305, 319);
             this.chkSeriesList.TabIndex = 2;
             // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.cbTheme);
+            this.groupBox3.Controls.Add(this.label8);
+            this.groupBox3.Location = new System.Drawing.Point(340, 225);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(251, 48);
+            this.groupBox3.TabIndex = 24;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Theme";
+            // 
             // ConfigurationDialog
             // 
             this.AcceptButton = this.btOK;
@@ -366,6 +377,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btCancel;
             this.ClientSize = new System.Drawing.Size(603, 442);
+            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.panel1);
@@ -383,6 +395,8 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -415,5 +429,6 @@
         private CheckedListBox chkSeriesList;
         private Button btCheckNone;
         private Button btCheckAll;
+        private GroupBox groupBox3;
     }
 }
