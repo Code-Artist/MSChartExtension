@@ -1,10 +1,12 @@
 # MSChartExtension
-Microsoft Chart Extensions unleashed the power of Microsoft .NET Chart component in WinForms. 
-Features implemented includes:
-- Zoom / Pan
-- Dual Cursors for Data Analysis
-- Context Menu to Show / Hide and configure Series Color on runtime.
-- Beautiful Themes
+Microsoft Chart Extensions unleashed the power of Microsoft .NET Chart component in WinForms.</br>
+Let's see what it can do
+- Interactive zoom and pan with built-in context menu to configure chart series and cursors</br>
+![Context menu with Zoom and Pan controls](/Doc/Images/ContextMenu.png?raw=true)</br>
+- Dual Cursors for Data Analysis</br>
+![Dual Cursors](/Doc/Images/DualCursors.PNG?raw=true)</br>
+- Beautiful Themes</br>
+![Themes](/Doc/Images/Theme.PNG?raw=true)</br>
 
 
 ## Documentations:
