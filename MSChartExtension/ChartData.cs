@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace System.Windows.Forms.DataVisualization.Charting
 {
@@ -46,6 +45,8 @@ namespace System.Windows.Forms.DataVisualization.Charting
         public ChartArea ActiveChartArea { get; set; }
         public ChartCursor Cursor1 { get; private set; }
         public ChartCursor Cursor2 { get; private set; }
+
+        public List<SeriesDataBuffer> SeriesData { get; set; } = new List<SeriesDataBuffer>();
 
         private void CreateChartContextMenu()
         {

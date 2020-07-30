@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace System.Windows.Forms.DataVisualization.Charting
 {
@@ -14,12 +10,11 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// <summary>
         /// Constructor
         /// </summary>
-        public DarkTheme(): base("Dark")
+        public DarkTheme() : base("Dark")
         {
             BackColor = ChartAreaBackColor = Color.Black;
-            AxisLineColor = AxisMajorGridColor = AxisLabelColor = TitleColor = Color.Gray;
+            AxisLineColor = AxisMajorGridColor = AxisMinorGridColor = Color.Gray;
             AxisLabelColor = TitleColor = Color.LightGray;
-
         }
     }
 }

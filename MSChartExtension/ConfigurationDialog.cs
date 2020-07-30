@@ -1,18 +1,12 @@
-﻿using System;
+﻿using Cyotek.Windows.Forms;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using Cyotek.Windows.Forms;
 
 namespace System.Windows.Forms.DataVisualization.Charting
 {
     internal partial class ConfigurationDialog : Form
     {
-        private Dictionary<string, ThemeBase> Themes;
+        private readonly Dictionary<string, ThemeBase> Themes;
 
         public ChartOption Option { get; private set; }
 
@@ -36,11 +30,12 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
             ReadSettings();
 
-            chkSeriesList.Items.Clear();
-            chkSeriesList.Items.AddRange(chart.Series.Select(x => x.Name).ToArray());
-            for (int x = 0; x < chkSeriesList.Items.Count; x++)
+            SeriesGrid.Rows.Clear();
+            foreach (Series series in chart.Series)
             {
-                chkSeriesList.SetItemChecked(x, chart.Series[x].Enabled);
+                int rowID = SeriesGrid.Rows.Add(new object[] { series.Enabled, series.Name, "", ">>" });
+                SeriesGrid.Rows[rowID].Cells[colSeriesColor.Index].Style.BackColor = series.Color;
+                SeriesGrid.Rows[rowID].Tag = series;
             }
         }
 
@@ -98,33 +93,55 @@ namespace System.Windows.Forms.DataVisualization.Charting
             }
         }
 
-        private void UpdateSeriesVisibleState()
+        private void UpdateSeriesSettings()
         {
-            for (int x = 0; x < chkSeriesList.Items.Count; x++)
+            foreach (DataGridViewRow r in SeriesGrid.Rows)
             {
-                ChartHandler.Series[x].Enabled = chkSeriesList.GetItemChecked(x);
+                Series ptrSeries = r.Tag as Series;
+                ptrSeries.Enabled = Convert.ToBoolean(r.Cells[colSeriesEnable.Index].Value);
+                ptrSeries.MarkerBorderColor = ptrSeries.MarkerColor = ptrSeries.Color = r.Cells[colSeriesColor.Index].Style.BackColor;
             }
         }
 
         private void BtOK_Click(object sender, EventArgs e)
         {
             WriteSettings();
-            UpdateSeriesVisibleState();
+            UpdateSeriesSettings();
         }
 
         private void ChkAllowToHideSeries_CheckedChanged(object sender, EventArgs e)
         {
-            chkSeriesList.Enabled = chkAllowToHideSeries.Enabled;
+            SeriesGrid.Enabled = chkAllowToHideSeries.Enabled;
         }
 
         private void BtCheckAll_Click(object sender, EventArgs e)
         {
-            for (int x = 0; x < chkSeriesList.Items.Count; x++) chkSeriesList.SetItemChecked(x, true);
+            for (int x = 0; x < SeriesGrid.Rows.Count; x++) (SeriesGrid.Rows[x].Cells[colSeriesEnable.Index] as DataGridViewCheckBoxCell).Value = true;
         }
 
         private void BtCheckNone_Click(object sender, EventArgs e)
         {
-            for (int x = 0; x < chkSeriesList.Items.Count; x++) chkSeriesList.SetItemChecked(x, false);
+            for (int x = 0; x < SeriesGrid.Rows.Count; x++) (SeriesGrid.Rows[x].Cells[colSeriesEnable.Index] as DataGridViewCheckBoxCell).Value = false;
+        }
+
+        private void SeriesGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == colSelectColor.Index)
+            {
+                using (ColorPickerDialog dialog = new ColorPickerDialog())
+                {
+                    dialog.Color = SeriesGrid.Rows[e.RowIndex].Cells[e.ColumnIndex - 1].Style.BackColor;
+                    if (dialog.ShowDialog() == DialogResult.OK)
+                    {
+                        SeriesGrid.Rows[e.RowIndex].Cells[e.ColumnIndex - 1].Style.BackColor = dialog.Color;
+                    }
+                }
+            }
+        }
+
+        private void SeriesGrid_SelectionChanged(object sender, EventArgs e)
+        {
+            SeriesGrid.ClearSelection();
         }
     }
 }

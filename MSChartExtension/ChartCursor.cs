@@ -49,7 +49,9 @@
                 DataIndex = this.DataIndex,
                 ChartArea = this.ChartArea,
                 SelectedChartSeries = this.SelectedChartSeries,
-                CursorIndex = this.CursorIndex
+                CursorIndex = this.CursorIndex,
+                XFormattedString = this.XFormattedString,
+                YFormattedString = this.YFormattedString
             };
         }
         /// <summary>

@@ -1,8 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using System.Windows.Forms;
-using System.Diagnostics;
-using System.Reflection;
+﻿using System.Diagnostics;
 
 namespace System.Windows.Forms.DataVisualization.Charting
 {

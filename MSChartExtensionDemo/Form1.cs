@@ -1,4 +1,7 @@
-﻿using System;
+﻿#define BUFFER
+#define Dynamic
+
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
@@ -23,8 +26,7 @@ namespace MSChartExtensionDemo
         public Form1()
         {
             InitializeComponent();
-            PlotData();
-            new ChartForm().Show();
+            //new ChartForm().Show();
         }
 
         private void Form1_Shown(object sender, EventArgs e)
@@ -36,38 +38,68 @@ namespace MSChartExtensionDemo
                     ContextMenuAllowToHideSeries = true,
                     //XAxisPrecision = 4,
                     //YAxisPrecision = 4
-                    //,Theme = new DarkTheme()
+                    Theme = new DarkTheme(),
                     CursorLabelStringFormatX1 = "F0",
                     CursorLabelPrefixX1 = "X=",
                     CursorLabelPrefixY1 = "Y ",
                     CursorLabelPostfixY1 = "V"
+#if BUFFER
+                    ,
+                    BufferedMode = true,
+                    DisplayDataSize = 800
+#endif
                 });
 
             chart2.EnableZoomAndPanControls();
 
             chart3.EnableZoomAndPanControls(ChartCursorSelected, ChartCursorMoved);
+            PlotData();
         }
+
+        const int DataSizeBase = 5000; //Increase this number to plot more points
 
         private void PlotData(bool reverse = false)
         {
-            chart1.Series[3].ClearPoints();
-            const int DataSizeBase = 1000; //Increase this number to plot more points
 
             //Series 1 used primary YAxis
             Series Ser1 = chart1.Series[0];
-            for (int x = DataSizeBase - 1; x != 0; x--)
-                Ser1.Points.AddXY(Math.PI * 0.1 * x, Math.Sin(Math.PI * 0.1 * x));
 
             //Series 2 used secondary YAxis 
             Series Ser2 = chart1.Series[1];
-            for (int x = 0; x < (2 * DataSizeBase); x++)
-                Ser2.Points.AddXY(0.2 * Math.PI * 0.2 * x, 10 * Math.Cos(Math.PI * 0.2 * x));
-
-            //Series 3 used
             Series Ser3 = chart1.Series[2];
-            for (int x = 0; x < (DataSizeBase / 100); x++)
-                Ser3.Points.AddXY(Math.PI * 0.1 * x, Math.Sin(Math.PI * 0.1 * x));
+            double angFreq = 0.20;
 
+#if Dynamic
+            int HalfSize = DataSizeBase / 10 * 9;
+            for (int x = 0; x < HalfSize; x++)
+            {
+#if BUFFER
+                Ser2.AddXYBuffered(x, 10 * Math.Cos(Math.PI * angFreq * x));
+#endif
+                Ser1.Points.AddXY(x, 10 * Math.Cos(Math.PI * angFreq * x));
+            }
+            for (int x = HalfSize; x < DataSizeBase; x++)
+            {
+#if BUFFER
+                Ser2.AddXYBuffered(HalfSize + 20 * (x - HalfSize), 10 * Math.Cos(Math.PI * angFreq * x));
+#endif
+                Ser1.Points.AddXY(HalfSize + 20 * (x - HalfSize), 10 * Math.Cos(Math.PI * angFreq * x));
+            }
+
+#else
+            for (int x = 0; x < DataSizeBase; x++)
+            {
+#if BUFFER
+                Ser2.AddXYBuffered(2 * Math.PI * angFreq * x, 10 * Math.Cos(Math.PI * angFreq * x));
+#endif
+                Ser1.Points.AddXY(2 * Math.PI * angFreq * x, 10 * Math.Cos(Math.PI * angFreq * x));
+            }
+#endif
+
+#if BUFFER
+
+            Ser2.PlotBufferedData();
+#endif
             var chartArea = chart1.ChartAreas.First();
             chartArea.AxisX.IsReversed = reverse;
             chartArea.AxisY.IsReversed = reverse;
@@ -80,10 +112,38 @@ namespace MSChartExtensionDemo
             //Date Time Series
             Series dateSeries = chart3.Series[0];
             DateTime today = DateTime.Today;
-            for(int x=0; x < 10; x++)
+            for (int x = 0; x < 10; x++)
             {
                 dateSeries.Points.AddXY(today.AddDays(x), x);
             }
+        }
+        private void randomDataToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ClearData();
+            StartStopWatch();
+            //Series 1 used primary YAxis
+            Series Ser1 = chart1.Series[0];
+
+            //Series 2 used secondary YAxis 
+            Series Ser2 = chart1.Series[1];
+
+            Random rand = new Random();
+            double data = 0;
+            for (int x = 0; x < DataSizeBase; x++)
+            {
+                data += rand.NextDouble() - 0.5;
+#if BUFFER
+                Ser2.AddXYBuffered(x, data);
+#endif
+                Ser1.Points.AddXY(x, data);
+            }
+#if BUFFER
+
+            Ser2.PlotBufferedData();
+#endif
+            Application.DoEvents();
+            CheckStopWatch("Plot random datas");
+
         }
 
         private void ClearData()
@@ -141,17 +201,18 @@ namespace MSChartExtensionDemo
         private void ChartCursorSelected(Chart sender, ChartCursor e)
         {
             txtChartSelect.Text = e.XFormattedString + ", " + e.YFormattedString; //e.X.ToString("F4") + ", " + e.Y.ToString("F4");
-            PointF diff = sender.CursorsDiff();
-            txtCursorDelta.Text = diff.X.ToString("F4") + ", " + diff.Y.ToString("F4");
         }
 
         private void ChartCursorMoved(Chart sender, ChartCursor e)
         {
             txtChartValue.Text = e.XFormattedString + ", " + e.YFormattedString;
+            PointF diff = sender.CursorsDiff();
+            txtCursorDelta.Text = diff.X.ToString("F4") + ", " + diff.Y.ToString("F4");
         }
 
         private void zoomChanged(Chart sender)
         {
+            //Trace.WriteLine("Zoom changed");
         }
 
         private void contextMenuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -222,13 +283,20 @@ namespace MSChartExtensionDemo
         {
             RectangleF all = chart1.ChartAreas[0].GetChartAreaBoundary();
             RectangleF visible = chart1.ChartAreas[0].GetChartVisibleAreaBoundary();
-            const string fmt = @"All data
-{0}
 
-Visible data
+            RectangleF all2 = chart1.ChartAreas[0].GetChartAreaBoundary(chart1.ChartAreas[0].AxisX2, chart1.ChartAreas[0].AxisY2);
+            RectangleF visible2 = chart1.ChartAreas[0].GetChartVisibleAreaBoundary(chart1.ChartAreas[0].AxisX2, chart1.ChartAreas[0].AxisY2);
+            const string fmt =
+@"PRIMARY AXIS
+All data: {0}
+Visible data: {1}
 
-{1}";
-            MessageBox.Show(string.Format(fmt, all.ToStringWithBoundaries(), visible.ToStringWithBoundaries()), "Extents/boundaries of the data");
+SECONDARY AXIS
+All data: {2}
+Visible data: {3}
+";
+            MessageBox.Show(string.Format(fmt, all.ToStringWithBoundaries(), visible.ToStringWithBoundaries(),
+                all2.ToStringWithBoundaries(), visible2.ToStringWithBoundaries()), "Extents/boundaries of the data");
 
 
         }
@@ -242,6 +310,12 @@ Visible data
         {
             Debug.WriteLine("Chart Preview Key Down");
         }
+
+        private void Chart1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
     }
 
     public static class RectangleExtensions

@@ -134,6 +134,24 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// 
         /// </summary>
         public ThemeBase Theme { get; set; } = null;
+
+        /// <summary>
+        /// Virtual Display Mode
+        /// </summary>
+        public bool BufferedMode { get; set; } = false;
+        /// <summary>
+        /// Number of data to display in <see cref="BufferedMode"/>
+        /// Minimum value is 10. Default Value is 500
+        /// </summary>
+        public int DisplayDataSize
+        {
+            get => DispDataSize; set
+            {
+                DispDataSize = value;
+                if (DispDataSize < 10) DispDataSize = 10;
+            }
+        }
+        private int DispDataSize = 1000;
     }
 
 }

@@ -30,19 +30,17 @@
         {
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Title title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.itemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -66,13 +64,13 @@
             this.txtChartValue = new System.Windows.Forms.ToolStripStatusLabel();
             this.txtChartSelect = new System.Windows.Forms.ToolStripStatusLabel();
             this.txtCursorDelta = new System.Windows.Forms.ToolStripStatusLabel();
-            this.lblZoomExtents = new System.Windows.Forms.ToolStripStatusLabel();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.chart2 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.chart3 = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.randomDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -99,9 +97,7 @@
             chartArea1.AxisY.Title = "Y";
             chartArea1.AxisY2.MajorGrid.LineColor = System.Drawing.Color.LightGray;
             chartArea1.Name = "ChartArea1";
-            chartArea2.Name = "ChartArea2";
             this.chart1.ChartAreas.Add(chartArea1);
-            this.chart1.ChartAreas.Add(chartArea2);
             this.chart1.ContextMenuStrip = this.contextMenuStrip1;
             this.chart1.Cursor = System.Windows.Forms.Cursors.Default;
             this.chart1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -130,19 +126,18 @@
             series2.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
             series2.Name = "Series2";
             series2.YAxisType = System.Windows.Forms.DataVisualization.Charting.AxisType.Secondary;
-            series3.ChartArea = "ChartArea2";
-            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            series3.ChartArea = "ChartArea1";
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series3.Color = System.Drawing.Color.Green;
             series3.Legend = "Legend1";
+            series3.MarkerSize = 3;
+            series3.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Square;
             series3.Name = "Series3";
+            series3.YAxisType = System.Windows.Forms.DataVisualization.Charting.AxisType.Secondary;
             series3.YValuesPerPoint = 2;
-            series4.ChartArea = "ChartArea1";
-            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series4.Legend = "Legend1";
-            series4.Name = "Series4";
             this.chart1.Series.Add(series1);
             this.chart1.Series.Add(series2);
             this.chart1.Series.Add(series3);
-            this.chart1.Series.Add(series4);
             this.chart1.Size = new System.Drawing.Size(923, 473);
             this.chart1.TabIndex = 0;
             this.chart1.Text = "chart1";
@@ -150,6 +145,7 @@
             title1.Name = "Title1";
             title1.Text = "Title1";
             this.chart1.Titles.Add(title1);
+            this.chart1.Paint += new System.Windows.Forms.PaintEventHandler(this.Chart1_Paint);
             // 
             // contextMenuStrip1
             // 
@@ -233,7 +229,8 @@
             // 
             this.btnPlot.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.btnPlot.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.btnPlotInDescendingOrder});
+            this.btnPlotInDescendingOrder,
+            this.randomDataToolStripMenuItem});
             this.btnPlot.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnPlot.Name = "btnPlot";
             this.btnPlot.Size = new System.Drawing.Size(71, 22);
@@ -270,7 +267,7 @@
             this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(95, 22);
+            this.toolStripButton1.Size = new System.Drawing.Size(94, 22);
             this.toolStripButton1.Text = "Annotation Test";
             this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
@@ -288,7 +285,7 @@
             this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton3.Name = "toolStripButton3";
-            this.toolStripButton3.Size = new System.Drawing.Size(52, 22);
+            this.toolStripButton3.Size = new System.Drawing.Size(51, 22);
             this.toolStripButton3.Text = "LogTest";
             this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
             // 
@@ -299,7 +296,7 @@
             this.btnUpdateVisibleExtents});
             this.btnViewChartExtents.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnViewChartExtents.Name = "btnViewChartExtents";
-            this.btnViewChartExtents.Size = new System.Drawing.Size(88, 22);
+            this.btnViewChartExtents.Size = new System.Drawing.Size(89, 22);
             this.btnViewChartExtents.Text = "View &Extents";
             this.btnViewChartExtents.ToolTipText = "Extents are the boundaries (left, right, top, bottom) of the data";
             this.btnViewChartExtents.ButtonClick += new System.EventHandler(this.btnViewChartExtents_ButtonClick);
@@ -307,7 +304,7 @@
             // btnUpdateVisibleExtents
             // 
             this.btnUpdateVisibleExtents.Name = "btnUpdateVisibleExtents";
-            this.btnUpdateVisibleExtents.Size = new System.Drawing.Size(189, 22);
+            this.btnUpdateVisibleExtents.Size = new System.Drawing.Size(190, 22);
             this.btnUpdateVisibleExtents.Text = "Update &Visible Extents";
             this.btnUpdateVisibleExtents.ToolTipText = "These are shown in the status bar at the bottom of the screen.";
             this.btnUpdateVisibleExtents.Click += new System.EventHandler(this.btnUpdateVisibleExtents_Click);
@@ -318,8 +315,7 @@
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.txtChartValue,
             this.txtChartSelect,
-            this.txtCursorDelta,
-            this.lblZoomExtents});
+            this.txtCursorDelta});
             this.statusStrip1.Location = new System.Drawing.Point(0, 530);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(937, 24);
@@ -359,17 +355,6 @@
             this.txtCursorDelta.Text = "Cursor Delta";
             this.txtCursorDelta.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // lblZoomExtents
-            // 
-            this.lblZoomExtents.AutoSize = false;
-            this.lblZoomExtents.AutoToolTip = true;
-            this.lblZoomExtents.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
-            this.lblZoomExtents.BorderStyle = System.Windows.Forms.Border3DStyle.RaisedOuter;
-            this.lblZoomExtents.Name = "lblZoomExtents";
-            this.lblZoomExtents.Size = new System.Drawing.Size(230, 19);
-            this.lblZoomExtents.Text = "Zoom to see visible extents here";
-            this.lblZoomExtents.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
@@ -406,17 +391,17 @@
             // 
             // chart2
             // 
-            chartArea3.Name = "ChartArea1";
-            this.chart2.ChartAreas.Add(chartArea3);
+            chartArea2.Name = "ChartArea1";
+            this.chart2.ChartAreas.Add(chartArea2);
             legend2.Name = "Legend1";
             this.chart2.Legends.Add(legend2);
             this.chart2.Location = new System.Drawing.Point(6, 6);
             this.chart2.Name = "chart2";
-            series5.ChartArea = "ChartArea1";
-            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Radar;
-            series5.Legend = "Legend1";
-            series5.Name = "Series1";
-            this.chart2.Series.Add(series5);
+            series4.ChartArea = "ChartArea1";
+            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Radar;
+            series4.Legend = "Legend1";
+            series4.Name = "Series1";
+            this.chart2.Series.Add(series4);
             this.chart2.Size = new System.Drawing.Size(300, 300);
             this.chart2.TabIndex = 0;
             this.chart2.Text = "chart2";
@@ -434,21 +419,28 @@
             // 
             // chart3
             // 
-            chartArea4.Name = "ChartArea1";
-            this.chart3.ChartAreas.Add(chartArea4);
+            chartArea3.Name = "ChartArea1";
+            this.chart3.ChartAreas.Add(chartArea3);
             this.chart3.Dock = System.Windows.Forms.DockStyle.Fill;
             legend3.Name = "Legend1";
             this.chart3.Legends.Add(legend3);
             this.chart3.Location = new System.Drawing.Point(0, 0);
             this.chart3.Margin = new System.Windows.Forms.Padding(2);
             this.chart3.Name = "chart3";
-            series6.ChartArea = "ChartArea1";
-            series6.Legend = "Legend1";
-            series6.Name = "Series1";
-            this.chart3.Series.Add(series6);
+            series5.ChartArea = "ChartArea1";
+            series5.Legend = "Legend1";
+            series5.Name = "Series1";
+            this.chart3.Series.Add(series5);
             this.chart3.Size = new System.Drawing.Size(929, 479);
             this.chart3.TabIndex = 0;
             this.chart3.Text = "chart3";
+            // 
+            // randomDataToolStripMenuItem
+            // 
+            this.randomDataToolStripMenuItem.Name = "randomDataToolStripMenuItem";
+            this.randomDataToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.randomDataToolStripMenuItem.Text = "Random Data";
+            this.randomDataToolStripMenuItem.Click += new System.EventHandler(this.randomDataToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -498,7 +490,6 @@
         private System.Windows.Forms.ToolStripButton toolStripButton1;
         private System.Windows.Forms.ToolStripButton toolStripButton2;
         private System.Windows.Forms.ToolStripButton toolStripButton3;
-        private System.Windows.Forms.ToolStripStatusLabel lblZoomExtents;
         private System.Windows.Forms.ToolStripSplitButton btnPlot;
         private System.Windows.Forms.ToolStripMenuItem btnPlotInDescendingOrder;
         private System.Windows.Forms.ToolStripSplitButton btnViewChartExtents;
@@ -510,6 +501,7 @@
         private System.Windows.Forms.DataVisualization.Charting.Chart chart2;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.DataVisualization.Charting.Chart chart3;
+        private System.Windows.Forms.ToolStripMenuItem randomDataToolStripMenuItem;
     }
 }
 

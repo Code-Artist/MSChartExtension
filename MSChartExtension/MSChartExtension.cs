@@ -1,10 +1,9 @@
-﻿using System.Linq;
+﻿using EventHandlerSupport;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
-using EventHandlerSupport;
 using System.Diagnostics;
-using System.Runtime.Serialization;
+using System.Drawing;
+using System.Linq;
 
 namespace System.Windows.Forms.DataVisualization.Charting
 {
@@ -90,7 +89,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// <param name="cursorMoved">Cursor moved callabck. Triggered when user move the mouse in chart area.</param>
         /// <param name="zoomChanged">Callback triggered when chart has 
         /// zoomed in or out (and on first painting of the chart).</param>
-        /// <param name="option">Additional user options</param>
+        /// <param name="option">Additional user options <see cref="ChartOption"/></param>
         /// <remarks>
         /// <para>Callback are optional (pass in null to ignore).</para>
         /// <para>WARNING: Add or Remove Chart Area or Chart Series after enabled zoom and pan controls may cause unexpected behavior.</para>
@@ -114,11 +113,11 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     IEnumerable<Series> chartSeries = ptrChart.Series.Where(n => n.ChartArea == cArea.Name);
                     if (chartSeries.Count() == 0)
                     {
-                        Debug.WriteLine(string.Format("WARNING: Chart Area [{0}] does not contains any series.", cArea.Name));
+                        Trace.WriteLine(string.Format("WARNING: Chart {0}, Chart Area [{1}] does not contains any series.", sender.Name, cArea.Name));
                     }
                     else if (chartSeries.Where(n => UnsupportedChartType.Contains(n.ChartType)).Count() > 0)
                     {
-                        Debug.WriteLine(string.Format("WARNING: Chart Area [{0}] contains unsupported series.", cArea.Name));
+                        Trace.WriteLine(string.Format("WARNING: Chart {0}, Chart Area [{1}] contains unsupported series.", sender.Name, cArea.Name));
                     }
                     else ptrChartData.SupportedChartArea.Add(cArea);
                 }
@@ -126,7 +125,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 if (ptrChartData.SupportedChartArea.Count == 0)
                 {
                     //No Supported Chart Area found, disable controls.
-                    Debug.WriteLine("WARNING: Chart type not supported! Controls disabled!");
+                    Trace.WriteLine("WARNING: Chart type not supported! Controls disabled!");
                     ChartTool.Remove(sender);
                     return;
                 }
@@ -164,6 +163,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 ptrChart.MouseUp += ChartControl_MouseUp;
                 ptrChart.KeyDown += ChartControl_KeyDown;
                 ptrChart.PreviewKeyDown += ChartControl_PreviewKeyDown;
+                ptrChart.AxisViewChanged += ChartControl_AxisViewChanged;
 
                 //Override settings.
                 foreach (ChartArea ptrChartArea in ptrChart.ChartAreas)
@@ -185,7 +185,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
                 if (ptrChartData.Option.Theme != null)
                 {
-                    ptrChart.AssignTheme(ptrChartData.Option.Theme);
+                    ptrChartData.Option.Theme.AssignTheme(ptrChart);
                 }
 
             }
@@ -207,6 +207,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 ptrChart.MouseUp -= ChartControl_MouseUp;
                 ptrChart.KeyDown -= ChartControl_KeyDown;
                 ptrChart.PreviewKeyDown -= ChartControl_PreviewKeyDown;
+                ptrChart.AxisViewChanged -= ChartControl_AxisViewChanged;
 
                 ChartTool[ptrChart].Restore();
                 ChartTool.Remove(ptrChart);
@@ -225,36 +226,6 @@ namespace System.Windows.Forms.DataVisualization.Charting
             else
                 return ChartTool[sender].ToolState;
         }
-
-        #region [ Theme ]
-
-        private static void AssignTheme(this Chart sender, ThemeBase theme)
-        {
-            sender.BackColor = theme.BackColor;
-            foreach (Title t in sender.Titles)
-            {
-                t.ForeColor = theme.TitleColor;
-            }
-            foreach (ChartArea a in sender.ChartAreas)
-            {
-                a.BackColor = theme.ChartAreaBackColor;
-                foreach (Axis x in a.Axes)
-                {
-                    x.LineColor = theme.AxisLineColor;
-                    x.MajorGrid.LineColor = x.MajorTickMark.LineColor = theme.AxisLineColor;
-                    x.MinorGrid.LineColor = x.MinorTickMark.LineColor = theme.AxisLineColor;
-                    x.LabelStyle.ForeColor = theme.AxisLabelColor;
-                    x.TitleForeColor = theme.AxisLabelColor;
-                }
-            }
-            foreach(Legend l in sender.Legends)
-            {
-                l.BackColor = theme.BackColor;
-                l.ForeColor = theme.AxisLabelColor;
-            }
-        }
-
-        #endregion
 
         #region [ Cursors ]
 
@@ -456,18 +427,8 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     SetChartControlState(ptrChart, MSChartExtensionToolState.Select2);
                     break;
                 case "Clear Cursors...":
-                    ptrChart.RemoveAnnotation(ptrChartArea.Name + "Cursor_1X");
-                    ptrChart.RemoveAnnotation(ptrChartArea.Name + "Cursor_2X");
-                    ptrChart.RemoveAnnotation(ptrChartArea.Name + "Cursor_1Y");
-                    ptrChart.RemoveAnnotation(ptrChartArea.Name + "Cursor_2Y");
-                    ptrChart.RemoveAnnotation(ptrChartArea.Name + "cursor1_Label");
-                    ptrChart.RemoveAnnotation(ptrChartArea.Name + "cursor2_Label");
-                    ptrChartData.Cursor1.X = double.NaN;
-                    ptrChartData.Cursor1.Y = double.NaN;
-                    ptrChartData.PositionChangedCallback?.Invoke(ptrChart, ptrChartData.Cursor1);
-                    ptrChartData.Cursor2.X = double.NaN;
-                    ptrChartData.Cursor2.Y = double.NaN;
-                    ptrChartData.PositionChangedCallback?.Invoke(ptrChart, ptrChartData.Cursor2);
+                    ClearCursor1(ptrChartArea, ptrChartData);
+                    ClearCursor2(ptrChartArea, ptrChartData);
                     break;
                 case "Zoom Window":
                     SetChartControlState(ptrChart, MSChartExtensionToolState.Zoom);
@@ -488,6 +449,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                         ptrChartArea.AxisX2.ScaleView.ZoomReset();
                         ptrChartArea.AxisY.ScaleView.ZoomReset();
                         ptrChartArea.AxisY2.ScaleView.ZoomReset();
+                        ptrChartData.RepaintBufferedData();
                         WindowMessagesNativeMethods.ResumeDrawing(ptrChart);
                         ChartTool[ptrChart].ZoomChangedCallback?.Invoke(ptrChart);
                     }
@@ -497,7 +459,10 @@ namespace System.Windows.Forms.DataVisualization.Charting
                         using (MSChartExtensionZoomDialog dlg = new Charting.MSChartExtensionZoomDialog(ptrChartArea))
                         {
                             if (dlg.ShowDialog() == DialogResult.OK)
+                            {
+                                ptrChartData.RepaintBufferedData();
                                 ChartTool[ptrChart].ZoomChangedCallback?.Invoke(ptrChart);
+                            }
                         }
                     }
                     break;
@@ -557,7 +522,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                                 }
 
                             }
-                            if (ptrChartData.Option.Theme != null) ptrChart.AssignTheme(ptrChartData.Option.Theme);
+                            if (ptrChartData.Option.Theme != null) ptrChartData.Option.Theme.AssignTheme(ptrChart);
                             ptrChart.Invalidate();
                         }
                     }
@@ -594,7 +559,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// <param name="state">Control State</param>
         public static void SetChartControlState(Chart sender, MSChartExtensionToolState state)
         {
-            ChartTool[(Chart)sender].ToolState = state;
+            ChartTool[sender].ToolState = state;
             UpdateChartControlState(sender);
         }
 
@@ -612,7 +577,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 }
             }
 
-            ChartData ptrChartData = ChartTool[(Chart)sender];
+            ChartData ptrChartData = ChartTool[sender];
             if (ptrChartData.Enabled == false)
             {
                 sender.Cursor = Cursors.Arrow;
@@ -650,6 +615,14 @@ namespace System.Windows.Forms.DataVisualization.Charting
             else if (e.KeyCode == Keys.OemPeriod) MoveCursor(sender as Chart, CursorDirection.Right);
         }
 
+        private static void ChartControl_AxisViewChanged(object sender, ViewEventArgs e)
+        {
+            Chart ptrChart = sender as Chart;
+            ChartData ptrChartData = ChartTool[ptrChart];
+            ptrChartData.RepaintBufferedData();
+            ptrChartData.ZoomChangedCallback?.Invoke(ptrChart);
+        }
+
         private enum CursorDirection { Right, Left }
 
         private static void MoveCursor(Chart chart, CursorDirection dir)
@@ -658,12 +631,10 @@ namespace System.Windows.Forms.DataVisualization.Charting
             ChartCursor ptrCursor = ptrChartData.ToolState == MSChartExtensionToolState.Select ? ptrChartData.Cursor1 : ptrChartData.Cursor2;
             Series ptrSeries = ptrCursor.SelectedChartSeries;
 
-            Debug.WriteLine("DataIndex = " + ptrCursor.DataIndex.ToString());
             if (ptrCursor.DataIndex == -1) ptrCursor.DataIndex = 0;
 
             if (dir == CursorDirection.Left) ptrCursor.DataIndex--;
             else if (dir == CursorDirection.Right) ptrCursor.DataIndex++;
-            Debug.WriteLine("New DataIndex = " + ptrCursor.DataIndex.ToString());
 
             if (ptrCursor.DataIndex <= 0) ptrCursor.DataIndex = 0;
             else if (ptrCursor.DataIndex >= ptrSeries.Points.Count()) ptrCursor.DataIndex = ptrSeries.Points.Count() - 1;
@@ -827,7 +798,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
         #region [ (PRIVATE) Chart - Mouse Events ]
 
         private static bool MouseDowned;
-        private static double X2Start, Y2Start;
+        private static double XStart, YStart, X2Start, Y2Start;
 
         private static ChartArea ChartAreaHitTest(object sender, Point cursorPos)
         {
@@ -867,6 +838,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     ScaleViewScroll(ptrChartArea.AxisY2, e.Delta);
                     ScaleViewScroll(ptrChartArea.AxisY, e.Delta);
                 }
+                else return;
             }
             else if (Form.ModifierKeys == Keys.Control)
             {
@@ -883,8 +855,9 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     ScaleViewScroll(ptrChartArea.AxisX, e.Delta);
                     ScaleViewScroll(ptrChartArea.AxisX2, e.Delta);
                 }
-
+                else return;
             }
+            ptrChartData.RepaintBufferedData();
             ptrChartData.ZoomChangedCallback?.Invoke(ptrChart);
         }
 
@@ -959,9 +932,15 @@ namespace System.Windows.Forms.DataVisualization.Charting
             //    reset automatically (remove the next two lines and zoom a few times to see)
             Point startAndEndPt = e.Location;
             const bool roundToBoundary = true;
+
+            ptrChartArea.CursorX.AxisType = !Double.IsNaN(ptrChartArea.AxisX.Minimum) ? AxisType.Primary : AxisType.Secondary;
+            ptrChartArea.CursorY.AxisType = !Double.IsNaN(ptrChartArea.AxisY.Minimum) ? AxisType.Primary : AxisType.Secondary;
             ptrChartArea.CursorX.SetSelectionPixelPosition(startAndEndPt, startAndEndPt, roundToBoundary);
             ptrChartArea.CursorY.SetSelectionPixelPosition(startAndEndPt, startAndEndPt, roundToBoundary);
 
+            //Value for PAN Control
+            XStart = ptrChartArea.AxisX.PixelPositionToValue(e.Location.X);
+            YStart = ptrChartArea.AxisY.PixelPositionToValue(e.Location.Y);
             X2Start = ptrChartArea.AxisX2.PixelPositionToValue(e.Location.X);
             Y2Start = ptrChartArea.AxisY2.PixelPositionToValue(e.Location.Y);
 
@@ -1160,7 +1139,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 {
                     //Mouse crossed border, verify and update 'passport'.
                     ptrChartData.ActiveChartArea = hitArea;
-                    Debug.WriteLine("Active Chart Area: " + (ptrChartData.ActiveChartArea == null ? "NULL" : ptrChartData.ActiveChartArea.Name));
+                    //Debug.WriteLine("Active Chart Area: " + (ptrChartData.ActiveChartArea == null ? "NULL" : ptrChartData.ActiveChartArea.Name));
 
                     if (ptrChartData.ActiveChartArea != null)
                     {
@@ -1204,18 +1183,32 @@ namespace System.Windows.Forms.DataVisualization.Charting
             //Check if all series of this chart have no data
             if (IsChartAreaEmpty(ptrChart, ptrChartArea)) { UpdateChartControlState(ptrChart); return; }
 
-            double selX, selY, selX2, selY2;
-            selX = selY = selX2 = selY2 = 0;
+            double selX, selY, selX1, selY1, selX2, selY2;
+            selX = selY = selX1 = selY1 = selX2 = selY2 = 0;
+            Axis ptrXAxis, ptrYAxis;
             try
             {
-                selX = ptrChartArea.AxisX.PixelPositionToValue(e.Location.X);
-                selY = ptrChartArea.AxisY.PixelPositionToValue(e.Location.Y);
+                ptrXAxis = ptrChartArea.AxisX;
+                ptrYAxis = ptrChartArea.AxisY;
+                selX = selX1 = ptrChartArea.AxisX.PixelPositionToValue(e.Location.X);
+                selY = selY1 = ptrChartArea.AxisY.PixelPositionToValue(e.Location.Y);
                 selX2 = ptrChartArea.AxisX2.PixelPositionToValue(e.Location.X);
                 selY2 = ptrChartArea.AxisY2.PixelPositionToValue(e.Location.Y);
 
-                //Debug.WriteLine(String.Format("Selection: {0}, {1}, {2}, {3}", selX, selX2, selY, selY2));
+                if (Double.IsNaN(ptrChartArea.AxisX.Minimum))
+                {
+                    selX = selX2;
+                    ptrXAxis = ptrChartArea.AxisX2;
+                }
 
-                if (!ptrChartArea.ChartAreaBoundaryTest(ptrChartArea.AxisX, ptrChartArea.AxisY, selX, selY)) return; //Pointer outside boundary.
+                if (Double.IsNaN(ptrChartArea.AxisY.Minimum))
+                {
+                    selY = selY2;
+                    ptrYAxis = ptrChartArea.AxisY2;
+                }
+
+                selY = !Double.IsNaN(ptrChartArea.AxisY.Minimum) ? selY1 : selY2;
+                if (!ptrChartArea.ChartAreaBoundaryTest(ptrXAxis, ptrYAxis, selX, selY)) return; //Pointer outside boundary.
 
                 ChartValueType xValueType = ptrChart.Series.Where(x => x.ChartArea == ptrChartArea.Name).Where(x => x.XAxisType == AxisType.Primary).First().XValueType;
                 ChartValueType yValueType = ptrChart.Series.Where(x => x.ChartArea == ptrChartArea.Name).Where(x => x.XAxisType == AxisType.Primary).First().XValueType;
@@ -1271,8 +1264,8 @@ namespace System.Windows.Forms.DataVisualization.Charting
                         if (ptrChartArea.AxisX.ScaleView.IsZoomed ||
                             ptrChartArea.AxisY.ScaleView.IsZoomed)
                         {
-                            double dx = -selX + ptrChartArea.CursorX.SelectionStart;
-                            double dy = -selY + ptrChartArea.CursorY.SelectionStart;
+                            double dx = -selX1 + XStart;
+                            double dy = -selY1 + YStart;
                             double dx2 = -selX2 + X2Start;
                             double dy2 = -selY2 + Y2Start;
 
@@ -1285,6 +1278,8 @@ namespace System.Windows.Forms.DataVisualization.Charting
                             ptrChartArea.AxisY.ScaleView.Scroll(newY);
                             ptrChartArea.AxisX2.ScaleView.Scroll(newX2);
                             ptrChartArea.AxisY2.ScaleView.Scroll(newY2);
+
+                            ptrChartData.RepaintBufferedData();
                         }
                     }
                     #endregion
@@ -1308,82 +1303,111 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 case MSChartExtensionToolState.ZoomX:
                 case MSChartExtensionToolState.ZoomY:
 
-                    //Zoom area (Pixel)
+                    //Zoom Window (Axis Value)
                     double XStart = ptrChartArea.CursorX.SelectionStart;
                     double XEnd = ptrChartArea.CursorX.SelectionEnd;
                     double YStart = ptrChartArea.CursorY.SelectionStart;
                     double YEnd = ptrChartArea.CursorY.SelectionEnd;
-
                     if ((XStart == XEnd) && (YStart == YEnd)) return;
 
-                    //Zoom area for X Axis
+                    //Get Pixel Position based on Cursor Axis Type
+                    double xStartPos, xEndPos, yStartPos, yEndPos;
+                    if (ptrChartArea.CursorX.AxisType == AxisType.Primary)
+                    {
+                        xStartPos = ptrChartArea.AxisX.ValueToPixelPosition(XStart);
+                        xEndPos = ptrChartArea.AxisX.ValueToPixelPosition(XEnd);
+                    }
+                    else
+                    {
+                        xStartPos = ptrChartArea.AxisX2.ValueToPixelPosition(XStart);
+                        xEndPos = ptrChartArea.AxisX2.ValueToPixelPosition(XEnd);
+                    }
+
+                    if (ptrChartArea.CursorY.AxisType == AxisType.Primary)
+                    {
+                        yStartPos = ptrChartArea.AxisY.ValueToPixelPosition(YStart);
+                        yEndPos = ptrChartArea.AxisY.ValueToPixelPosition(YEnd);
+                    }
+                    else
+                    {
+                        yStartPos = ptrChartArea.AxisY2.ValueToPixelPosition(YStart);
+                        yEndPos = ptrChartArea.AxisY2.ValueToPixelPosition(YEnd);
+                    }
+
+                    //Primary Axis;
+                    double x1Start = ptrChartArea.AxisX.PixelPositionToValue(xStartPos);
+                    double x1End = ptrChartArea.AxisX.PixelPositionToValue(xEndPos);
+                    double y1Start = ptrChartArea.AxisY.PixelPositionToValue(yStartPos);
+                    double y1End = ptrChartArea.AxisY.PixelPositionToValue(yEndPos);
+                    double x1Left = Math.Min(x1Start, x1End);
+                    double x1Right = Math.Max(x1Start, x1End);
+                    double y1Top = Math.Max(y1Start, y1End);
+                    double y1Bottom = Math.Min(y1Start, y1End);
+
+                    //Secondary Axis
+                    double x2Start = ptrChartArea.AxisX2.PixelPositionToValue(xStartPos);
+                    double x2End = ptrChartArea.AxisX2.PixelPositionToValue(xEndPos);
+                    double y2Start = ptrChartArea.AxisY2.PixelPositionToValue(yStartPos);
+                    double y2End = ptrChartArea.AxisY2.PixelPositionToValue(yEndPos);
+                    double x2Left = Math.Min(x2Start, x2End);
+                    double x2Right = Math.Max(x2Start, x2End);
+                    double y2Top = Math.Max(y2Start, y2End);
+                    double y2Bottom = Math.Min(y2Start, y2End);
+
+                    //Precision Adjustment
                     ChartOption option = ptrChartData.Option;
-                    double left = Math.Min(XStart, XEnd);
-                    double right = Math.Max(XStart, XEnd);
                     if (option.XAxisPrecision > 0)
                     {
-                        //Precision Correction
-                        left = Math.Round(left, option.XAxisPrecision);
-                        right = Math.Round(right, option.XAxisPrecision);
+                        x1Left = Math.Round(x1Left, option.XAxisPrecision);
+                        x1Right = Math.Round(x1Right, option.XAxisPrecision);
+                        x2Left = Math.Round(x2Left, option.XAxisPrecision);
+                        x2Right = Math.Round(x2Right, option.XAxisPrecision);
                     }
-                    double XMin = ptrChartArea.AxisX.ValueToPosition(left);
-                    double XMax = ptrChartArea.AxisX.ValueToPosition(right);
-                    //Zoom area for Y Axis
-                    double bottom = Math.Min(YStart, YEnd);
-                    double top = Math.Max(YStart, YEnd);
                     if (option.YAxisPrecision > 0)
                     {
-                        //Precision Correction
-                        top = Math.Round(top, option.YAxisPrecision);
-                        bottom = Math.Round(bottom, option.YAxisPrecision);
+                        y1Top = Math.Round(y1Top, option.XAxisPrecision);
+                        y1Bottom = Math.Round(y1Bottom, option.XAxisPrecision);
+                        y2Top = Math.Round(y2Top, option.XAxisPrecision);
+                        y2Bottom = Math.Round(y2Bottom, option.XAxisPrecision);
                     }
-                    double YMin = ptrChartArea.AxisY.ValueToPosition(bottom);
-                    double YMax = ptrChartArea.AxisY.ValueToPosition(top);
 
                     // NOTE: left <= right, even if Axis.IsReversed
-                    //X-Axis
+                    //Zomm X-Axis
                     if ((state == MSChartExtensionToolState.Zoom) || (state == MSChartExtensionToolState.ZoomX))
                     {
-                        if ((XMin == XMax) || (left < ptrChartArea.AxisX.Minimum) || (right > ptrChartArea.AxisX.Maximum))
+                        if ((x1Left >= ptrChartArea.AxisX.Minimum) && (x1Right <= ptrChartArea.AxisX.Maximum) && (x1Left != x1Right))
                         {
-                            //Handle conditions which caused exception on zoom operation
-                            ptrChartArea.CursorX.SetSelectionPosition(0, 0);
-                            ptrChartArea.CursorY.SetSelectionPosition(0, 0);
-                            return;
+                            ptrChartArea.AxisX.ScaleView.Zoom(x1Left, x1Right);
                         }
-
-                        ptrChartArea.AxisX.ScaleView.Zoom(left, right);
-                        ptrChartArea.AxisX2.ScaleView.Zoom(
-                            ptrChartArea.AxisX2.PositionToValue(XMin),
-                            ptrChartArea.AxisX2.PositionToValue(XMax));
+                        if ((x2Left >= ptrChartArea.AxisX2.Minimum) && (x2Right <= ptrChartArea.AxisX2.Maximum) && (x2Left != x2Right))
+                        {
+                            ptrChartArea.AxisX2.ScaleView.Zoom(x2Left, x2Right);
+                        }
                     }
                     //Y-Axis
                     if ((state == MSChartExtensionToolState.Zoom) || (state == MSChartExtensionToolState.ZoomY))
                     {
-                        if ((YMin == YMax) || (bottom < ptrChartArea.AxisY.Minimum) || (top > ptrChartArea.AxisY.Maximum))
+                        if ((y1Bottom >= ptrChartArea.AxisY.Minimum) && (y1Top <= ptrChartArea.AxisY.Maximum) && (y1Bottom != y1Top))
                         {
-                            //Handle conditions which caused exception on zoom operation
-                            ptrChartArea.CursorX.SetSelectionPosition(0, 0);
-                            ptrChartArea.CursorY.SetSelectionPosition(0, 0);
-                            return;
+                            ptrChartArea.AxisY.ScaleView.Zoom(y1Bottom, y1Top);
                         }
-
-                        ptrChartArea.AxisY.ScaleView.Zoom(bottom, top);
-                        ptrChartArea.AxisY2.ScaleView.Zoom(
-                            ptrChartArea.AxisY2.PositionToValue(YMin),
-                            ptrChartArea.AxisY2.PositionToValue(YMax));
+                        if ((y2Bottom >= ptrChartArea.AxisY2.Minimum) && (y2Top <= ptrChartArea.AxisY2.Maximum) && (y2Bottom != y2Top))
+                        {
+                            ptrChartArea.AxisY2.ScaleView.Zoom(y2Bottom, y2Top);
+                        }
                     }
 
                     //Clear selection (the following seem to be equivalent)
                     ptrChartArea.CursorX.SetSelectionPosition(0, 0);
                     ptrChartArea.CursorY.SetSelectionPosition(0, 0);
 
-
+                    ptrChartData.RepaintBufferedData();
                     ptrChartData.ZoomChangedCallback?.Invoke(ptrChart);
+                    SetChartControlState(ptrChart, MSChartExtensionToolState.Select);
                     break;
 
                 case MSChartExtensionToolState.Pan:
-                    ptrChartData.ZoomChangedCallback?.Invoke(ptrChart);
+                    //ptrChartData.ZoomChangedCallback?.Invoke(ptrChart);
                     break;
             }
         }
@@ -1415,16 +1439,15 @@ namespace System.Windows.Forms.DataVisualization.Charting
             double xTarget = xAxis.PixelPositionToValue(e.Location.X);
             double yTarget = yAxis.PixelPositionToValue(e.Location.Y);
 
+            // Get Incremental Ratio: Value / pixels
+            double xRatio = (xAxis.ScaleView.ViewMaximum - xAxis.ScaleView.ViewMinimum) / (xAxis.ValueToPixelPosition(xAxis.ScaleView.ViewMaximum) - xAxis.ValueToPixelPosition(xAxis.ScaleView.ViewMinimum));
+            double yRatio = (yAxis.ScaleView.ViewMaximum - yAxis.ScaleView.ViewMinimum) / (yAxis.ValueToPixelPosition(yAxis.ScaleView.ViewMaximum) - yAxis.ValueToPixelPosition(xAxis.ScaleView.ViewMinimum));
+
             //Sort data point assending by X-Values
             DataPoint[] datas = series.Points.OrderBy(x => x.XValue).ToArray();
 
-            //Get nearest data points
-            int iLower, iUpper;
-            iUpper = iLower = 0;
+            //Get data point closed to mouse cursor x
             int estIndex = (int)(datas.Length * (xTarget - xMin) / (xMax - xMin));
-
-            //iLower --> XValue < xTarget
-            //iUpper --> XValue > xTarget
             if (datas[estIndex].XValue > xTarget)
             {
                 //Serch Down
@@ -1432,8 +1455,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 {
                     if (datas[x].XValue <= xTarget)
                     {
-                        iLower = x;
-                        iUpper = x + 1;
+                        estIndex = x;
                         break;
                     }
                 }
@@ -1445,8 +1467,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 {
                     if (datas[x].XValue >= xTarget)
                     {
-                        iUpper = x;
-                        iLower = x - 1;
+                        estIndex = x;
                         break;
                     }
                 }
@@ -1455,21 +1476,26 @@ namespace System.Windows.Forms.DataVisualization.Charting
             //Search out of range.... iLower = iUpper
 
             //Distance = x^2 + y^2
-            double distLower = Math.Pow(datas[iLower].XValue - xTarget, 2) + Math.Pow(datas[iLower].YValues[0] - yTarget, 2);
-            double distUpper = Math.Pow(datas[iUpper].XValue - xTarget, 2) + Math.Pow(datas[iUpper].YValues[0] - yTarget, 2);
+            int iLower = Math.Max(0, estIndex - 20);
+            int iUppwer = Math.Min(estIndex + 20, datas.Length);
 
+            double minDist = Double.MaxValue;
+
+            //Get Data point with minimum distance within windowed data points
+            double dist;
             int dataIndex = 0;
-            if (distLower > distUpper)
+            for (int x = iLower; x < iUppwer; x++)
             {
-                XResult = datas[iUpper].XValue;
-                YResult = datas[iUpper].YValues[0];
-                dataIndex = iUpper;
-            }
-            else
-            {
-                XResult = datas[iLower].XValue;
-                YResult = datas[iLower].YValues[0];
-                dataIndex = iLower;
+                DataPoint ptrData = datas[x];
+                //Calculate distance based on Axis ratio.
+                dist = Math.Pow((ptrData.XValue - xTarget) / xRatio, 2) + Math.Pow((ptrData.YValues[0] - yTarget) / yRatio, 2);
+                if (dist < minDist)
+                {
+                    dataIndex = x;
+                    minDist = dist;
+                    XResult = ptrData.XValue;
+                    YResult = ptrData.YValues[0];
+                }
             }
 
             Trace.WriteLine("Snap data index = " + dataIndex);
@@ -1486,12 +1512,56 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// <param name="sender"></param>
         public static void ClearPoints(this Series sender)
         {
+            ClearPointsInt(sender, true);
+            ChartArea ptrChartArea = sender.GetChartArea();
+            ChartData ptrChartData = sender.GetChartData();
+            if (ptrChartData.Cursor1.SelectedChartSeries == sender) ClearCursor1(ptrChartArea, ptrChartData);
+            if (ptrChartData.Cursor2.SelectedChartSeries == sender) ClearCursor2(ptrChartArea, ptrChartData);
+        }
+
+        private static void ClearCursor1(ChartArea chartArea, ChartData chartData)
+        {
+            Chart ptrChart = ChartTool.FirstOrDefault(x => x.Value == chartData).Key;
+            ptrChart.RemoveAnnotation(chartArea.Name + "Cursor_1X");
+            ptrChart.RemoveAnnotation(chartArea.Name + "Cursor_1Y");
+            ptrChart.RemoveAnnotation(chartArea.Name + "cursor1_Label");
+            chartData.Cursor1.X = double.NaN;
+            chartData.Cursor1.Y = double.NaN;
+            chartData.PositionChangedCallback?.Invoke(ptrChart, chartData.Cursor1);
+        }
+
+        private static void ClearCursor2(ChartArea chartArea, ChartData chartData)
+        {
+            Chart ptrChart = ChartTool.FirstOrDefault(x => x.Value == chartData).Key;
+            ptrChart.RemoveAnnotation(chartArea.Name + "Cursor_2X");
+            ptrChart.RemoveAnnotation(chartArea.Name + "Cursor_2Y");
+            ptrChart.RemoveAnnotation(chartArea.Name + "cursor2_Label");
+            chartData.Cursor2.X = double.NaN;
+            chartData.Cursor2.Y = double.NaN;
+            chartData.PositionChangedCallback?.Invoke(ptrChart, chartData.Cursor2);
+        }
+
+        /// <summary>
+        /// Internal used implementation. <see cref="ClearPoints(Series)"/>
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="clearDataBuffer">Delete buffered data for virtual mode</param>
+        private static void ClearPointsInt(this Series sender, bool clearDataBuffer = true)
+        {
             sender.Points.SuspendUpdates();
             while (sender.Points.Count > 0)
                 sender.Points.RemoveAt(sender.Points.Count - 1);
             sender.Points.ResumeUpdates();
             sender.Points.Clear(); //Force refresh.
+
+            if (clearDataBuffer)
+            {
+                if (sender.GetChartData().Option.BufferedMode)
+                    sender.GetSeriesDataBuffer(true).Clear();
+            }
         }
+
+
         /// <summary>
         /// Clear all series and Annotations
         /// </summary>
@@ -1537,6 +1607,239 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     ptrChart.Annotations.RemoveAt(x--);
                 }
             }
+        }
+
+        #endregion
+
+        #region [ Add Data ]
+
+        /// <summary>
+        /// Add data point to data buffer. Used with <see cref="ChartOption.BufferedMode"/>
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="xValue"></param>
+        /// <param name="yValue"></param>
+        public static void AddXYBuffered(this Series sender, double xValue, double yValue)
+        {
+            sender.GetSeriesDataBuffer(true)?.AddPoint(xValue, yValue);
+        }
+
+        private static void RepaintBufferedData(this ChartData sender)
+        {
+            if (!sender.Option.BufferedMode) return;
+            foreach (SeriesDataBuffer s in sender.SeriesData)
+            {
+                if (s.DataBuffer.Count == 0) continue; //ToDo: Shall we allow mixture of series? Buffered and non-buffered series?
+                if (s.Series.ChartArea == sender.ActiveChartArea.Name)
+                    s.Series.PlotBufferedData();
+            }
+        }
+
+        /// <summary>
+        /// Plot chart using data buffer. Only applicable for <see cref="ChartOption.BufferedMode"/>
+        /// </summary>
+        /// <param name="sender"></param>
+        public static void PlotBufferedData(this Series sender)
+        {
+            ChartArea ptrChartArea = GetChartArea(sender);
+
+            //Identify Series Axis
+            Axis ptrXAxis = sender.XAxisType == AxisType.Primary ? ptrChartArea.AxisX : ptrChartArea.AxisX2;
+            Axis ptrYAxis = sender.YAxisType == AxisType.Primary ? ptrChartArea.AxisY : ptrChartArea.AxisY2;
+
+            //Get Visible Boundary
+            RectangleF region = ptrChartArea.GetChartVisibleAreaBoundary(ptrXAxis, ptrYAxis);
+            SeriesDataBuffer ptrDataBuffer = GetSeriesDataBuffer(sender);
+            if (ptrDataBuffer == null) return;
+
+            sender.ClearPointsInt(clearDataBuffer: false);
+            IList<PointD> VisibleDatas = ptrDataBuffer.DataBuffer;
+            if (VisibleDatas.Count == 0) return;
+
+            if (ptrXAxis.ScaleView.IsZoomed || ptrYAxis.ScaleView.IsZoomed)
+            {
+                float width10p = (float)(region.Width * 0.20);
+
+                float leftBoundary = (float)Math.Max(ptrDataBuffer.XMin, region.X - width10p);
+                float leftWidth = region.X - leftBoundary; //Get widht increment on left, could be less than 10%
+                region.X = leftBoundary;
+                region.Width = (float)Math.Min(ptrDataBuffer.XMax - region.X, region.Width + leftWidth + width10p);
+
+                //Get data points in visible area.
+                if (ptrDataBuffer.DataBuffer.Count > 0)
+                {
+                    if (ptrXAxis.IsReversed)
+                        VisibleDatas = ptrDataBuffer.DataBuffer.Where(n => ((n.X >= region.Right) && (n.X <= region.Left))).ToList();
+                    else
+                        VisibleDatas = ptrDataBuffer.DataBuffer.Where(n => ((n.X >= region.Left) && (n.X <= region.Right))).ToList();
+                }
+            }
+
+            ChartOption ptrOption = GetChartData(sender).Option;
+            if (VisibleDatas.Count > ptrOption.DisplayDataSize * 2)
+            {
+                VisibleDatas = DownsampleLTTB(VisibleDatas.ToArray(), ptrOption.DisplayDataSize);
+            }
+
+            //Plot Min Point if out of sight
+            if (region.Left > ptrDataBuffer.XMin) sender.Points.AddXY(ptrDataBuffer.XMinPoint.X, ptrDataBuffer.XMinPoint.Y);
+
+            //Plot Data
+            foreach (PointD p in VisibleDatas)
+            {
+                sender.Points.AddXY(p.X, p.Y);
+            }
+
+            //Plot Max Point if out of sight
+            if (region.Right < ptrDataBuffer.XMax) sender.Points.AddXY(ptrDataBuffer.XMaxPoint.X, ptrDataBuffer.XMaxPoint.Y);
+
+        }
+
+        private static PointD[] DownsampleLTTB(PointD[] array, int length, bool dynamicX = true)
+        {
+            //Largest-Triangle-Three Bucket Downsampling 
+            //Technical Reference: https://github.com/sveinn-steinarsson/highcharts-downsample
+            //Code Reference: https://gist.github.com/adrianseeley/264417d295ccd006e7fd
+
+            //ToDo: With dynamicX, Actual data size returned might be less, Handle data point with not data by not returning 0,0. Use Dynamic List
+            PointD[] window = new PointD[length];
+            int w = 0;
+            int bucket_size_less_start_and_end = length - 2;
+
+            double bucket_size = (double)(array.Length - 2) / bucket_size_less_start_and_end;
+            int a = 0;
+            int next_a = 0;
+            PointD max_area_point = new PointD();
+            window[w++] = array[a]; // Always add the first point
+
+            int start = 0, end = 0;
+            int bucket_start = 1, bucket_end = 1;
+
+            //Dynamic X Values (For data points where X incremental is not constant)
+            double bucketSizeX = (array[array.Length - 2].X - array[1].X) / bucket_size_less_start_and_end; //Calculate bucket X width exclude first and last points
+            double bucketBoundary = array[0].X + bucketSizeX;   //Next bucket boundary
+
+            if (dynamicX)
+            {
+                while (array[bucket_end].X < bucketBoundary)
+                {
+                    bucket_end++;
+                }
+            }
+            else
+            {
+                bucket_end = (int)(Math.Floor(bucket_size) + 1);   //End index of current bucket
+            }
+            //Debug.WriteLine("Bucket Start: " + bucket_start + ", " + bucket_end);
+
+            for (int i = 0; i < bucket_size_less_start_and_end; i++)
+            {
+                // Calculate point average for next bucket (containing c)
+                double avg_x = 0;
+                double avg_y = 0;
+                if (dynamicX)
+                {
+                    while (array[start].X < bucketBoundary) { start++; }
+                    bucketBoundary += bucketSizeX;
+                    end = start;
+                    if (end <= (array.Length - 1)) //Prevent buffer overrun
+                    {
+                        while (array[end].X < bucketBoundary)
+                        {
+                            end++;
+                            if (end == array.Length) break;
+                        }
+                    }
+                }
+                else
+                {
+                    //Get bucket data, assume x increased with fixed interval
+                    start = (int)(Math.Floor((i + 1) * bucket_size) + 1);   //Start index of next bucket
+                    end = (int)(Math.Floor((i + 2) * bucket_size) + 1);     //End index of next bucket
+                }
+
+                if (end >= array.Length)    //Prevent index overrun
+                {
+                    end = array.Length;
+                }
+
+                int span = end - start; //Span = number of data points in next bucket
+                //Debug.WriteLine("Bucket " + i + ": " + start + ", " + end + " : " + span);
+
+                if (span <= 0) continue; //Skip empty bucket
+                else
+                {
+                    for (int m = start; m < end; m++)
+                    {
+                        avg_x += m;
+                        avg_y += array[m].Y;
+                    }
+                    avg_x /= span; //Average X Value
+                    avg_y /= span; //Average Y Value
+
+                    // Point a (Reference data point of previous bucket)
+                    double a_x = a;
+                    double a_y = array[a].Y;
+
+                    double max_area = double.MinValue;
+                    for (int n = bucket_start; n < bucket_end; n++)
+                    {
+                        // Calculate triangle area over three buckets
+                        double area = Math.Abs((a_x - avg_x) * (array[n].Y - a_y) - (a_x - n) * (avg_y - a_y)) * 0.5f;
+                        if (area > max_area)
+                        {
+                            max_area = area;
+                            max_area_point = array[n];
+                            next_a = n; // Next a is this b
+                        }
+                    }
+                    // Pick this point from the Bucket
+                    window[w++] = max_area_point;
+                }
+
+                // Current a becomes the next_a (chosen b)
+                a = next_a;
+
+                //Move on to next bucket
+                bucket_start = start;
+                bucket_end = end;
+                start = end;
+            }
+
+            window[w++] = array[array.Length - 1]; // Always add last
+            if (w < length)
+            {
+                //Resize array in case total length is less
+                Array.Resize(ref window, w);
+                Debug.WriteLine("Actual window size = " + w);
+            }
+            return window;
+        }
+
+        private static ChartArea GetChartArea(this Series sender)
+        {
+            return GetChartData(sender).Source.ChartAreas.FirstOrDefault(x => x.Name == sender.ChartArea);
+        }
+
+        private static ChartData GetChartData(this Series sender)
+        {
+            if (sender == null) throw new ArgumentNullException(nameof(sender));
+            ChartData ptrChartData = ChartTool.FirstOrDefault(x => x.Key.Series.Contains(sender)).Value;
+            if (ptrChartData == null) throw new ArgumentNullException(nameof(AddXYBuffered) + ": No matching series found!");
+            return ptrChartData;
+
+        }
+
+        private static SeriesDataBuffer GetSeriesDataBuffer(this Series sender, bool autoCreate = false)
+        {
+            ChartData ptrChartData = GetChartData(sender);
+            SeriesDataBuffer result = ptrChartData.SeriesData.FirstOrDefault(x => x.Series == sender);
+            if ((result == null) && (autoCreate == true))
+            {
+                result = new SeriesDataBuffer() { Series = sender };
+                ptrChartData.SeriesData.Add(result);
+            }
+            return result;
         }
 
         #endregion
@@ -1875,8 +2178,17 @@ namespace System.Windows.Forms.DataVisualization.Charting
         private static bool ChartAreaBoundaryTest(this ChartArea sender, Axis xAxis, Axis yAxis, double x, double y)
         {
             RectangleF area = GetChartVisibleAreaBoundary(sender, xAxis, yAxis);
-            if ((x < area.Left) || (x > area.Right)) return false;
-            if ((y < area.Bottom) || (y > area.Top)) return false;
+            if (xAxis.IsReversed)
+            {
+                if ((x > area.Left) || (x < area.Right)) return false;      //Reversed Axis
+            }
+            else if ((x < area.Left) || (x > area.Right)) return false;     //Normal Axis
+
+            if (yAxis.IsReversed)
+            {
+                if ((y > area.Bottom) || (y < area.Top)) return false;      //Reversed Axis
+            }
+            else if ((y < area.Bottom) || (y > area.Top)) return false;     //Normal Axis
             return true;
         }
         #endregion

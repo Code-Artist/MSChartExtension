@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace System.Windows.Forms.DataVisualization.Charting
 {
@@ -37,6 +33,10 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// </summary>
         public Color AxisMajorGridColor { get; set; } = Color.Empty;
         /// <summary>
+        /// All Axis: Minor Gird Color, Minor Tick Mark
+        /// </summary>
+        public Color AxisMinorGridColor { get; set; } = Color.Empty;
+        /// <summary>
         /// All Axis: LabelStyel -> ForeColor
         /// </summary>
         public Color AxisLabelColor { get; set; } = Color.Empty;
@@ -44,6 +44,41 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// Chart Title Color
         /// </summary>
         public Color TitleColor { get; set; } = Color.Empty;
+        /// <summary>
+        /// Border Skin Style
+        /// </summary>
+        public BorderSkinStyle BorderSkin { get; set; } = BorderSkinStyle.None;
+
+        /// <summary>
+        /// Assign style to chart
+        /// </summary>
+        /// <param name="sender"></param>
+        public virtual void AssignTheme(Chart sender)
+        {
+            sender.BackColor = BackColor;
+            foreach (Title t in sender.Titles)
+            {
+                t.ForeColor = TitleColor;
+            }
+            foreach (ChartArea a in sender.ChartAreas)
+            {
+                a.BackColor = ChartAreaBackColor;
+                foreach (Axis x in a.Axes)
+                {
+                    x.LineColor = AxisLineColor;
+                    x.MajorGrid.LineColor = x.MajorTickMark.LineColor = AxisMajorGridColor;
+                    x.MinorGrid.LineColor = x.MinorTickMark.LineColor = AxisMinorGridColor;
+                    x.LabelStyle.ForeColor = AxisLabelColor;
+                    x.TitleForeColor = AxisLabelColor;
+                }
+            }
+            foreach (Legend l in sender.Legends)
+            {
+                l.BackColor = BackColor;
+                l.ForeColor = AxisLabelColor;
+            }
+            sender.BorderSkin.SkinStyle = BorderSkin;
+        }
 
     }
 }

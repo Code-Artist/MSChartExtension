@@ -74,6 +74,8 @@
     <Compile Include="ConfigurationDialog.Designer.cs">
       <DependentUpon>ConfigurationDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="SeriesDataBuffer.cs" />
+    <Compile Include="Theme\Futuristic.cs" />
     <Compile Include="Theme\DarkTheme.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="MSChartExtension.cs" />
@@ -89,8 +91,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Theme\NightVision.cs" />
     <Compile Include="Theme\ThemeBase.cs" />
     <Compile Include="Theme\ThemeManager.cs" />
+    <Compile Include="Theme\WindowsTheme.cs" />
     <Compile Include="WindowMessagesNativeMethods.cs" />
   </ItemGroup>
   <ItemGroup>

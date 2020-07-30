@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.panel1 = new System.Windows.Forms.Panel();
             this.btCancel = new System.Windows.Forms.Button();
             this.btOK = new System.Windows.Forms.Button();
@@ -51,15 +52,20 @@
             this.cbTheme = new System.Windows.Forms.ComboBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.SeriesGrid = new System.Windows.Forms.DataGridView();
             this.btCheckNone = new System.Windows.Forms.Button();
             this.btCheckAll = new System.Windows.Forms.Button();
-            this.chkSeriesList = new System.Windows.Forms.CheckedListBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.colSeriesEnable = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.colSeries = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colSeriesColor = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colSelectColor = new System.Windows.Forms.DataGridViewButtonColumn();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cursor1LineWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cursor2LineWidth)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.SeriesGrid)).BeginInit();
             this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -68,17 +74,17 @@
             this.panel1.Controls.Add(this.btCancel);
             this.panel1.Controls.Add(this.btOK);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 400);
+            this.panel1.Location = new System.Drawing.Point(0, 401);
             this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(603, 42);
+            this.panel1.Size = new System.Drawing.Size(626, 42);
             this.panel1.TabIndex = 0;
             // 
             // btCancel
             // 
             this.btCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btCancel.Location = new System.Drawing.Point(538, 8);
+            this.btCancel.Location = new System.Drawing.Point(561, 8);
             this.btCancel.Margin = new System.Windows.Forms.Padding(2);
             this.btCancel.Name = "btCancel";
             this.btCancel.Size = new System.Drawing.Size(56, 24);
@@ -90,7 +96,7 @@
             // 
             this.btOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btOK.Location = new System.Drawing.Point(477, 8);
+            this.btOK.Location = new System.Drawing.Point(500, 8);
             this.btOK.Margin = new System.Windows.Forms.Padding(2);
             this.btOK.Name = "btOK";
             this.btOK.Size = new System.Drawing.Size(56, 24);
@@ -114,7 +120,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(42, 65);
+            this.label1.Location = new System.Drawing.Point(42, 61);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(100, 13);
@@ -124,7 +130,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(42, 88);
+            this.label2.Location = new System.Drawing.Point(42, 84);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(100, 13);
@@ -134,7 +140,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(8, 183);
+            this.label3.Location = new System.Drawing.Point(8, 179);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(131, 13);
@@ -143,7 +149,7 @@
             // 
             // txtCursorLabelStringFormat
             // 
-            this.txtCursorLabelStringFormat.Location = new System.Drawing.Point(146, 180);
+            this.txtCursorLabelStringFormat.Location = new System.Drawing.Point(146, 176);
             this.txtCursorLabelStringFormat.Margin = new System.Windows.Forms.Padding(2);
             this.txtCursorLabelStringFormat.Name = "txtCursorLabelStringFormat";
             this.txtCursorLabelStringFormat.Size = new System.Drawing.Size(91, 20);
@@ -153,7 +159,7 @@
             // 
             this.chkShowCursorValue.AutoSize = true;
             this.chkShowCursorValue.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.chkShowCursorValue.Location = new System.Drawing.Point(47, 158);
+            this.chkShowCursorValue.Location = new System.Drawing.Point(47, 154);
             this.chkShowCursorValue.Margin = new System.Windows.Forms.Padding(2);
             this.chkShowCursorValue.Name = "chkShowCursorValue";
             this.chkShowCursorValue.Size = new System.Drawing.Size(116, 17);
@@ -185,7 +191,7 @@
             // btCursor2Color
             // 
             this.btCursor2Color.BackColor = System.Drawing.SystemColors.Control;
-            this.btCursor2Color.Location = new System.Drawing.Point(146, 38);
+            this.btCursor2Color.Location = new System.Drawing.Point(146, 34);
             this.btCursor2Color.Margin = new System.Windows.Forms.Padding(2);
             this.btCursor2Color.Name = "btCursor2Color";
             this.btCursor2Color.Size = new System.Drawing.Size(90, 20);
@@ -196,7 +202,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(67, 41);
+            this.label5.Location = new System.Drawing.Point(67, 37);
             this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(73, 13);
@@ -207,7 +213,7 @@
             // 
             this.cbCursor1DashStyle.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbCursor1DashStyle.FormattingEnabled = true;
-            this.cbCursor1DashStyle.Location = new System.Drawing.Point(145, 109);
+            this.cbCursor1DashStyle.Location = new System.Drawing.Point(145, 105);
             this.cbCursor1DashStyle.Margin = new System.Windows.Forms.Padding(2);
             this.cbCursor1DashStyle.Name = "cbCursor1DashStyle";
             this.cbCursor1DashStyle.Size = new System.Drawing.Size(92, 21);
@@ -216,7 +222,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(41, 111);
+            this.label6.Location = new System.Drawing.Point(41, 107);
             this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(100, 13);
@@ -226,7 +232,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(41, 136);
+            this.label7.Location = new System.Drawing.Point(41, 132);
             this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(100, 13);
@@ -237,7 +243,7 @@
             // 
             this.cbCursor2DashStyle.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbCursor2DashStyle.FormattingEnabled = true;
-            this.cbCursor2DashStyle.Location = new System.Drawing.Point(145, 133);
+            this.cbCursor2DashStyle.Location = new System.Drawing.Point(145, 129);
             this.cbCursor2DashStyle.Margin = new System.Windows.Forms.Padding(2);
             this.cbCursor2DashStyle.Name = "cbCursor2DashStyle";
             this.cbCursor2DashStyle.Size = new System.Drawing.Size(92, 21);
@@ -245,7 +251,7 @@
             // 
             // cursor1LineWidth
             // 
-            this.cursor1LineWidth.Location = new System.Drawing.Point(146, 63);
+            this.cursor1LineWidth.Location = new System.Drawing.Point(146, 59);
             this.cursor1LineWidth.Margin = new System.Windows.Forms.Padding(2);
             this.cursor1LineWidth.Maximum = new decimal(new int[] {
             9999,
@@ -258,7 +264,7 @@
             // 
             // cursor2LineWidth
             // 
-            this.cursor2LineWidth.Location = new System.Drawing.Point(146, 86);
+            this.cursor2LineWidth.Location = new System.Drawing.Point(146, 82);
             this.cursor2LineWidth.Margin = new System.Windows.Forms.Padding(2);
             this.cursor2LineWidth.Maximum = new decimal(new int[] {
             9999,
@@ -311,29 +317,49 @@
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.cbCursor1DashStyle);
             this.groupBox1.Controls.Add(this.btCursor2Color);
-            this.groupBox1.Location = new System.Drawing.Point(340, 10);
+            this.groupBox1.Location = new System.Drawing.Point(370, 10);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(251, 209);
+            this.groupBox1.Size = new System.Drawing.Size(251, 204);
             this.groupBox1.TabIndex = 22;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Cursors";
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.SeriesGrid);
             this.groupBox2.Controls.Add(this.btCheckNone);
             this.groupBox2.Controls.Add(this.btCheckAll);
-            this.groupBox2.Controls.Add(this.chkSeriesList);
             this.groupBox2.Controls.Add(this.chkAllowToHideSeries);
             this.groupBox2.Location = new System.Drawing.Point(12, 10);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(322, 387);
+            this.groupBox2.Size = new System.Drawing.Size(352, 387);
             this.groupBox2.TabIndex = 23;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Series";
             // 
+            // SeriesGrid
+            // 
+            this.SeriesGrid.AllowUserToAddRows = false;
+            this.SeriesGrid.AllowUserToDeleteRows = false;
+            this.SeriesGrid.AllowUserToResizeColumns = false;
+            this.SeriesGrid.AllowUserToResizeRows = false;
+            this.SeriesGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.SeriesGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.colSeriesEnable,
+            this.colSeries,
+            this.colSeriesColor,
+            this.colSelectColor});
+            this.SeriesGrid.Location = new System.Drawing.Point(9, 41);
+            this.SeriesGrid.Name = "SeriesGrid";
+            this.SeriesGrid.RowHeadersVisible = false;
+            this.SeriesGrid.Size = new System.Drawing.Size(337, 340);
+            this.SeriesGrid.TabIndex = 25;
+            this.SeriesGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.SeriesGrid_CellContentClick);
+            this.SeriesGrid.SelectionChanged += new System.EventHandler(this.SeriesGrid_SelectionChanged);
+            // 
             // btCheckNone
             // 
-            this.btCheckNone.Location = new System.Drawing.Point(87, 37);
+            this.btCheckNone.Location = new System.Drawing.Point(271, 14);
             this.btCheckNone.Name = "btCheckNone";
             this.btCheckNone.Size = new System.Drawing.Size(75, 20);
             this.btCheckNone.TabIndex = 4;
@@ -343,7 +369,7 @@
             // 
             // btCheckAll
             // 
-            this.btCheckAll.Location = new System.Drawing.Point(9, 37);
+            this.btCheckAll.Location = new System.Drawing.Point(193, 14);
             this.btCheckAll.Name = "btCheckAll";
             this.btCheckAll.Size = new System.Drawing.Size(75, 20);
             this.btCheckAll.TabIndex = 3;
@@ -351,24 +377,50 @@
             this.btCheckAll.UseVisualStyleBackColor = true;
             this.btCheckAll.Click += new System.EventHandler(this.BtCheckAll_Click);
             // 
-            // chkSeriesList
-            // 
-            this.chkSeriesList.FormattingEnabled = true;
-            this.chkSeriesList.Location = new System.Drawing.Point(9, 61);
-            this.chkSeriesList.Name = "chkSeriesList";
-            this.chkSeriesList.Size = new System.Drawing.Size(305, 319);
-            this.chkSeriesList.TabIndex = 2;
-            // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.cbTheme);
             this.groupBox3.Controls.Add(this.label8);
-            this.groupBox3.Location = new System.Drawing.Point(340, 225);
+            this.groupBox3.Location = new System.Drawing.Point(370, 220);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(251, 48);
             this.groupBox3.TabIndex = 24;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Theme";
+            // 
+            // colSeriesEnable
+            // 
+            this.colSeriesEnable.HeaderText = "";
+            this.colSeriesEnable.Name = "colSeriesEnable";
+            this.colSeriesEnable.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.colSeriesEnable.Width = 20;
+            // 
+            // colSeries
+            // 
+            this.colSeries.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.colSeries.HeaderText = "Series";
+            this.colSeries.Name = "colSeries";
+            this.colSeries.ReadOnly = true;
+            this.colSeries.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.colSeries.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // colSeriesColor
+            // 
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.colSeriesColor.DefaultCellStyle = dataGridViewCellStyle1;
+            this.colSeriesColor.HeaderText = "Color";
+            this.colSeriesColor.Name = "colSeriesColor";
+            this.colSeriesColor.ReadOnly = true;
+            this.colSeriesColor.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.colSeriesColor.Width = 60;
+            // 
+            // colSelectColor
+            // 
+            this.colSelectColor.HeaderText = "";
+            this.colSelectColor.Name = "colSelectColor";
+            this.colSelectColor.ReadOnly = true;
+            this.colSelectColor.Text = ">>";
+            this.colSelectColor.Width = 30;
             // 
             // ConfigurationDialog
             // 
@@ -376,7 +428,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btCancel;
-            this.ClientSize = new System.Drawing.Size(603, 442);
+            this.ClientSize = new System.Drawing.Size(626, 443);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -395,6 +447,7 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.SeriesGrid)).EndInit();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
@@ -426,9 +479,13 @@
         private ComboBox cbTheme;
         private GroupBox groupBox1;
         private GroupBox groupBox2;
-        private CheckedListBox chkSeriesList;
         private Button btCheckNone;
         private Button btCheckAll;
         private GroupBox groupBox3;
+        private DataGridView SeriesGrid;
+        private DataGridViewCheckBoxColumn colSeriesEnable;
+        private DataGridViewTextBoxColumn colSeries;
+        private DataGridViewTextBoxColumn colSeriesColor;
+        private DataGridViewButtonColumn colSelectColor;
     }
 }
