@@ -1,4 +1,4 @@
-# MSChartExtension
+# MSChartExtension ![NuGet](https://img.shields.io/nuget/v/Mschartextension)
 Microsoft Chart Extensions unleashed the power of Microsoft .NET Chart component in WinForms.</br>
 Let's see what it can do
 - Interactive zoom and pan with built-in context menu to configure chart series and cursors</br>
