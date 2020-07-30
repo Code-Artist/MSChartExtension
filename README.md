@@ -9,7 +9,7 @@ Let's see what it can do
 ![Themes](/Doc/Images/Theme.PNG?raw=true)</br>
 
 
-## Documentations:
+## Future Study:
 - [MSChart Extension - The Start](https://www.codearteng.com/2012/05/mschart-extension-zoom-and-pan-controls.html)
 - [MSChart Extension Version 2](https://www.codearteng.com/2016/08/mschart-extension-v2.html)</br>
   What's New: Dual cursors, mouse wheel functions.
