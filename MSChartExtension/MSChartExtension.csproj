@@ -74,6 +74,7 @@
     <Compile Include="ConfigurationDialog.Designer.cs">
       <DependentUpon>ConfigurationDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="DownSampling.cs" />
     <Compile Include="SeriesDataBuffer.cs" />
     <Compile Include="Theme\Futuristic.cs" />
     <Compile Include="Theme\DarkTheme.cs" />
