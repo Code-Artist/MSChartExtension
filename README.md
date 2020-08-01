@@ -15,6 +15,9 @@ Let's see what it can do
   What's New: Dual cursors, mouse wheel functions.
 - [MSChart Extension Version 2.2](https://www.codearteng.com/2019/02/mschart-extension-zoom-and-pan-control.html):</br>
   What's New: Snap cursor to nearest data points, select series for chart cursor.
-  </br>
+- [What's new in Microsoft Chart Control (MSChart) Extension Version 3 ](https://www.codearteng.com/2020/07/whats-new-in-microsoft-chart-control.html)</br>
+  What's New: Theme, Buffered Mode, Cursor Label Format and Cursors Navigation.
+- [Implementation of Downsampling Algorithm in MSChart Extension ](https://www.codearteng.com/2020/08/implementation-of-downsampling.html)</br>
+  Discussed implementation of downsampling algorithm in MSChart Buffered Mode.
   
 
