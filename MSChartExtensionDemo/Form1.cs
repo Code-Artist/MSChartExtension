@@ -316,6 +316,74 @@ Visible data: {3}
 
         }
 
+        private void toolStripButton4_Click(object sender, EventArgs e)
+        {
+            AdjustAxisIntervalOffset(ref chart1, 0, 0);
+        }
+
+        private void AdjustAxisIntervalOffset(ref Chart ChartObj, int ChartAreaIndex, int AxisIndex)
+        {
+            //Created by Shin-Hua Tseng <shtsenga@gmail.com>
+
+            double[] unit_base = new double[] { 1.0, 2.0, 2.5, 5.0 };
+            double unit = 1.0;
+            double value = 0;
+            double vmin, vmax;
+            int max_count, scale;
+            Axis axis = ChartObj.ChartAreas[ChartAreaIndex].Axes[AxisIndex];
+            vmin = axis.ScaleView.ViewMinimum;      //min. value of current view area
+            vmax = axis.ScaleView.ViewMaximum;      //max. value of current view area
+
+            //Label Rectangle Estimation
+            //select max. label count for X-Axis or Y-Axis, this value can be estimated by
+            // X-Axis = axis-width/(1.25*MaxLabelWidth)
+            // Y-Axis = axis-height/(2*MaxLabelHeight)
+            // when max. characters of all label can be obtained.
+
+            //max_count is used to restrict max. label count of this axis in the current view area. 
+            // I just select 10 for X - axis, 8 - 20 for Yaxis to skip label rectangle estimation.
+            // If you know how to get rectangle for all labels. You can choose a larger label count,
+            // then check if some labels will be overlapped. When label overlap occurred, reduce
+            // label count, and recheck it again until no label overlap occurs.
+
+            max_count = (AxisIndex % 2) == 0 ? 10 : 10;
+
+            value = (vmax - vmin) / (double)max_count;
+            //find best expression label format, we restrict all label unit
+            // be one of unit_base[] value  * 10^n n is integer
+            scale = (int)Math.Log10(value);
+            value = value / Math.Pow(10.0, scale);
+            if (value < 0.5)
+            {
+                scale -= 1;
+                value *= 10.0;
+            }
+            else if (value > 5.0)
+            {
+                scale += 1;
+                value *= 0.1;
+            }
+            for (int i = 0; i < unit_base.Length; ++i)
+            {
+                if (unit_base[i] >= value)
+                {
+                    unit = unit_base[i] * Math.Pow(10.0, scale);
+                    break;
+                }
+            }
+            //change axis interval and interval offset
+            double offset = unit * (double)(int)(vmin / unit);
+            double minor_offset = 0;
+            if (offset > vmin)
+                offset -= unit;
+            offset = offset - vmin;
+            axis.Interval = unit;
+            axis.IntervalOffset = offset;
+            minor_offset = offset - axis.MinorTickMark.Interval * (double)(int)(offset / axis.MinorTickMark.Interval);
+            axis.MajorTickMark.IntervalOffset = offset;
+            axis.MinorTickMark.IntervalOffset = minor_offset;
+        }
+
     }
 
     public static class RectangleExtensions

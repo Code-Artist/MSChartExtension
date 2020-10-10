@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace System.Windows.Forms.DataVisualization.Charting
 {
@@ -103,6 +104,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
             if (!ChartTool.ContainsKey(sender))
             {
                 ChartData ptrChartData = ChartTool[sender] = new ChartData(sender);
+                sender.Disposed += ChartDisposed;
                 ptrChartData.Option = option ?? new ChartOption();
                 ptrChartData.Backup();
 
@@ -191,6 +193,13 @@ namespace System.Windows.Forms.DataVisualization.Charting
             }
         }
 
+        //Auto clean up ChartTool when chart is disposed
+        private static void ChartDisposed(object sender, EventArgs e)
+        {
+            Chart ptrChart = sender as Chart;
+            ChartTool.Remove(ptrChart);
+        }
+
         /// <summary>
         /// Disable Zoom and Pan Controls
         /// </summary>
@@ -226,6 +235,13 @@ namespace System.Windows.Forms.DataVisualization.Charting
             else
                 return ChartTool[sender].ToolState;
         }
+
+        /// <summary>
+        /// Get Chart option settings.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <returns></returns>
+        public static ChartOption GetChartOption(this Chart sender) { return ChartTool[sender]?.Option; }
 
         #region [ Cursors ]
 
@@ -619,6 +635,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
         {
             Chart ptrChart = sender as Chart;
             ChartData ptrChartData = ChartTool[ptrChart];
+            AdjustAxisIntervalForAllAxes(e.ChartArea);
             ptrChartData.RepaintBufferedData();
             ptrChartData.ZoomChangedCallback?.Invoke(ptrChart);
         }
@@ -1280,6 +1297,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                             ptrChartArea.AxisY2.ScaleView.Scroll(newY2);
 
                             ptrChartData.RepaintBufferedData();
+                            AdjustAxisIntervalForAllAxes(ptrChartArea);
                         }
                     }
                     #endregion
@@ -1401,6 +1419,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     ptrChartArea.CursorX.SetSelectionPosition(0, 0);
                     ptrChartArea.CursorY.SetSelectionPosition(0, 0);
 
+                    AdjustAxisIntervalForAllAxes(ptrChartArea);
                     ptrChartData.RepaintBufferedData();
                     ptrChartData.ZoomChangedCallback?.Invoke(ptrChart);
                     SetChartControlState(ptrChart, MSChartExtensionToolState.Select);
@@ -1512,11 +1531,18 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// <param name="sender"></param>
         public static void ClearPoints(this Series sender)
         {
-            ClearPointsInt(sender, true);
-            ChartArea ptrChartArea = sender.GetChartArea();
-            ChartData ptrChartData = sender.GetChartData();
-            if (ptrChartData.Cursor1.SelectedChartSeries == sender) ClearCursor1(ptrChartArea, ptrChartData);
-            if (ptrChartData.Cursor2.SelectedChartSeries == sender) ClearCursor2(ptrChartArea, ptrChartData);
+            sender.Points.SuspendUpdates();
+            if (sender.IsChartDataValid())
+            {
+                //Series is registered in MSChart Extension tool
+                ClearPointsInt(sender, true);
+                ChartArea ptrChartArea = sender.GetChartArea();
+                ChartData ptrChartData = sender.GetChartData();
+                if (ptrChartData.Cursor1.SelectedChartSeries == sender) ClearCursor1(ptrChartArea, ptrChartData);
+                if (ptrChartData.Cursor2.SelectedChartSeries == sender) ClearCursor2(ptrChartArea, ptrChartData);
+            }
+            else ClearPointsInt(sender, false);
+            sender.Points.ResumeUpdates();
         }
 
         private static void ClearCursor1(ChartArea chartArea, ChartData chartData)
@@ -1548,10 +1574,8 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// <param name="clearDataBuffer">Delete buffered data for virtual mode</param>
         private static void ClearPointsInt(this Series sender, bool clearDataBuffer = true)
         {
-            sender.Points.SuspendUpdates();
             while (sender.Points.Count > 0)
                 sender.Points.RemoveAt(sender.Points.Count - 1);
-            sender.Points.ResumeUpdates();
             sender.Points.Clear(); //Force refresh.
 
             if (clearDataBuffer)
@@ -1706,7 +1730,11 @@ namespace System.Windows.Forms.DataVisualization.Charting
             ChartData ptrChartData = ChartTool.FirstOrDefault(x => x.Key.Series.Contains(sender)).Value;
             if (ptrChartData == null) throw new ArgumentNullException(nameof(AddXYBuffered) + ": No matching series found!");
             return ptrChartData;
+        }
 
+        private static bool IsChartDataValid(this Series sender)
+        {
+            return !ChartTool.FirstOrDefault(x => x.Key.Series.Contains(sender)).Equals(new KeyValuePair<Chart, ChartData>());
         }
 
         private static SeriesDataBuffer GetSeriesDataBuffer(this Series sender, bool autoCreate = false)
@@ -2084,6 +2112,74 @@ namespace System.Windows.Forms.DataVisualization.Charting
             foreach (Axis a in sender.Axes)
                 if (a.ScaleView.IsZoomed) return true;
             return false;
+        }
+
+        private static void AdjustAxisIntervalForAllAxes(this ChartArea sender)
+        {
+            foreach (Axis a in sender.Axes)
+                AdjustAxisIntervalOffset(sender, a);
+        }
+
+        private static void AdjustAxisIntervalOffset(this ChartArea sender, Axis axis)
+        {
+            //Created by Shin-Hua Tseng <shtsenga@gmail.com>
+
+            double[] unit_base = new double[] { 1.0, 2.0, 2.5, 5.0 };
+            double unit = 1.0;
+            double value = 0;
+            double vmin, vmax;
+            int max_count, scale;
+            vmin = axis.ScaleView.ViewMinimum;      //min. value of current view area
+            vmax = axis.ScaleView.ViewMaximum;      //max. value of current view area
+
+            //Label Rectangle Estimation
+            //select max. label count for X-Axis or Y-Axis, this value can be estimated by
+            // X-Axis = axis-width/(1.25*MaxLabelWidth)
+            // Y-Axis = axis-height/(2*MaxLabelHeight)
+            // when max. characters of all label can be obtained.
+
+            //max_count is used to restrict max. label count of this axis in the current view area. 
+            // I just select 10 for X - axis, 8 - 20 for Yaxis to skip label rectangle estimation.
+            // If you know how to get rectangle for all labels. You can choose a larger label count,
+            // then check if some labels will be overlapped. When label overlap occurred, reduce
+            // label count, and recheck it again until no label overlap occurs.
+
+            max_count = (((int)axis.AxisName) % 2 == 0) ? 10 : 10;
+
+            value = (vmax - vmin) / (double)max_count;
+            //find best expression label format, we restrict all label unit
+            // be one of unit_base[] value  * 10^n n is integer
+            scale = (int)Math.Log10(value);
+            value = value / Math.Pow(10.0, scale);
+            if (value < 0.5)
+            {
+                scale -= 1;
+                value *= 10.0;
+            }
+            else if (value > 5.0)
+            {
+                scale += 1;
+                value *= 0.1;
+            }
+            for (int i = 0; i < unit_base.Length; ++i)
+            {
+                if (unit_base[i] >= value)
+                {
+                    unit = unit_base[i] * Math.Pow(10.0, scale);
+                    break;
+                }
+            }
+            //change axis interval and interval offset
+            double offset = unit * (double)(int)(vmin / unit);
+            double minor_offset = 0;
+            if (offset > vmin)
+                offset -= unit;
+            offset = offset - vmin;
+            axis.Interval = unit;
+            axis.IntervalOffset = offset;
+            minor_offset = offset - axis.MinorTickMark.Interval * (double)(int)(offset / axis.MinorTickMark.Interval);
+            axis.MajorTickMark.IntervalOffset = offset;
+            axis.MinorTickMark.IntervalOffset = minor_offset;
         }
 
         #endregion
