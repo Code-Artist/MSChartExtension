@@ -54,6 +54,24 @@ namespace MSChartExtensionDemo
 
             chart3.EnableZoomAndPanControls(ChartCursorSelected, ChartCursorMoved);
             PlotData();
+
+            PlotChartDate();
+        }
+
+        private void PlotChartDate()
+        {
+            Series ptrSeries = ChartDate.Series[0];
+            DateTime StartDate = new DateTime(2020, 1, 1);
+            for (int x = 0; x < 10; x++)
+            {
+                int id = ptrSeries.Points.AddXY(StartDate.AddDays(x), x);
+                ptrSeries.Points[id].Label = StartDate.AddDays(x).ToShortDateString();
+            }
+            ChartOption chartOption = new ChartOption()
+            {
+                CursorLabelStringFormatX1 = "MMM-dd"
+            };
+            ChartDate.EnableZoomAndPanControls(null, null, option: chartOption);
         }
 
         const int DataSizeBase = 5000; //Increase this number to plot more points

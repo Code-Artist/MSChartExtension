@@ -465,6 +465,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                         ptrChartArea.AxisX2.ScaleView.ZoomReset();
                         ptrChartArea.AxisY.ScaleView.ZoomReset();
                         ptrChartArea.AxisY2.ScaleView.ZoomReset();
+                        ResetAxisIntervalForAllAxes(ptrChartArea);
                         ptrChartData.RepaintBufferedData();
                         WindowMessagesNativeMethods.ResumeDrawing(ptrChart);
                         ChartTool[ptrChart].ZoomChangedCallback?.Invoke(ptrChart);
@@ -902,7 +903,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
         {
             switch (valueType)
             {
-                case ChartValueType.Auto: return value.ToString();
+                case ChartValueType.Auto:
                 case ChartValueType.Double:
                 case ChartValueType.Single:
                 case ChartValueType.Int32:
@@ -916,7 +917,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 case ChartValueType.Date:
                 case ChartValueType.Time:
                 case ChartValueType.DateTimeOffset:
-                    return DateTime.FromOADate(value).ToString();
+                    return DateTime.FromOADate(value).ToString(NumberLabelFormat);
             }
             return value.ToString();
         }
@@ -2112,6 +2113,19 @@ namespace System.Windows.Forms.DataVisualization.Charting
             foreach (Axis a in sender.Axes)
                 if (a.ScaleView.IsZoomed) return true;
             return false;
+        }
+
+        private static void ResetAxisIntervalForAllAxes(this ChartArea sender)
+        {
+            foreach(Axis a in sender.Axes)
+            {
+                a.Interval = 0;
+                a.IntervalAutoMode = IntervalAutoMode.FixedCount;
+                a.IntervalOffset = 0;
+                a.IntervalOffsetType = DateTimeIntervalType.Auto;
+                a.MajorTickMark.IntervalOffset = 0;
+                a.MinorTickMark.IntervalOffset = 0;
+            }
         }
 
         private static void AdjustAxisIntervalForAllAxes(this ChartArea sender)

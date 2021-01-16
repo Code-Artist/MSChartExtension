@@ -75,22 +75,22 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// Define string format for cursor value which use X primary axis.
         /// </summary>
         /// <remarks>More details regarding string format at https://docs.microsoft.com/en-us/dotnet/standard/base-types/standard-numeric-format-strings </remarks>
-        public string CursorLabelStringFormatX1 { get; set; } = "F4";
+        public string CursorLabelStringFormatX1 { get; set; }
         /// <summary>
         /// Define string format for cursor value which use X secondary axis.
         /// </summary>
         /// <remarks>More details regarding string format at https://docs.microsoft.com/en-us/dotnet/standard/base-types/standard-numeric-format-strings </remarks>
-        public string CursorLabelStringFormatX2 { get; set; } = "F4";
+        public string CursorLabelStringFormatX2 { get; set; }
         /// <summary>
         /// Define string format for cursor value which use Y primary axis.
         /// </summary>
         /// <remarks>More details regarding string format at https://docs.microsoft.com/en-us/dotnet/standard/base-types/standard-numeric-format-strings </remarks>
-        public string CursorLabelStringFormatY1 { get; set; } = "F4";
+        public string CursorLabelStringFormatY1 { get; set; } 
         /// <summary>
         /// Define string format for cursor value which use Y secondary axis.
         /// </summary>
         /// <remarks>More details regarding string format at https://docs.microsoft.com/en-us/dotnet/standard/base-types/standard-numeric-format-strings </remarks>
-        public string CursorLabelStringFormatY2 { get; set; } = "F4";
+        public string CursorLabelStringFormatY2 { get; set; }
 
         /// <summary>
         /// Assign prefix on label string, default is empty
