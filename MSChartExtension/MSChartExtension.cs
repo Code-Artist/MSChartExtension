@@ -970,6 +970,9 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 int lineWidth = ptrChartData.Option.Cursor1LineWidth;
                 Series ptrSeries = ptrChartData.Cursor1.SelectedChartSeries;
                 if (ptrSeries == null) ptrSeries = ptrChartData.Cursor1.SelectedChartSeries = ptrChart.Series.First(x => x.ChartArea == ptrChartArea.Name);
+                else if (!ptrChartData.Source.Series.Contains(ptrChartData.Cursor1.SelectedChartSeries))
+                     ptrSeries = ptrChartData.Cursor1.SelectedChartSeries = ptrChart.Series.First(x => x.ChartArea == ptrChartArea.Name);
+
                 if (ptrSeries != null)
                 {
                     Axis ptrXAxis = ptrSeries.XAxisType == AxisType.Primary ? ptrChartArea.AxisX : ptrChartArea.AxisX2;
@@ -1044,6 +1047,9 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 int lineWidth = ptrChartData.Option.Cursor2LineWidth;
                 Series ptrSeries = ptrChartData.Cursor2.SelectedChartSeries;
                 if (ptrSeries == null) ptrSeries = ptrChartData.Cursor2.SelectedChartSeries = ptrChart.Series.First(x => x.ChartArea == ptrChartArea.Name);
+                else if (!ptrChartData.Source.Series.Contains(ptrChartData.Cursor2.SelectedChartSeries))
+                     ptrSeries = ptrChartData.Cursor2.SelectedChartSeries = ptrChart.Series.First(x => x.ChartArea == ptrChartArea.Name);
+
                 if (ptrSeries != null)
                 {
                     Axis ptrXAxis = ptrSeries.XAxisType == AxisType.Primary ? ptrChartArea.AxisX : ptrChartArea.AxisX2;
@@ -2117,7 +2123,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
         private static void ResetAxisIntervalForAllAxes(this ChartArea sender)
         {
-            foreach(Axis a in sender.Axes)
+            foreach (Axis a in sender.Axes)
             {
                 a.Interval = 0;
                 a.IntervalAutoMode = IntervalAutoMode.FixedCount;

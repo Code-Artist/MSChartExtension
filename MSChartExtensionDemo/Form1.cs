@@ -137,7 +137,13 @@ namespace MSChartExtensionDemo
         }
         private void randomDataToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ClearData();
+            //ClearData();
+            //Remove series instead of clear.
+            chart1.Series.Clear();
+            //Recreate series
+            chart1.Series.Add(new Series());
+            chart1.Series.Add(new Series());
+
             StartStopWatch();
             //Series 1 used primary YAxis
             Series Ser1 = chart1.Series[0];
