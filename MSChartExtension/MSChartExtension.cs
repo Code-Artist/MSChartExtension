@@ -65,6 +65,15 @@ namespace System.Windows.Forms.DataVisualization.Charting
     /// </summary>
     public static class MSChartExtension
     {
+        private const string Cursor1LabelName = "cursor1_Label";
+        private const string Cursor1LabelBGName = "cursor1_Label_BG";
+        private const string Cursor2LabelName = "cursor2_Label";
+        private const string Cursor2LabelBGName = "cursor2_Label_BG";
+
+        private const string Cursor1XName = "Cursor_1X";
+        private const string Cursor1YName = "Cursor_1Y";
+        private const string Cursor2XName = "Cursor_2X";
+        private const string Cursor2YName = "Cursor_2Y";
         private static readonly SeriesChartType[] UnsupportedChartType =
             new SeriesChartType[] {
                 SeriesChartType.Pie, SeriesChartType.Doughnut,
@@ -165,7 +174,8 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 ptrChart.MouseUp += ChartControl_MouseUp;
                 ptrChart.KeyDown += ChartControl_KeyDown;
                 ptrChart.PreviewKeyDown += ChartControl_PreviewKeyDown;
-                ptrChart.AxisViewChanged += ChartControl_AxisViewChanged;
+                ptrChart.AxisViewChanged += ChartControl_AxisViewChanged; //Event trigger when chart is scrolled
+                ptrChart.SizeChanged += ChartControl_Resized;
 
                 //Override settings.
                 foreach (ChartArea ptrChartArea in ptrChart.ChartAreas)
@@ -190,6 +200,41 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     ptrChartData.Option.Theme.AssignTheme(ptrChart);
                 }
 
+            }
+        }
+
+        private static void ChartControl_Resized(object sender, EventArgs e)
+        {
+            UpdateCursorLabelPosition(sender as Chart);
+        }
+
+        private static void UpdateCursorLabelPosition(Chart sender)
+        {
+            Chart ptrChart = sender as Chart;
+            if (ptrChart == null) return;
+
+            ChartData ptrChartData = ChartTool[ptrChart];
+            if (ptrChartData == null) return;
+
+            foreach (ChartArea ptrChartArea in ptrChart.ChartAreas)
+            {
+                TextAnnotation ptrCurosr1Label = ptrChart.Annotations.FindByName(ptrChartArea.Name + Cursor1LabelName) as TextAnnotation;
+                if (ptrCurosr1Label != null)
+                {
+                    Annotation xCursor = ptrChart.Annotations.FindByName(ptrChartArea.Name + Cursor1XName);
+                    Annotation yCursor = ptrChart.Annotations.FindByName(ptrChartArea.Name + Cursor1YName);
+                    CheckAndUpdateTextAnnotationLocation(ptrChart, ptrCurosr1Label, xCursor.X, yCursor.Y);
+                    AddTextBackground(ptrChart, ptrCurosr1Label.Name, ptrChartData.Option.Cursor1Color);
+                }
+
+                TextAnnotation ptrCursor2Label = ptrChart.Annotations.FindByName(ptrChartArea.Name + Cursor2LabelName) as TextAnnotation;
+                if (ptrCursor2Label != null)
+                {
+                    Annotation xCursor = ptrChart.Annotations.FindByName(ptrChartArea.Name + Cursor2XName);
+                    Annotation yCursor = ptrChart.Annotations.FindByName(ptrChartArea.Name + Cursor2YName);
+                    CheckAndUpdateTextAnnotationLocation(ptrChart, ptrCursor2Label, xCursor.X, yCursor.Y);
+                    AddTextBackground(ptrChart, ptrCursor2Label.Name, ptrChartData.Option.Cursor2Color);
+                }
             }
         }
 
@@ -413,6 +458,12 @@ namespace System.Windows.Forms.DataVisualization.Charting
             }
         }
 
+        private static void ZoomChangedCallback(Chart chart)
+        {
+            UpdateCursorLabelPosition(chart);
+            ChartTool[chart].ZoomChangedCallback?.Invoke(chart);
+        }
+
         private static void ChartContext_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
             ContextMenuStrip ptrMenuStrip = (ContextMenuStrip)sender;
@@ -468,7 +519,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                         ResetAxisIntervalForAllAxes(ptrChartArea);
                         ptrChartData.RepaintBufferedData();
                         WindowMessagesNativeMethods.ResumeDrawing(ptrChart);
-                        ChartTool[ptrChart].ZoomChangedCallback?.Invoke(ptrChart);
+                        ZoomChangedCallback(ptrChart);
                     }
                     break;
                 case "Zoom Dialog...":
@@ -478,7 +529,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                             if (dlg.ShowDialog() == DialogResult.OK)
                             {
                                 ptrChartData.RepaintBufferedData();
-                                ChartTool[ptrChart].ZoomChangedCallback?.Invoke(ptrChart);
+                                ZoomChangedCallback(ptrChart);
                             }
                         }
                     }
@@ -497,45 +548,55 @@ namespace System.Windows.Forms.DataVisualization.Charting
                             foreach (ChartArea area in ptrChart.ChartAreas)
                             {
                                 //Update Cursor 1
-                                Annotation x = ptrChart.Annotations.FindByName(area.Name + "Cursor_1X");
+                                Annotation x = ptrChart.Annotations.FindByName(area.Name + Cursor1XName);
                                 if (x != null)
                                 {
                                     x.LineDashStyle = ptrChartData.Option.Cursor1DashStyle;
                                     x.LineColor = ptrChartData.Option.Cursor1Color;
                                     x.LineWidth = ptrChartData.Option.Cursor1LineWidth;
                                 }
-                                Annotation y = ptrChart.Annotations.FindByName(area.Name + "Cursor_1Y");
+                                Annotation y = ptrChart.Annotations.FindByName(area.Name + Cursor1YName);
                                 if (y != null)
                                 {
                                     y.LineDashStyle = ptrChartData.Option.Cursor1DashStyle;
                                     y.LineColor = ptrChartData.Option.Cursor1Color;
                                     y.LineWidth = ptrChartData.Option.Cursor1LineWidth;
                                 }
-                                Annotation label = ptrChart.Annotations.FindByName(area.Name + "cursor1_Label");
+                                Annotation label = ptrChart.Annotations.FindByName(area.Name + Cursor1LabelName);
                                 if (label != null)
                                 {
-                                    label.ForeColor = ptrChartData.Option.Cursor1Color;
+                                    label.ForeColor = ptrChartData.Option.Cursor1TextColor;
+                                }
+                                Annotation labelBg = ptrChart.Annotations.FindByName(area.Name + Cursor1LabelBGName);
+                                if (labelBg != null)
+                                {
+                                    labelBg.BackColor = ptrChartData.Option.Cursor1Color;
                                 }
 
                                 //Update Cursor 2
-                                x = ptrChart.Annotations.FindByName(area.Name + "Cursor_2X");
+                                x = ptrChart.Annotations.FindByName(area.Name + Cursor2XName);
                                 if (x != null)
                                 {
                                     x.LineDashStyle = ptrChartData.Option.Cursor2DashStyle;
                                     x.LineColor = ptrChartData.Option.Cursor2Color;
                                     x.LineWidth = ptrChartData.Option.Cursor2LineWidth;
                                 }
-                                y = ptrChart.Annotations.FindByName(area.Name + "Cursor_2Y");
+                                y = ptrChart.Annotations.FindByName(area.Name + Cursor2YName);
                                 if (y != null)
                                 {
                                     y.LineDashStyle = ptrChartData.Option.Cursor2DashStyle;
                                     y.LineColor = ptrChartData.Option.Cursor2Color;
                                     y.LineWidth = ptrChartData.Option.Cursor2LineWidth;
                                 }
-                                label = ptrChart.Annotations.FindByName(area.Name + "cursor2_Label");
+                                label = ptrChart.Annotations.FindByName(area.Name + Cursor2LabelName);
                                 if (label != null)
                                 {
-                                    label.ForeColor = ptrChartData.Option.Cursor2Color;
+                                    label.ForeColor = ptrChartData.Option.Cursor2TextColor;
+                                }
+                                labelBg = ptrChart.Annotations.FindByName(area.Name + Cursor2LabelBGName);
+                                if (labelBg != null)
+                                {
+                                    labelBg.BackColor = ptrChartData.Option.Cursor2Color;
                                 }
 
                             }
@@ -638,7 +699,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
             ChartData ptrChartData = ChartTool[ptrChart];
             AdjustAxisIntervalForAllAxes(e.ChartArea);
             ptrChartData.RepaintBufferedData();
-            ptrChartData.ZoomChangedCallback?.Invoke(ptrChart);
+            ZoomChangedCallback(ptrChart);
         }
 
         private enum CursorDirection { Right, Left }
@@ -671,12 +732,14 @@ namespace System.Windows.Forms.DataVisualization.Charting
         {
             ChartData ptrChartData = ChartTool[ptrChart];
             ChartArea ptrChartArea = ChartTool[ptrChart].ActiveChartArea;
+
             if (IsChartAreaEmpty(ptrChart, ptrChartArea)) { UpdateChartControlState(ptrChart); return; }
             if (ptrChartArea == null) return;
             if (!ptrChartData.Enabled) return;
 
             if (ptrChartData.ToolState == MSChartExtensionToolState.Select)
             {
+                Color textColor = ptrChartData.Option.Cursor1TextColor;
                 Color cursorColor = ptrChartData.Option.Cursor1Color;
                 ChartDashStyle cursorDashStyle = ptrChartData.Option.Cursor1DashStyle;
                 int lineWidth = ptrChartData.Option.Cursor1LineWidth;
@@ -693,49 +756,31 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     if (!SanityCheck(ptrXAxis, XStart)) return;
                     if (!SanityCheck(ptrYAxis, YStart)) return;
 
+                    ChartCursorLabel ptrLabelX = ptrSeries.XAxisType == AxisType.Primary ? ptrChartData.Option.CursorLabelFormatX1 : ptrChartData.Option.CursorLabelFormatX2;
+                    ChartCursorLabel ptrLabelY = ptrSeries.YAxisType == AxisType.Primary ? ptrChartData.Option.CursorLabelFormatY1 : ptrChartData.Option.CursorLabelFormatY2;
+
                     if (ptrChartArea.ChartAreaBoundaryTest(ptrXAxis, ptrYAxis, XStart, YStart))
                     {
-                        RemoveAnnotation(ptrChart, ptrChartArea.Name + "cursor1_Label");
-
-                        DrawVerticalLine(ptrChart, XStart, cursorColor, ptrChartArea.Name + "Cursor_1X", lineWidth, cursorDashStyle, ptrChartArea, ptrSeries.XAxisType);
-                        DrawHorizontalLine(ptrChart, YStart, cursorColor, ptrChartArea.Name + "Cursor_1Y", lineWidth, cursorDashStyle, ptrChartArea, ptrSeries.YAxisType);
+                        DrawVerticalLine(ptrChart, XStart, cursorColor, ptrChartArea.Name + Cursor1XName, lineWidth, cursorDashStyle, ptrChartArea, ptrSeries.XAxisType);
+                        DrawHorizontalLine(ptrChart, YStart, cursorColor, ptrChartArea.Name + Cursor1YName, lineWidth, cursorDashStyle, ptrChartArea, ptrSeries.YAxisType);
                         ptrChartData.Cursor1.X = XStart;
                         ptrChartData.Cursor1.Y = YStart;
-                        ptrChartData.Cursor1.XFormattedString = FormatCursorValue(XStart, ptrSeries.XValueType,
-                            (ptrSeries.XAxisType == AxisType.Primary ? ptrChartData.Option.CursorLabelStringFormatX1 : ptrChartData.Option.CursorLabelStringFormatX2));
-                        ptrChartData.Cursor1.YFormattedString = FormatCursorValue(YStart, ptrSeries.YValueType,
-                            (ptrSeries.YAxisType == AxisType.Primary ? ptrChartData.Option.CursorLabelStringFormatY1 : ptrChartData.Option.CursorLabelStringFormatY2));
+                        ptrChartData.Cursor1.XFormattedString = FormatCursorValue(XStart, ptrSeries.XValueType, ptrLabelX.StringFormat);
+                        ptrChartData.Cursor1.YFormattedString = FormatCursorValue(YStart, ptrSeries.YValueType, ptrLabelY.StringFormat);
                         ptrChartData.Cursor1.ChartArea = ptrChartArea;
 
                         if (ptrChartData.Option.ShowCursorValue)
                         {
-                            string xPrefix, xPostfix, yPrefix, yPostfix;
-                            if (ptrSeries.XAxisType == AxisType.Primary)
-                            {
-                                xPrefix = ptrChartData.Option.CursorLabelPrefixX1;
-                                xPostfix = ptrChartData.Option.CursorLabelPostfixX1;
-                            }
-                            else
-                            {
-                                xPrefix = ptrChartData.Option.CursorLabelPrefixX2;
-                                xPostfix = ptrChartData.Option.CursorLabelPostfixX2;
-                            }
-
-                            if (ptrSeries.YAxisType == AxisType.Primary)
-                            {
-                                yPrefix = ptrChartData.Option.CursorLabelPrefixY1;
-                                yPostfix = ptrChartData.Option.CursorLabelPostfixY1;
-                            }
-                            else
-                            {
-                                yPrefix = ptrChartData.Option.CursorLabelPrefixY2;
-                                yPostfix = ptrChartData.Option.CursorLabelPostfixY2;
-                            }
-
                             //Add Cursor Value : X, Y
-                            string cursorValue = xPrefix + ptrChartData.Cursor1.XFormattedString + xPostfix + "," +
-                                                    yPrefix + ptrChartData.Cursor1.YFormattedString + yPostfix;
-                            AddText(ptrChart, cursorValue, XStart, YStart, cursorColor, ptrChartArea.Name + "cursor1_Label", TextStyle.Default, ptrChartArea, ptrSeries.XAxisType, ptrSeries.YAxisType);
+                            string cursorValue = string.Empty;
+                            if (ptrLabelX.Visible) cursorValue += ptrLabelX.Prefix + ptrChartData.Cursor1.XFormattedString + ptrLabelX.Postfix;
+                            if (ptrLabelX.Visible && ptrLabelY.Visible) cursorValue += ",";
+                            if (ptrLabelY.Visible) cursorValue += ptrLabelY.Prefix + ptrChartData.Cursor1.YFormattedString + ptrLabelY.Postfix;
+
+                            TextAnnotation ptrTextAnnotation = AddText(ptrChart, cursorValue, XStart, YStart, textColor, ptrChartArea.Name + Cursor1LabelName,
+                                                    TextStyle.Default, ptrChartArea, ptrSeries.XAxisType, ptrSeries.YAxisType) as TextAnnotation;
+                            CheckAndUpdateTextAnnotationLocation(ptrChart, ptrTextAnnotation, XStart, YStart);
+                            AddTextBackground(ptrChart, ptrTextAnnotation.Name, cursorColor);
                         }
                         ptrChartData.PositionChangedCallback?.Invoke(ptrChart, ptrChartData.Cursor1.Clone() as ChartCursor);
                     }
@@ -743,6 +788,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
             }
             else if (ptrChartData.ToolState == MSChartExtensionToolState.Select2)
             {
+                Color textColor = ptrChartData.Option.Cursor2TextColor;
                 Color cursorColor = ptrChartData.Option.Cursor2Color;
                 ChartDashStyle cursorDashStyle = ptrChartData.Option.Cursor2DashStyle;
                 int lineWidth = ptrChartData.Option.Cursor2LineWidth;
@@ -755,54 +801,36 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     double XStart = newX;
                     double YStart = newY;
 
+                    ChartCursorLabel ptrLabelX = ptrSeries.XAxisType == AxisType.Primary ? ptrChartData.Option.CursorLabelFormatX1 : ptrChartData.Option.CursorLabelFormatX2;
+                    ChartCursorLabel ptrLabelY = ptrSeries.YAxisType == AxisType.Primary ? ptrChartData.Option.CursorLabelFormatY1 : ptrChartData.Option.CursorLabelFormatY2;
+
                     //Sanity check - make sure XStart and YStart within limit
                     if (!SanityCheck(ptrXAxis, XStart)) return;
                     if (!SanityCheck(ptrYAxis, YStart)) return;
 
                     if (ptrChartArea.ChartAreaBoundaryTest(ptrXAxis, ptrYAxis, XStart, YStart))
                     {
-                        RemoveAnnotation(ptrChart, ptrChartArea.Name + "cursor2_Label");
-
-                        DrawVerticalLine(ptrChart, XStart, cursorColor, ptrChartArea.Name + "Cursor_2X", lineWidth, cursorDashStyle, ptrChartArea, ptrSeries.XAxisType);
-                        DrawHorizontalLine(ptrChart, YStart, cursorColor, ptrChartArea.Name + "Cursor_2Y", lineWidth, cursorDashStyle, ptrChartArea, ptrSeries.YAxisType);
+                        DrawVerticalLine(ptrChart, XStart, cursorColor, ptrChartArea.Name + Cursor2XName, lineWidth, cursorDashStyle, ptrChartArea, ptrSeries.XAxisType);
+                        DrawHorizontalLine(ptrChart, YStart, cursorColor, ptrChartArea.Name + Cursor2YName, lineWidth, cursorDashStyle, ptrChartArea, ptrSeries.YAxisType);
                         ptrChartData.Cursor2.X = XStart;
                         ptrChartData.Cursor2.Y = YStart;
-                        ptrChartData.Cursor2.XFormattedString = FormatCursorValue(XStart, ptrSeries.XValueType,
-                            (ptrSeries.XAxisType == AxisType.Primary ? ptrChartData.Option.CursorLabelStringFormatX1 : ptrChartData.Option.CursorLabelStringFormatX2));
-                        ptrChartData.Cursor2.YFormattedString = FormatCursorValue(YStart, ptrSeries.YValueType,
-                            (ptrSeries.YAxisType == AxisType.Primary ? ptrChartData.Option.CursorLabelStringFormatY1 : ptrChartData.Option.CursorLabelStringFormatY2));
+                        ptrChartData.Cursor2.XFormattedString = FormatCursorValue(XStart, ptrSeries.XValueType, ptrLabelX.StringFormat);
+                        ptrChartData.Cursor2.YFormattedString = FormatCursorValue(YStart, ptrSeries.YValueType, ptrLabelY.StringFormat);
                         ptrChartData.Cursor2.ChartArea = ptrChartArea;
 
 
                         if (ptrChartData.Option.ShowCursorValue)
                         {
-                            string xPrefix, xPostfix, yPrefix, yPostfix;
-                            if (ptrSeries.XAxisType == AxisType.Primary)
-                            {
-                                xPrefix = ptrChartData.Option.CursorLabelPrefixX1;
-                                xPostfix = ptrChartData.Option.CursorLabelPostfixX1;
-                            }
-                            else
-                            {
-                                xPrefix = ptrChartData.Option.CursorLabelPrefixX2;
-                                xPostfix = ptrChartData.Option.CursorLabelPostfixX2;
-                            }
-
-                            if (ptrSeries.YAxisType == AxisType.Primary)
-                            {
-                                yPrefix = ptrChartData.Option.CursorLabelPrefixY1;
-                                yPostfix = ptrChartData.Option.CursorLabelPostfixY1;
-                            }
-                            else
-                            {
-                                yPrefix = ptrChartData.Option.CursorLabelPrefixY2;
-                                yPostfix = ptrChartData.Option.CursorLabelPostfixY2;
-                            }
-
                             //Add Cursor Value : X, Y
-                            string cursorValue = xPrefix + ptrChartData.Cursor2.XFormattedString + xPostfix + "," +
-                                                    yPrefix + ptrChartData.Cursor2.YFormattedString + yPostfix;
-                            AddText(ptrChart, cursorValue, XStart, YStart, cursorColor, ptrChartArea.Name + "cursor2_Label", TextStyle.Default, ptrChartArea, ptrSeries.XAxisType, ptrSeries.YAxisType);
+                            string cursorValue = string.Empty;
+                            if (ptrLabelX.Visible) cursorValue += ptrLabelX.Prefix + ptrChartData.Cursor1.XFormattedString + ptrLabelX.Postfix;
+                            if (ptrLabelX.Visible && ptrLabelY.Visible) cursorValue += ",";
+                            if (ptrLabelY.Visible) cursorValue += ptrLabelY.Prefix + ptrChartData.Cursor1.YFormattedString + ptrLabelY.Postfix;
+
+                            TextAnnotation ptrTextAnnotation = AddText(ptrChart, cursorValue, XStart, YStart, textColor, ptrChartArea.Name + Cursor2LabelName,
+                                                TextStyle.Default, ptrChartArea, ptrSeries.XAxisType, ptrSeries.YAxisType) as TextAnnotation;
+                            CheckAndUpdateTextAnnotationLocation(ptrChart, ptrTextAnnotation, XStart, YStart);
+                            AddTextBackground(ptrChart, ptrTextAnnotation.Name, cursorColor);
                         }
                         ptrChartData.PositionChangedCallback?.Invoke(ptrChart, ptrChartData.Cursor2.Clone() as ChartCursor);
                     }
@@ -875,8 +903,9 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 }
                 else return;
             }
+            ptrChartArea.AdjustAxisIntervalForAllAxes();
             ptrChartData.RepaintBufferedData();
-            ptrChartData.ZoomChangedCallback?.Invoke(ptrChart);
+            ZoomChangedCallback(ptrChart);
         }
 
         private static void ScaleViewScroll(Axis ptrAxis, int delta)
@@ -901,25 +930,39 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
         private static string FormatCursorValue(double value, ChartValueType valueType, string NumberLabelFormat)
         {
-            switch (valueType)
+            try
             {
-                case ChartValueType.Auto:
-                case ChartValueType.Double:
-                case ChartValueType.Single:
-                case ChartValueType.Int32:
-                case ChartValueType.Int64:
-                case ChartValueType.UInt32:
-                case ChartValueType.UInt64:
-                    return value.ToString(NumberLabelFormat);
-                case ChartValueType.String:
-                    return value.ToString(); //Not Supported as X Value always 0 if string label is used.
-                case ChartValueType.DateTime:
-                case ChartValueType.Date:
-                case ChartValueType.Time:
-                case ChartValueType.DateTimeOffset:
-                    return DateTime.FromOADate(value).ToString(NumberLabelFormat);
+                switch (valueType)
+                {
+                    case ChartValueType.Auto:
+                    case ChartValueType.Double:
+                    case ChartValueType.Single:
+                    case ChartValueType.Int32:
+                    case ChartValueType.Int64:
+                    case ChartValueType.UInt32:
+                    case ChartValueType.UInt64:
+                        if (!string.IsNullOrEmpty(NumberLabelFormat))
+                        {
+                            if (NumberLabelFormat.ToUpper().StartsWith("X"))
+                                return Convert.ToInt64(value).ToString(NumberLabelFormat);
+                        }
+                        return value.ToString(NumberLabelFormat);
+
+                    case ChartValueType.String:
+                        return value.ToString(); //Not Supported as X Value always 0 if string label is used.
+                    case ChartValueType.DateTime:
+                    case ChartValueType.Date:
+                    case ChartValueType.Time:
+                    case ChartValueType.DateTimeOffset:
+                        return DateTime.FromOADate(value).ToString(NumberLabelFormat);
+                }
+                return value.ToString();
             }
-            return value.ToString();
+            catch (Exception ex)
+            {
+                Debug.WriteLine("WARNING: Conversion Error " + ex.Message);
+                return value.ToString();
+            }
         }
 
         private static bool IsChartAreaEmpty(Chart chart, ChartArea chartArea)
@@ -965,13 +1008,14 @@ namespace System.Windows.Forms.DataVisualization.Charting
             int dataIndex = -1;
             if (ptrChartData.ToolState == MSChartExtensionToolState.Select)
             {
+                Color textColor = ptrChartData.Option.Cursor1TextColor;
                 Color cursorColor = ptrChartData.Option.Cursor1Color;
                 ChartDashStyle cursorDashStyle = ptrChartData.Option.Cursor1DashStyle;
                 int lineWidth = ptrChartData.Option.Cursor1LineWidth;
                 Series ptrSeries = ptrChartData.Cursor1.SelectedChartSeries;
                 if (ptrSeries == null) ptrSeries = ptrChartData.Cursor1.SelectedChartSeries = ptrChart.Series.First(x => x.ChartArea == ptrChartArea.Name);
                 else if (!ptrChartData.Source.Series.Contains(ptrChartData.Cursor1.SelectedChartSeries))
-                     ptrSeries = ptrChartData.Cursor1.SelectedChartSeries = ptrChart.Series.First(x => x.ChartArea == ptrChartArea.Name);
+                    ptrSeries = ptrChartData.Cursor1.SelectedChartSeries = ptrChart.Series.First(x => x.ChartArea == ptrChartArea.Name);
 
                 if (ptrSeries != null)
                 {
@@ -984,55 +1028,34 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     if (!SanityCheck(ptrXAxis, XStart)) return;
                     if (!SanityCheck(ptrYAxis, YStart)) return;
 
+                    ChartCursorLabel ptrLabelX = ptrSeries.XAxisType == AxisType.Primary ? ptrChartData.Option.CursorLabelFormatX1 : ptrChartData.Option.CursorLabelFormatX2;
+                    ChartCursorLabel ptrLabelY = ptrSeries.YAxisType == AxisType.Primary ? ptrChartData.Option.CursorLabelFormatY1 : ptrChartData.Option.CursorLabelFormatY2;
+
                     if (ptrChartArea.ChartAreaBoundaryTest(ptrXAxis, ptrYAxis, XStart, YStart))
                     {
                         if (ptrChartData.Option.SnapCursorToData) dataIndex = SnapToNearestData(ptrChart, ptrSeries, ptrXAxis, ptrYAxis, e, ref XStart, ref YStart);
 
-                        RemoveAnnotation(ptrChart, ptrChartArea.Name + "cursor1_Label");
-
-                        DrawVerticalLine(ptrChart, XStart, cursorColor, ptrChartArea.Name + "Cursor_1X", lineWidth, cursorDashStyle, ptrChartArea, ptrSeries.XAxisType);
-                        DrawHorizontalLine(ptrChart, YStart, cursorColor, ptrChartArea.Name + "Cursor_1Y", lineWidth, cursorDashStyle, ptrChartArea, ptrSeries.YAxisType);
+                        DrawVerticalLine(ptrChart, XStart, cursorColor, ptrChartArea.Name + Cursor1XName, lineWidth, cursorDashStyle, ptrChartArea, ptrSeries.XAxisType);
+                        DrawHorizontalLine(ptrChart, YStart, cursorColor, ptrChartArea.Name + Cursor1YName, lineWidth, cursorDashStyle, ptrChartArea, ptrSeries.YAxisType);
                         ptrChartData.Cursor1.X = XStart;
                         ptrChartData.Cursor1.Y = YStart;
                         ptrChartData.Cursor1.DataIndex = dataIndex;
-                        ptrChartData.Cursor1.XFormattedString = FormatCursorValue(XStart, ptrSeries.XValueType,
-                            (ptrSeries.XAxisType == AxisType.Primary ? ptrChartData.Option.CursorLabelStringFormatX1 : ptrChartData.Option.CursorLabelStringFormatX2));
-                        ptrChartData.Cursor1.YFormattedString = FormatCursorValue(YStart, ptrSeries.YValueType,
-                            (ptrSeries.YAxisType == AxisType.Primary ? ptrChartData.Option.CursorLabelStringFormatY1 : ptrChartData.Option.CursorLabelStringFormatY2));
+                        ptrChartData.Cursor1.XFormattedString = FormatCursorValue(XStart, ptrSeries.XValueType, ptrLabelX.StringFormat);
+                        ptrChartData.Cursor1.YFormattedString = FormatCursorValue(YStart, ptrSeries.YValueType, ptrLabelY.StringFormat);
                         ptrChartData.Cursor1.ChartArea = ptrChartArea;
 
                         if (ptrChartData.Option.ShowCursorValue)
                         {
-                            string xPrefix, xPostfix, yPrefix, yPostfix;
-                            if (ptrSeries.XAxisType == AxisType.Primary)
-                            {
-                                xPrefix = ptrChartData.Option.CursorLabelPrefixX1;
-                                xPostfix = ptrChartData.Option.CursorLabelPostfixX1;
-                            }
-                            else
-                            {
-                                xPrefix = ptrChartData.Option.CursorLabelPrefixX2;
-                                xPostfix = ptrChartData.Option.CursorLabelPostfixX2;
-                            }
-
-                            if (ptrSeries.YAxisType == AxisType.Primary)
-                            {
-                                yPrefix = ptrChartData.Option.CursorLabelPrefixY1;
-                                yPostfix = ptrChartData.Option.CursorLabelPostfixY1;
-                            }
-                            else
-                            {
-                                yPrefix = ptrChartData.Option.CursorLabelPrefixY2;
-                                yPostfix = ptrChartData.Option.CursorLabelPostfixY2;
-                            }
-
                             //Add Cursor Value : X, Y
-                            string cursorValue = xPrefix + ptrChartData.Cursor1.XFormattedString + xPostfix + "," +
-                                                    yPrefix + ptrChartData.Cursor1.YFormattedString + yPostfix;
+                            string cursorValue = string.Empty;
+                            if (ptrLabelX.Visible) cursorValue += ptrLabelX.Prefix + ptrChartData.Cursor1.XFormattedString + ptrLabelX.Postfix;
+                            if (ptrLabelX.Visible && ptrLabelY.Visible) cursorValue += ",";
+                            if (ptrLabelY.Visible) cursorValue += ptrLabelY.Prefix + ptrChartData.Cursor1.YFormattedString + ptrLabelY.Postfix;
 
-                            TextAnnotation ptrTextAnnotation = AddText(ptrChart, cursorValue, XStart, YStart, cursorColor, ptrChartArea.Name + "cursor1_Label",
+                            TextAnnotation ptrTextAnnotation = AddText(ptrChart, cursorValue, XStart, YStart, textColor, ptrChartArea.Name + Cursor1LabelName,
                                                                     TextStyle.Default, ptrChartArea, ptrSeries.XAxisType, ptrSeries.YAxisType) as TextAnnotation;
-                            CheckAndUpdateTextAnnotationLocation(ptrTextAnnotation, ptrXAxis, ptrYAxis, XStart, YStart);
+                            CheckAndUpdateTextAnnotationLocation(ptrChart, ptrTextAnnotation, XStart, YStart);
+                            AddTextBackground(ptrChart, ptrTextAnnotation.Name, cursorColor);
                         }
 
                         ptrChartData.PositionChangedCallback?.Invoke(ptrChart, ptrChartData.Cursor1.Clone() as ChartCursor);
@@ -1042,13 +1065,14 @@ namespace System.Windows.Forms.DataVisualization.Charting
             }
             else if (ptrChartData.ToolState == MSChartExtensionToolState.Select2)
             {
+                Color textColor = ptrChartData.Option.Cursor2TextColor;
                 Color cursorColor = ptrChartData.Option.Cursor2Color;
                 ChartDashStyle cursorDashStyle = ptrChartData.Option.Cursor2DashStyle;
                 int lineWidth = ptrChartData.Option.Cursor2LineWidth;
                 Series ptrSeries = ptrChartData.Cursor2.SelectedChartSeries;
                 if (ptrSeries == null) ptrSeries = ptrChartData.Cursor2.SelectedChartSeries = ptrChart.Series.First(x => x.ChartArea == ptrChartArea.Name);
                 else if (!ptrChartData.Source.Series.Contains(ptrChartData.Cursor2.SelectedChartSeries))
-                     ptrSeries = ptrChartData.Cursor2.SelectedChartSeries = ptrChart.Series.First(x => x.ChartArea == ptrChartArea.Name);
+                    ptrSeries = ptrChartData.Cursor2.SelectedChartSeries = ptrChart.Series.First(x => x.ChartArea == ptrChartArea.Name);
 
                 if (ptrSeries != null)
                 {
@@ -1061,54 +1085,34 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     if (!SanityCheck(ptrXAxis, XStart)) return;
                     if (!SanityCheck(ptrYAxis, YStart)) return;
 
+                    ChartCursorLabel ptrLabelX = ptrSeries.XAxisType == AxisType.Primary ? ptrChartData.Option.CursorLabelFormatX1 : ptrChartData.Option.CursorLabelFormatX2;
+                    ChartCursorLabel ptrLabelY = ptrSeries.YAxisType == AxisType.Primary ? ptrChartData.Option.CursorLabelFormatY1 : ptrChartData.Option.CursorLabelFormatY2;
+
                     if (ptrChartArea.ChartAreaBoundaryTest(ptrXAxis, ptrYAxis, XStart, YStart))
                     {
                         if (ptrChartData.Option.SnapCursorToData) dataIndex = SnapToNearestData(ptrChart, ptrSeries, ptrXAxis, ptrYAxis, e, ref XStart, ref YStart);
 
-                        RemoveAnnotation(ptrChart, ptrChartArea.Name + "cursor2_Label");
-
-                        DrawVerticalLine(ptrChart, XStart, cursorColor, ptrChartArea.Name + "Cursor_2X", lineWidth, cursorDashStyle, ptrChartArea, ptrSeries.XAxisType);
-                        DrawHorizontalLine(ptrChart, YStart, cursorColor, ptrChartArea.Name + "Cursor_2Y", lineWidth, cursorDashStyle, ptrChartArea, ptrSeries.YAxisType);
+                        DrawVerticalLine(ptrChart, XStart, cursorColor, ptrChartArea.Name + Cursor2XName, lineWidth, cursorDashStyle, ptrChartArea, ptrSeries.XAxisType);
+                        DrawHorizontalLine(ptrChart, YStart, cursorColor, ptrChartArea.Name + Cursor2YName, lineWidth, cursorDashStyle, ptrChartArea, ptrSeries.YAxisType);
                         ptrChartData.Cursor2.X = XStart;
                         ptrChartData.Cursor2.Y = YStart;
                         ptrChartData.Cursor2.DataIndex = dataIndex;
-                        ptrChartData.Cursor2.XFormattedString = FormatCursorValue(XStart, ptrSeries.XValueType,
-                            (ptrSeries.XAxisType == AxisType.Primary ? ptrChartData.Option.CursorLabelStringFormatX1 : ptrChartData.Option.CursorLabelStringFormatX2));
-                        ptrChartData.Cursor2.YFormattedString = FormatCursorValue(YStart, ptrSeries.YValueType,
-                            (ptrSeries.YAxisType == AxisType.Primary ? ptrChartData.Option.CursorLabelStringFormatY1 : ptrChartData.Option.CursorLabelStringFormatY2));
+                        ptrChartData.Cursor1.XFormattedString = FormatCursorValue(XStart, ptrSeries.XValueType, ptrLabelX.StringFormat);
+                        ptrChartData.Cursor1.YFormattedString = FormatCursorValue(YStart, ptrSeries.YValueType, ptrLabelY.StringFormat);
                         ptrChartData.Cursor2.ChartArea = ptrChartArea;
 
                         if (ptrChartData.Option.ShowCursorValue)
                         {
-                            string xPrefix, xPostfix, yPrefix, yPostfix;
-                            if (ptrSeries.XAxisType == AxisType.Primary)
-                            {
-                                xPrefix = ptrChartData.Option.CursorLabelPrefixX1;
-                                xPostfix = ptrChartData.Option.CursorLabelPostfixX1;
-                            }
-                            else
-                            {
-                                xPrefix = ptrChartData.Option.CursorLabelPrefixX2;
-                                xPostfix = ptrChartData.Option.CursorLabelPostfixX2;
-                            }
-
-                            if (ptrSeries.YAxisType == AxisType.Primary)
-                            {
-                                yPrefix = ptrChartData.Option.CursorLabelPrefixY1;
-                                yPostfix = ptrChartData.Option.CursorLabelPostfixY1;
-                            }
-                            else
-                            {
-                                yPrefix = ptrChartData.Option.CursorLabelPrefixY2;
-                                yPostfix = ptrChartData.Option.CursorLabelPostfixY2;
-                            }
-
                             //Add Cursor Value : X, Y
-                            string cursorValue = xPrefix + ptrChartData.Cursor2.XFormattedString + xPostfix + "," +
-                                                    yPrefix + ptrChartData.Cursor2.YFormattedString + yPostfix;
-                            TextAnnotation ptrTextAnnotation = AddText(ptrChart, cursorValue, XStart, YStart, cursorColor, ptrChartArea.Name + "cursor2_Label",
+                            string cursorValue = string.Empty;
+                            if (ptrLabelX.Visible) cursorValue += ptrLabelX.Prefix + ptrChartData.Cursor1.XFormattedString + ptrLabelX.Postfix;
+                            if (ptrLabelX.Visible && ptrLabelY.Visible) cursorValue += ",";
+                            if (ptrLabelY.Visible) cursorValue += ptrLabelY.Prefix + ptrChartData.Cursor1.YFormattedString + ptrLabelY.Postfix;
+
+                            TextAnnotation ptrTextAnnotation = AddText(ptrChart, cursorValue, XStart, YStart, textColor, ptrChartArea.Name + Cursor2LabelName,
                                                                 TextStyle.Default, ptrChartArea, ptrSeries.XAxisType, ptrSeries.YAxisType) as TextAnnotation;
-                            CheckAndUpdateTextAnnotationLocation(ptrTextAnnotation, ptrXAxis, ptrYAxis, XStart, YStart);
+                            CheckAndUpdateTextAnnotationLocation(ptrChart, ptrTextAnnotation, XStart, YStart);
+                            AddTextBackground(ptrChart, ptrTextAnnotation.Name, cursorColor);
                         }
 
                         ptrChartData.PositionChangedCallback?.Invoke(ptrChart, ptrChartData.Cursor2.Clone() as ChartCursor);
@@ -1118,28 +1122,50 @@ namespace System.Windows.Forms.DataVisualization.Charting
             }
         }
 
-        private static void CheckAndUpdateTextAnnotationLocation(TextAnnotation sender, Axis xAxis, Axis yAxis, double xStart, double yStart)
+        private static void CheckAndUpdateTextAnnotationLocation(Chart chart, TextAnnotation textAnn, double xStart, double yStart)
         {
-            Size textSize = TextRenderer.MeasureText(sender.Text, sender.Font);
-            double xMin = xAxis.ValueToPixelPosition(xAxis.ScaleView.ViewMinimum);
-            double xMax = xAxis.ValueToPixelPosition(xAxis.ScaleView.ViewMaximum);
-            double yMin = yAxis.ValueToPixelPosition(yAxis.ScaleView.ViewMaximum);
-            double yMax = yAxis.ValueToPixelPosition(yAxis.ScaleView.ViewMinimum);
+            if (chart == null) throw new ArgumentNullException(nameof(chart));
+            if (textAnn == null) throw new ArgumentNullException(nameof(textAnn));
 
-            double xStartPixel = xAxis.ValueToPixelPosition(xStart);
-            double yStartPixel = yAxis.ValueToPixelPosition(yStart);
+            ChartArea ptrChartArea = chart.ChartAreas.FindByName(textAnn.ClipToChartArea);
+            if (ptrChartArea == null) throw new ArgumentNullException("Chart are [" + textAnn.ClipToChartArea + "] not found!");
+            Axis ptrXAxis = textAnn.AxisXName.EndsWith("2") ? ptrChartArea.AxisX2 : ptrChartArea.AxisX;
+            Axis ptrYAxis = textAnn.YAxisName.EndsWith("2") ? ptrChartArea.AxisY2 : ptrChartArea.AxisY;
+
+            textAnn.Text = textAnn.Text; //Update text to force recalculate text size and position
+            Size textSize = TextRenderer.MeasureText(textAnn.Text, textAnn.Font);
+            double xMin = ptrXAxis.ValueToPixelPosition(ptrXAxis.ScaleView.ViewMinimum);
+            double xMax = ptrXAxis.ValueToPixelPosition(ptrXAxis.ScaleView.ViewMaximum);
+            double yMin = ptrYAxis.ValueToPixelPosition(ptrYAxis.ScaleView.ViewMaximum);
+            double yMax = ptrYAxis.ValueToPixelPosition(ptrYAxis.ScaleView.ViewMinimum);
+
+            double xStartPixel = ptrXAxis.ValueToPixelPosition(xStart);
+            double yStartPixel = ptrYAxis.ValueToPixelPosition(yStart);
 
             //Check if Text is out of sight
             if ((xStartPixel < xMin) || (xStartPixel > xMax)) return;
             if ((yStartPixel < yMin) || (yStartPixel > yMax)) return;
 
-            if (((xStartPixel + textSize.Width) > xMax) ||
-                ((yStartPixel + textSize.Height) < yMin))
+
+            if (((xStartPixel + textSize.Width) > xMax) &&
+                ((yStartPixel - textSize.Height) < yMin))
             {
-                double newXStart = xAxis.PixelPositionToValue(xStartPixel - textSize.Width - 4);
-                double newYStart = yAxis.PixelPositionToValue(yStartPixel - textSize.Height - 4);
-                sender.X = newXStart;
-                sender.Y = newYStart;
+                double newXStart = ptrXAxis.PixelPositionToValue(xStartPixel - textSize.Width - 4);
+                textAnn.X = newXStart;
+                textAnn.Y = ptrYAxis.PixelPositionToValue(yStartPixel);
+            }
+            else if (((xStartPixel + textSize.Width) > xMax) ||
+                ((yStartPixel + textSize.Height) > yMax))
+            {
+                double newXStart = ptrXAxis.PixelPositionToValue(xStartPixel - textSize.Width - 4);
+                double newYStart = ptrYAxis.PixelPositionToValue(yStartPixel - textSize.Height - 4);
+                textAnn.X = newXStart;
+                textAnn.Y = newYStart;
+            }
+            else
+            {
+                textAnn.X = ptrXAxis.PixelPositionToValue(xStartPixel);
+                textAnn.Y = ptrYAxis.PixelPositionToValue(yStartPixel);
             }
         }
 
@@ -1242,8 +1268,8 @@ namespace System.Windows.Forms.DataVisualization.Charting
                         X = selX,
                         Y = selY,
                         ChartArea = ptrChartArea,
-                        XFormattedString = FormatCursorValue(selX, xValueType, ptrChartData.Option.CursorLabelStringFormatX1),
-                        YFormattedString = FormatCursorValue(selY, yValueType, ptrChartData.Option.CursorLabelStringFormatY1)
+                        XFormattedString = FormatCursorValue(selX, xValueType, ptrChartData.Option.CursorLabelFormatX1.StringFormat),
+                        YFormattedString = FormatCursorValue(selY, yValueType, ptrChartData.Option.CursorLabelFormatY1.StringFormat)
                     });
             }
             catch (Exception)
@@ -1428,7 +1454,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
                     AdjustAxisIntervalForAllAxes(ptrChartArea);
                     ptrChartData.RepaintBufferedData();
-                    ptrChartData.ZoomChangedCallback?.Invoke(ptrChart);
+                    ZoomChangedCallback(ptrChart);
                     SetChartControlState(ptrChart, MSChartExtensionToolState.Select);
                     break;
 
@@ -1464,16 +1490,22 @@ namespace System.Windows.Forms.DataVisualization.Charting
             //Mouser Pointer Value
             double xTarget = xAxis.PixelPositionToValue(e.Location.X);
             double yTarget = yAxis.PixelPositionToValue(e.Location.Y);
+            Debug.WriteLine("Target: " + xTarget + ", " + yTarget);
 
             // Get Incremental Ratio: Value / pixels
             double xRatio = (xAxis.ScaleView.ViewMaximum - xAxis.ScaleView.ViewMinimum) / (xAxis.ValueToPixelPosition(xAxis.ScaleView.ViewMaximum) - xAxis.ValueToPixelPosition(xAxis.ScaleView.ViewMinimum));
-            double yRatio = (yAxis.ScaleView.ViewMaximum - yAxis.ScaleView.ViewMinimum) / (yAxis.ValueToPixelPosition(yAxis.ScaleView.ViewMaximum) - yAxis.ValueToPixelPosition(xAxis.ScaleView.ViewMinimum));
+            double yRatio = (yAxis.ScaleView.ViewMaximum - yAxis.ScaleView.ViewMinimum) / (yAxis.ValueToPixelPosition(yAxis.ScaleView.ViewMaximum) - yAxis.ValueToPixelPosition(yAxis.ScaleView.ViewMinimum));
+            Debug.WriteLine("Ratio: " + xRatio + ", " + yRatio);
 
             //Sort data point assending by X-Values
             DataPoint[] datas = series.Points.OrderBy(x => x.XValue).ToArray();
 
             //Get data point closed to mouse cursor x
+            //Estimate x index of X position as search starting point. Assume that data count increase proportional to x values.
             int estIndex = (int)(datas.Length * (xTarget - xMin) / (xMax - xMin));
+            Debug.WriteLine("Estimated index = " + estIndex);
+
+            //Find crossing index of X Value.
             if (datas[estIndex].XValue > xTarget)
             {
                 //Serch Down
@@ -1498,10 +1530,12 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     }
                 }
             }
+            Debug.WriteLine("Calculated X index = " + estIndex);
 
             //Search out of range.... iLower = iUpper
-
             //Distance = x^2 + y^2
+
+            //Calculate min distance within 20 data points
             int iLower = Math.Max(0, estIndex - 20);
             int iUppwer = Math.Min(estIndex + 20, datas.Length);
 
@@ -1514,7 +1548,11 @@ namespace System.Windows.Forms.DataVisualization.Charting
             {
                 DataPoint ptrData = datas[x];
                 //Calculate distance based on Axis ratio.
-                dist = Math.Pow((ptrData.XValue - xTarget) / xRatio, 2) + Math.Pow((ptrData.YValues[0] - yTarget) / yRatio, 2);
+                double dX = (ptrData.XValue - xTarget) / xRatio;
+                double dY = (ptrData.YValues[0] - yTarget) / yRatio;
+                dist = Math.Pow(dX, 2) + Math.Pow(dY, 2);
+                Debug.WriteLine(string.Format("[{0}] {1}, {2}, dX = {3}, dY = {4}, D = {5}", x, ptrData.XValue, ptrData.YValues[0], dX, dY, dist));
+
                 if (dist < minDist)
                 {
                     dataIndex = x;
@@ -1555,9 +1593,10 @@ namespace System.Windows.Forms.DataVisualization.Charting
         private static void ClearCursor1(ChartArea chartArea, ChartData chartData)
         {
             Chart ptrChart = ChartTool.FirstOrDefault(x => x.Value == chartData).Key;
-            ptrChart.RemoveAnnotation(chartArea.Name + "Cursor_1X");
-            ptrChart.RemoveAnnotation(chartArea.Name + "Cursor_1Y");
-            ptrChart.RemoveAnnotation(chartArea.Name + "cursor1_Label");
+            ptrChart.RemoveAnnotation(chartArea.Name + Cursor1XName);
+            ptrChart.RemoveAnnotation(chartArea.Name + Cursor1YName);
+            ptrChart.RemoveAnnotation(chartArea.Name + Cursor1LabelName);
+            ptrChart.RemoveAnnotation(chartArea.Name + Cursor1LabelBGName);
             chartData.Cursor1.X = double.NaN;
             chartData.Cursor1.Y = double.NaN;
             chartData.PositionChangedCallback?.Invoke(ptrChart, chartData.Cursor1);
@@ -1566,9 +1605,10 @@ namespace System.Windows.Forms.DataVisualization.Charting
         private static void ClearCursor2(ChartArea chartArea, ChartData chartData)
         {
             Chart ptrChart = ChartTool.FirstOrDefault(x => x.Value == chartData).Key;
-            ptrChart.RemoveAnnotation(chartArea.Name + "Cursor_2X");
-            ptrChart.RemoveAnnotation(chartArea.Name + "Cursor_2Y");
-            ptrChart.RemoveAnnotation(chartArea.Name + "cursor2_Label");
+            ptrChart.RemoveAnnotation(chartArea.Name + Cursor2XName);
+            ptrChart.RemoveAnnotation(chartArea.Name + Cursor2YName);
+            ptrChart.RemoveAnnotation(chartArea.Name + Cursor2LabelName);
+            ptrChart.RemoveAnnotation(chartArea.Name + Cursor2LabelBGName);
             chartData.Cursor2.X = double.NaN;
             chartData.Cursor2.Y = double.NaN;
             chartData.PositionChangedCallback?.Invoke(ptrChart, chartData.Cursor2);
@@ -1672,6 +1712,9 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// <param name="sender"></param>
         public static void PlotBufferedData(this Series sender)
         {
+            ChartData ptrChartData = GetChartData(sender);
+            if (!ptrChartData.Option.BufferedMode) throw new InvalidOperationException("Buffered mode not enabled.");
+
             ChartArea ptrChartArea = GetChartArea(sender);
 
             //Identify Series Axis
@@ -2003,8 +2046,16 @@ namespace System.Windows.Forms.DataVisualization.Charting
             TextStyle textStyle = TextStyle.Default, ChartArea chartArea = null,
             AxisType xAxisType = AxisType.Primary, AxisType yAxisType = AxisType.Primary)
         {
-            TextAnnotation textAnn = new TextAnnotation();
-            string chartAreaName = (chartArea == null) ? sender.ChartAreas[0].Name : chartArea.Name;
+            TextAnnotation textAnn = (string.IsNullOrEmpty(name)) ? null : (TextAnnotation)sender.Annotations.FindByName(name);
+            if (textAnn == null)
+            {
+                textAnn = new TextAnnotation();
+                if (!string.IsNullOrEmpty(name)) textAnn.Name = name;
+                sender.Annotations.Add(textAnn);
+            }
+
+            if (chartArea == null) chartArea = sender.ChartAreas[0];
+            string chartAreaName = chartArea.Name;
             textAnn.ClipToChartArea = chartAreaName;
             textAnn.AxisXName = chartAreaName + "\\rX";
             textAnn.YAxisName = chartAreaName + "\\rY";
@@ -2018,10 +2069,46 @@ namespace System.Windows.Forms.DataVisualization.Charting
             textAnn.Y = y;
             textAnn.TextStyle = textStyle;
 
-            sender.Annotations.Add(textAnn);
-            if (!string.IsNullOrEmpty(name)) textAnn.Name = name;
-
             return textAnn;
+        }
+
+        private static Annotation AddTextBackground(this Chart sender, string textAnnotationName, Drawing.Color color)
+        {
+            if (string.IsNullOrEmpty(textAnnotationName)) throw new ArgumentNullException(nameof(textAnnotationName));
+
+            TextAnnotation ptrTextAnn = (TextAnnotation)sender.Annotations.FindByName(textAnnotationName);
+            if (ptrTextAnn == null) throw new InvalidEnumArgumentException("AddTextBackground: Text annotation [" + textAnnotationName + "] not found!");
+
+            RectangleAnnotation ann = (RectangleAnnotation)sender.Annotations.FindByName(textAnnotationName + "_BG");
+            if (ann == null)
+            {
+                //Always add background before text
+                ann = new RectangleAnnotation();
+                ann.Name = textAnnotationName + "_BG";
+                sender.RemoveAnnotation(ptrTextAnn.Name);
+                sender.Annotations.Add(ann);
+                sender.Annotations.Add(ptrTextAnn);
+            }
+
+            ChartArea ptrChartArea = sender.ChartAreas.FindByName(ptrTextAnn.ClipToChartArea);
+            if (ptrChartArea == null) throw new ArgumentException("AddTextBackground: Invalid chart area [" + ptrTextAnn.ClipToChartArea + "]!");
+
+            ann.ClipToChartArea = ptrTextAnn.ClipToChartArea;
+            ann.AxisXName = ptrTextAnn.AxisXName;
+            ann.YAxisName = ptrTextAnn.YAxisName;
+            ann.IsSizeAlwaysRelative = false;
+            ann.X = ptrTextAnn.X;
+            ann.Y = ptrTextAnn.Y;
+            ann.BackColor = color;
+            Size textSize = TextRenderer.MeasureText(ptrTextAnn.Text, ptrTextAnn.Font);
+
+            Axis ptrXAxis = ann.AxisXName.EndsWith("2") ? ptrChartArea.AxisX2 : ptrChartArea.AxisX;
+            Axis ptrYAxis = ann.YAxisName.EndsWith("2") ? ptrChartArea.AxisY2 : ptrChartArea.AxisY;
+
+            ann.Width = ptrXAxis.PixelPositionToValue(textSize.Width + 5) - ptrXAxis.PixelPositionToValue(0);
+            ann.Height = ptrYAxis.PixelPositionToValue(textSize.Height + 5) - ptrYAxis.PixelPositionToValue(0);
+
+            return ann;
         }
 
         #endregion

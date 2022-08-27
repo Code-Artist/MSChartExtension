@@ -41,15 +41,22 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
         private void ReadSettings()
         {
+            btCursor1TextColor.BackColor = Option.Cursor1TextColor;
+            btCursor2TextColor.BackColor = Option.Cursor2TextColor;
             btCursor1Color.BackColor = Option.Cursor1Color;
             btCursor2Color.BackColor = Option.Cursor2Color;
             cursor1LineWidth.Text = Option.Cursor1LineWidth.ToString();
             cursor2LineWidth.Text = Option.Cursor2LineWidth.ToString();
             chkAllowToHideSeries.Checked = Option.ContextMenuAllowToHideSeries;
             chkShowCursorValue.Checked = Option.ShowCursorValue;
-            txtCursorLabelStringFormat.Text = Option.CursorLabelStringFormat;
             cbCursor1DashStyle.SelectedIndex = (int)Option.Cursor1DashStyle - 1;
             cbCursor2DashStyle.SelectedIndex = (int)Option.Cursor2DashStyle - 1;
+
+            LabelFormatX1.SetContent(Option.CursorLabelFormatX1);
+            LabelFormatX2.SetContent(Option.CursorLabelFormatX2);
+            LabelFormatY1.SetContent(Option.CursorLabelFormatY1);
+            LabelFormatY2.SetContent(Option.CursorLabelFormatY2);
+
 
             if (Option.Theme == null) cbTheme.SelectedIndex = ThemeIndex = -1;
             else { ThemeIndex = cbTheme.SelectedIndex = cbTheme.Items.IndexOf(Option.Theme.Name); }
@@ -57,15 +64,21 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
         private void WriteSettings()
         {
+            Option.Cursor1TextColor = btCursor1TextColor.BackColor;
+            Option.Cursor2TextColor = btCursor2TextColor.BackColor;
             Option.Cursor1Color = btCursor1Color.BackColor;
             Option.Cursor2Color = btCursor2Color.BackColor;
             Option.Cursor1LineWidth = Convert.ToInt32(cursor1LineWidth.Text);
             Option.Cursor2LineWidth = Convert.ToInt32(cursor2LineWidth.Text);
             Option.ContextMenuAllowToHideSeries = chkAllowToHideSeries.Checked;
             Option.ShowCursorValue = chkShowCursorValue.Checked;
-            Option.CursorLabelStringFormat = txtCursorLabelStringFormat.Text;
             Option.Cursor1DashStyle = (ChartDashStyle)(cbCursor1DashStyle.SelectedIndex + 1);
             Option.Cursor2DashStyle = (ChartDashStyle)(cbCursor2DashStyle.SelectedIndex + 1);
+
+            Option.CursorLabelFormatX1 = LabelFormatX1.GetLabelContent();
+            Option.CursorLabelFormatX2 = LabelFormatX2.GetLabelContent();
+            Option.CursorLabelFormatY1 = LabelFormatY1.GetLabelContent();
+            Option.CursorLabelFormatY2 = LabelFormatY2.GetLabelContent();   
 
             if (cbTheme.SelectedIndex != ThemeIndex) Option.Theme = Themes[cbTheme.Text];
         }
@@ -81,6 +94,19 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 }
             }
         }
+        private void btCursor1TextColor_Click(object sender, EventArgs e)
+        {
+            using (ColorPickerDialog dialog = new ColorPickerDialog())
+            {
+                dialog.Color = Option.Cursor1TextColor;
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    Option.Cursor1TextColor = btCursor1TextColor.BackColor = dialog.Color;
+                }
+            }
+        }
+
+
         private void BtCursor2Color_Click(object sender, EventArgs e)
         {
             using (ColorPickerDialog dialog = new ColorPickerDialog())
@@ -89,6 +115,18 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     Option.Cursor2Color = btCursor2Color.BackColor = dialog.Color;
+                }
+            }
+        }
+
+        private void btCursor2TextColor_Click(object sender, EventArgs e)
+        {
+            using (ColorPickerDialog dialog = new ColorPickerDialog())
+            {
+                dialog.Color = Option.Cursor2TextColor;
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    Option.Cursor2TextColor = btCursor2TextColor.BackColor = dialog.Color;
                 }
             }
         }
@@ -143,5 +181,6 @@ namespace System.Windows.Forms.DataVisualization.Charting
         {
             SeriesGrid.ClearSelection();
         }
+
     }
 }

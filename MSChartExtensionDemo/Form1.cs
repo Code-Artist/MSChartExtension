@@ -31,24 +31,25 @@ namespace MSChartExtensionDemo
 
         private void Form1_Shown(object sender, EventArgs e)
         {
-            chart1.EnableZoomAndPanControls(ChartCursorSelected, ChartCursorMoved,
-                zoomChanged,
-                new ChartOption()
-                {
-                    ContextMenuAllowToHideSeries = true,
-                    //XAxisPrecision = 4,
-                    //YAxisPrecision = 4
-                    Theme = new DarkTheme(),
-                    CursorLabelStringFormatX1 = "F0",
-                    CursorLabelPrefixX1 = "X=",
-                    CursorLabelPrefixY1 = "Y ",
-                    CursorLabelPostfixY1 = "V"
+            ChartOption option = new ChartOption()
+            {
+                ContextMenuAllowToHideSeries = true,
+                //XAxisPrecision = 4,
+                //YAxisPrecision = 4
+                Theme = new DarkTheme(),
 #if BUFFER
-                    ,
-                    BufferedMode = true,
-                    DisplayDataSize = 800
+                BufferedMode = true,
+                DisplayDataSize = 800
 #endif
-                });
+            };
+            option.CursorLabelFormatX1.StringFormat = "F0";
+            option.CursorLabelFormatX1.Prefix = "X=";
+            option.CursorLabelFormatY1.Prefix = "Y ";
+            option.CursorLabelFormatY1.StringFormat = "F4";
+            option.CursorLabelFormatY1.Postfix = "V";
+
+
+            chart1.EnableZoomAndPanControls(ChartCursorSelected, ChartCursorMoved, zoomChanged, option);
 
             chart2.EnableZoomAndPanControls();
 
@@ -62,15 +63,14 @@ namespace MSChartExtensionDemo
         {
             Series ptrSeries = ChartDate.Series[0];
             DateTime StartDate = new DateTime(2020, 1, 1);
-            for (int x = 0; x < 10; x++)
+            Random r = new Random((int)DateTime.Now.Ticks);
+            for (int x = 0; x < 20; x++)
             {
-                int id = ptrSeries.Points.AddXY(StartDate.AddDays(x), x);
+                int id = ptrSeries.Points.AddXY(StartDate.AddDays(x), r.Next(0, 100));
                 ptrSeries.Points[id].Label = StartDate.AddDays(x).ToShortDateString();
             }
-            ChartOption chartOption = new ChartOption()
-            {
-                CursorLabelStringFormatX1 = "MMM-dd"
-            };
+            ChartOption chartOption = new ChartOption();
+            chartOption.CursorLabelFormatX1.StringFormat = "MMM-dd";
             ChartDate.EnableZoomAndPanControls(null, null, option: chartOption);
         }
 
@@ -275,8 +275,8 @@ namespace MSChartExtensionDemo
             chart1.DrawVerticalLine(750, Color.Orange, lineWidth: 3, lineStyle: ChartDashStyle.Dot);
             chart1.DrawRectangle(1000, -0.3, 500, 0.6, Color.Lime, lineWidth: 3);
             chart1.DrawLine(1500, 2000, -1, 1, Color.Pink, lineWidth: 2);
-            chart1.DrawLine(1500, 2000, -1, 1, Color.Red, lineWidth: 2, chartArea: chart1.ChartAreas[1]);
-            chart1.AddText("Test chart message", 100, 14, Color.Black, textStyle: TextStyle.Shadow, xAxisType: AxisType.Secondary, yAxisType: AxisType.Secondary);
+            //chart1.DrawLine(1500, 2000, -1, 1, Color.Red, lineWidth: 2, chartArea: chart1.ChartAreas[1]);
+            chart1.AddText("Test chart message", 100, 14, Color.Black, textStyle: TextStyle.Shadow, xAxisType: AxisType.Primary, yAxisType: AxisType.Primary);
         }
 
         private void toolStripButton2_Click(object sender, EventArgs e)
