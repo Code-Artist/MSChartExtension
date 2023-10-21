@@ -14,7 +14,9 @@ namespace System.Windows.Forms.DataVisualization.Charting
             //Technical Reference: https://github.com/sveinn-steinarsson/highcharts-downsample
             //Code Reference: https://gist.github.com/adrianseeley/264417d295ccd006e7fd
 
-            //ToDo: With dynamicX, Actual data size returned might be less, Handle data point with no data by not returning 0,0. Use Dynamic List
+            //Implementation: https://www.codearteng.com/2020/08/implementation-of-downsampling.html
+
+            //With dynamicX, Actual data size returned might be less, Handle data point with no data by not returning 0,0. Use Dynamic List
             PointD[] window = new PointD[length];
             int w = 0;
             int bucket_size_less_start_and_end = length - 2;
