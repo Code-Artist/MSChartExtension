@@ -1698,6 +1698,15 @@ namespace System.Windows.Forms.DataVisualization.Charting
         private static void RepaintBufferedData(this ChartData sender)
         {
             if (!sender.Option.BufferedMode) return;
+
+            //Cleanup old SeriesData if series had been removed from Chart
+            for(int x=0; x < sender.SeriesData.Count; )
+            {
+                if (!sender.Source.Series.Contains(sender.SeriesData[x].Series))
+                    sender.SeriesData.RemoveAt(x);
+                else x++;
+            }
+
             foreach (SeriesDataBuffer s in sender.SeriesData)
             {
                 if (s.DataBuffer.Count == 0) continue; //ToDo: Shall we allow mixture of series? Buffered and non-buffered series?

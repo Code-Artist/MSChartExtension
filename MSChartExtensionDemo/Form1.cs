@@ -141,15 +141,17 @@ namespace MSChartExtensionDemo
             //Remove series instead of clear.
             chart1.Series.Clear();
             //Recreate series
-            chart1.Series.Add(new Series());
-            chart1.Series.Add(new Series());
+            chart1.Series.Add(new Series("radn1"));
+            chart1.Series.Add(new Series("rand2"));
 
             StartStopWatch();
             //Series 1 used primary YAxis
             Series Ser1 = chart1.Series[0];
+            Ser1.ChartType = SeriesChartType.FastLine;
 
             //Series 2 used secondary YAxis 
             Series Ser2 = chart1.Series[1];
+            Ser2.ChartType= SeriesChartType.FastLine;
 
             Random rand = new Random();
             double data = 0;

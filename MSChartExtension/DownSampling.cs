@@ -100,7 +100,8 @@ namespace System.Windows.Forms.DataVisualization.Charting
                     for (int n = bucket_start; n < bucket_end; n++)
                     {
                         // Calculate triangle area over three buckets
-                        double area = Math.Abs((a_x - avg_x) * (array[n].Y - a_y) - (a_x - n) * (avg_y - a_y)) * 0.5f;
+                        // Optimization - Rectange and Triangle area return same result, removed multiplication of 0.5
+                        double area = Math.Abs((a_x - avg_x) * (array[n].Y - a_y) - (a_x - n) * (avg_y - a_y));
                         if (area > max_area)
                         {
                             max_area = area;
