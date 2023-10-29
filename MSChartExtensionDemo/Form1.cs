@@ -1,7 +1,9 @@
 ﻿#define BUFFER
-#define Dynamic
+//#define Dynamic
 
 using System;
+using System.IO;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
@@ -12,6 +14,9 @@ namespace MSChartExtensionDemo
 {
     public partial class Form1 : Form
     {
+        const int DataSizeBase = 200; //Increase this number to plot more points
+        const int SamplingSize = 30;
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -39,7 +44,7 @@ namespace MSChartExtensionDemo
                 Theme = new DarkTheme(),
 #if BUFFER
                 BufferedMode = true,
-                DisplayDataSize = 800
+                DisplayDataSize = SamplingSize
 #endif
             };
             option.CursorLabelFormatX1.StringFormat = "F0";
@@ -74,7 +79,6 @@ namespace MSChartExtensionDemo
             ChartDate.EnableZoomAndPanControls(null, null, option: chartOption);
         }
 
-        const int DataSizeBase = 5000; //Increase this number to plot more points
 
         private void PlotData(bool reverse = false)
         {
@@ -87,37 +91,58 @@ namespace MSChartExtensionDemo
             Series Ser3 = chart1.Series[2];
             double angFreq = 0.20;
 
-#if Dynamic
             int HalfSize = DataSizeBase / 10 * 9;
             for (int x = 0; x < HalfSize; x++)
             {
+                Ser1.Points.AddXY(x, 10 * Math.Cos(Math.PI * angFreq * x));
 #if BUFFER
                 Ser2.AddXYBuffered(x, 10 * Math.Cos(Math.PI * angFreq * x));
+                //Ser3.AddXYBuffered(x, 10 * Math.Cos(Math.PI * angFreq * x));
 #endif
-                Ser1.Points.AddXY(x, 10 * Math.Cos(Math.PI * angFreq * x));
             }
             for (int x = HalfSize; x < DataSizeBase; x++)
             {
+                Ser1.Points.AddXY(HalfSize + 10 * (x - HalfSize), 10 * Math.Cos(Math.PI * angFreq * x));
 #if BUFFER
-                Ser2.AddXYBuffered(HalfSize + 20 * (x - HalfSize), 10 * Math.Cos(Math.PI * angFreq * x));
+                Ser2.AddXYBuffered(HalfSize + 10 * (x - HalfSize), 10 * Math.Cos(Math.PI * angFreq * x));
+                //Ser3.AddXYBuffered(HalfSize + 10 * (x - HalfSize), 10 * Math.Cos(Math.PI * angFreq * x));
 #endif
-                Ser1.Points.AddXY(HalfSize + 20 * (x - HalfSize), 10 * Math.Cos(Math.PI * angFreq * x));
             }
 
-#else
-            for (int x = 0; x < DataSizeBase; x++)
-            {
-#if BUFFER
-                Ser2.AddXYBuffered(2 * Math.PI * angFreq * x, 10 * Math.Cos(Math.PI * angFreq * x));
-#endif
-                Ser1.Points.AddXY(2 * Math.PI * angFreq * x, 10 * Math.Cos(Math.PI * angFreq * x));
-            }
-#endif
 
 #if BUFFER
-
             Ser2.PlotBufferedData();
+            //Ser3.PlotBufferedData(false);
 #endif
+            int i = 0;
+            List<string> S1 = new List<string>();
+            foreach (DataPoint p in Ser1.Points) 
+            {
+                while (p.XValue > i++) S1.Add(" ");
+                S1.Add(p.XValue + "," + p.YValues[0]);
+            }
+            File.WriteAllLines("S1.txt", S1.ToArray());
+
+            List<string> S2 = new List<string>();
+            i = 0;
+            foreach (DataPoint p in Ser2.Points)
+            {
+                while (p.XValue > i++) S2.Add(" ");
+                S2.Add(p.XValue + "," + p.YValues[0]);
+            }
+            File.WriteAllLines("S2.txt", S2.ToArray());
+
+            List<string> S3 = new List<string>();
+            i = 0;
+            foreach (DataPoint p in Ser3.Points)
+            {
+                while (p.XValue > i++) S3.Add(" ");
+                S3.Add(p.XValue + "," + p.YValues[0]);
+            }
+            File.WriteAllLines("S3.txt", S3.ToArray());
+
+
+
             var chartArea = chart1.ChartAreas.First();
             chartArea.AxisX.IsReversed = reverse;
             chartArea.AxisY.IsReversed = reverse;
@@ -151,7 +176,7 @@ namespace MSChartExtensionDemo
 
             //Series 2 used secondary YAxis 
             Series Ser2 = chart1.Series[1];
-            Ser2.ChartType= SeriesChartType.FastLine;
+            Ser2.ChartType = SeriesChartType.FastLine;
 
             Random rand = new Random();
             double data = 0;

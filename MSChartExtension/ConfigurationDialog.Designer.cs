@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.panel1 = new System.Windows.Forms.Panel();
             this.btCancel = new System.Windows.Forms.Button();
             this.btOK = new System.Windows.Forms.Button();
@@ -50,6 +50,13 @@
             this.label8 = new System.Windows.Forms.Label();
             this.cbTheme = new System.Windows.Forms.ComboBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.LabelFormatY2 = new System.Windows.Forms.DataVisualization.Charting.LabelFormatControl();
+            this.LabelFormatX2 = new System.Windows.Forms.DataVisualization.Charting.LabelFormatControl();
+            this.LabelFormatY1 = new System.Windows.Forms.DataVisualization.Charting.LabelFormatControl();
+            this.LabelFormatX1 = new System.Windows.Forms.DataVisualization.Charting.LabelFormatControl();
             this.label10 = new System.Windows.Forms.Label();
             this.btCursor2TextColor = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
@@ -63,10 +70,6 @@
             this.btCheckNone = new System.Windows.Forms.Button();
             this.btCheckAll = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.LabelFormatX1 = new System.Windows.Forms.DataVisualization.Charting.LabelFormatControl();
-            this.LabelFormatY1 = new System.Windows.Forms.DataVisualization.Charting.LabelFormatControl();
-            this.LabelFormatY2 = new System.Windows.Forms.DataVisualization.Charting.LabelFormatControl();
-            this.LabelFormatX2 = new System.Windows.Forms.DataVisualization.Charting.LabelFormatControl();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cursor1LineWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cursor2LineWidth)).BeginInit();
@@ -147,7 +150,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(5, 243);
+            this.label3.Location = new System.Drawing.Point(5, 240);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(101, 13);
@@ -301,6 +304,9 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label13);
+            this.groupBox1.Controls.Add(this.label12);
+            this.groupBox1.Controls.Add(this.label11);
             this.groupBox1.Controls.Add(this.LabelFormatY2);
             this.groupBox1.Controls.Add(this.LabelFormatX2);
             this.groupBox1.Controls.Add(this.LabelFormatY1);
@@ -325,10 +331,77 @@
             this.groupBox1.Controls.Add(this.btCursor2Color);
             this.groupBox1.Location = new System.Drawing.Point(370, 10);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(309, 374);
+            this.groupBox1.Size = new System.Drawing.Size(309, 394);
             this.groupBox1.TabIndex = 22;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Cursors";
+            // 
+            // label13
+            // 
+            this.label13.Location = new System.Drawing.Point(80, 261);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(112, 13);
+            this.label13.TabIndex = 30;
+            this.label13.Text = "String Format";
+            this.label13.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(198, 261);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(38, 13);
+            this.label12.TabIndex = 29;
+            this.label12.Text = "Postfix";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(41, 261);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(33, 13);
+            this.label11.TabIndex = 28;
+            this.label11.Text = "Prefix";
+            // 
+            // LabelFormatY2
+            // 
+            this.LabelFormatY2.AutoSize = true;
+            this.LabelFormatY2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.LabelFormatY2.LabelName = "Y2";
+            this.LabelFormatY2.Location = new System.Drawing.Point(6, 352);
+            this.LabelFormatY2.Name = "LabelFormatY2";
+            this.LabelFormatY2.Size = new System.Drawing.Size(298, 26);
+            this.LabelFormatY2.TabIndex = 27;
+            // 
+            // LabelFormatX2
+            // 
+            this.LabelFormatX2.AutoSize = true;
+            this.LabelFormatX2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.LabelFormatX2.LabelName = "X2";
+            this.LabelFormatX2.Location = new System.Drawing.Point(6, 329);
+            this.LabelFormatX2.Name = "LabelFormatX2";
+            this.LabelFormatX2.Size = new System.Drawing.Size(298, 26);
+            this.LabelFormatX2.TabIndex = 26;
+            // 
+            // LabelFormatY1
+            // 
+            this.LabelFormatY1.AutoSize = true;
+            this.LabelFormatY1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.LabelFormatY1.LabelName = "Y1";
+            this.LabelFormatY1.Location = new System.Drawing.Point(6, 297);
+            this.LabelFormatY1.Name = "LabelFormatY1";
+            this.LabelFormatY1.Size = new System.Drawing.Size(298, 26);
+            this.LabelFormatY1.TabIndex = 25;
+            // 
+            // LabelFormatX1
+            // 
+            this.LabelFormatX1.AutoSize = true;
+            this.LabelFormatX1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.LabelFormatX1.LabelName = "X1";
+            this.LabelFormatX1.Location = new System.Drawing.Point(6, 274);
+            this.LabelFormatX1.Name = "LabelFormatX1";
+            this.LabelFormatX1.Size = new System.Drawing.Size(298, 26);
+            this.LabelFormatX1.TabIndex = 24;
             // 
             // label10
             // 
@@ -426,8 +499,8 @@
             // 
             // colSeriesColor
             // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.colSeriesColor.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.colSeriesColor.DefaultCellStyle = dataGridViewCellStyle1;
             this.colSeriesColor.HeaderText = "Color";
             this.colSeriesColor.Name = "colSeriesColor";
             this.colSeriesColor.ReadOnly = true;
@@ -466,52 +539,12 @@
             // 
             this.groupBox3.Controls.Add(this.cbTheme);
             this.groupBox3.Controls.Add(this.label8);
-            this.groupBox3.Location = new System.Drawing.Point(370, 390);
+            this.groupBox3.Location = new System.Drawing.Point(370, 410);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(309, 48);
             this.groupBox3.TabIndex = 24;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Theme";
-            // 
-            // LabelFormatX1
-            // 
-            this.LabelFormatX1.AutoSize = true;
-            this.LabelFormatX1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.LabelFormatX1.LabelName = "X1";
-            this.LabelFormatX1.Location = new System.Drawing.Point(6, 259);
-            this.LabelFormatX1.Name = "LabelFormatX1";
-            this.LabelFormatX1.Size = new System.Drawing.Size(298, 26);
-            this.LabelFormatX1.TabIndex = 24;
-            // 
-            // LabelFormatY1
-            // 
-            this.LabelFormatY1.AutoSize = true;
-            this.LabelFormatY1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.LabelFormatY1.LabelName = "Y1";
-            this.LabelFormatY1.Location = new System.Drawing.Point(6, 282);
-            this.LabelFormatY1.Name = "LabelFormatY1";
-            this.LabelFormatY1.Size = new System.Drawing.Size(298, 26);
-            this.LabelFormatY1.TabIndex = 25;
-            // 
-            // LabelFormatY2
-            // 
-            this.LabelFormatY2.AutoSize = true;
-            this.LabelFormatY2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.LabelFormatY2.LabelName = "Y2";
-            this.LabelFormatY2.Location = new System.Drawing.Point(6, 337);
-            this.LabelFormatY2.Name = "LabelFormatY2";
-            this.LabelFormatY2.Size = new System.Drawing.Size(298, 26);
-            this.LabelFormatY2.TabIndex = 27;
-            // 
-            // LabelFormatX2
-            // 
-            this.LabelFormatX2.AutoSize = true;
-            this.LabelFormatX2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.LabelFormatX2.LabelName = "X2";
-            this.LabelFormatX2.Location = new System.Drawing.Point(6, 314);
-            this.LabelFormatX2.Name = "LabelFormatX2";
-            this.LabelFormatX2.Size = new System.Drawing.Size(298, 26);
-            this.LabelFormatX2.TabIndex = 26;
             // 
             // ConfigurationDialog
             // 
@@ -585,5 +618,8 @@
         private LabelFormatControl LabelFormatX1;
         private LabelFormatControl LabelFormatY2;
         private LabelFormatControl LabelFormatX2;
+        private Label label11;
+        private Label label13;
+        private Label label12;
     }
 }

@@ -1,4 +1,4 @@
-﻿using Cyotek.Windows.Forms;
+﻿using System.Drawing;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -23,6 +23,13 @@ namespace System.Windows.Forms.DataVisualization.Charting
             //Create List of Dash Style, skip NOTSET option.
             cbCursor1DashStyle.Items.AddRange(Enum.GetNames(typeof(ChartDashStyle)).Skip(1).ToArray());
             cbCursor2DashStyle.Items.AddRange(Enum.GetNames(typeof(ChartDashStyle)).Skip(1).ToArray());
+
+            Text = chart.Name + " Settings";
+            if (chart.Titles.Count > 0)
+            {
+                string chartTitle = chart.Titles.Where(n => !string.IsNullOrEmpty(n.Text)).Select(d => d.Text).FirstOrDefault();
+                if (!string.IsNullOrEmpty(chartTitle)) Text = chartTitle + " Settings";
+            }
 
             Themes = ThemeManager.GetThemes();
             cbTheme.Items.Clear();
@@ -78,57 +85,40 @@ namespace System.Windows.Forms.DataVisualization.Charting
             Option.CursorLabelFormatX1 = LabelFormatX1.GetLabelContent();
             Option.CursorLabelFormatX2 = LabelFormatX2.GetLabelContent();
             Option.CursorLabelFormatY1 = LabelFormatY1.GetLabelContent();
-            Option.CursorLabelFormatY2 = LabelFormatY2.GetLabelContent();   
+            Option.CursorLabelFormatY2 = LabelFormatY2.GetLabelContent();
 
             if (cbTheme.SelectedIndex != ThemeIndex) Option.Theme = Themes[cbTheme.Text];
         }
 
+        private Color PickColor(Color color)
+        {
+            using (ColorDialog dialog = new ColorDialog())
+            {
+                dialog.Color = color;
+                if (dialog.ShowDialog() == DialogResult.OK) return dialog.Color;
+                return color;
+            }
+        }
+
+
         private void BtCursor1Color_Click(object sender, EventArgs e)
         {
-            using (ColorPickerDialog dialog = new ColorPickerDialog())
-            {
-                dialog.Color = Option.Cursor1Color;
-                if (dialog.ShowDialog() == DialogResult.OK)
-                {
-                    Option.Cursor1Color = btCursor1Color.BackColor = dialog.Color;
-                }
-            }
+            btCursor1Color.BackColor = PickColor(btCursor1Color.BackColor);
         }
         private void btCursor1TextColor_Click(object sender, EventArgs e)
         {
-            using (ColorPickerDialog dialog = new ColorPickerDialog())
-            {
-                dialog.Color = Option.Cursor1TextColor;
-                if (dialog.ShowDialog() == DialogResult.OK)
-                {
-                    Option.Cursor1TextColor = btCursor1TextColor.BackColor = dialog.Color;
-                }
-            }
+            btCursor1TextColor.BackColor = PickColor(btCursor1TextColor.BackColor);
         }
 
 
         private void BtCursor2Color_Click(object sender, EventArgs e)
         {
-            using (ColorPickerDialog dialog = new ColorPickerDialog())
-            {
-                dialog.Color = Option.Cursor2Color;
-                if (dialog.ShowDialog() == DialogResult.OK)
-                {
-                    Option.Cursor2Color = btCursor2Color.BackColor = dialog.Color;
-                }
-            }
+            btCursor2Color.BackColor = PickColor(btCursor2Color.BackColor);
         }
 
         private void btCursor2TextColor_Click(object sender, EventArgs e)
         {
-            using (ColorPickerDialog dialog = new ColorPickerDialog())
-            {
-                dialog.Color = Option.Cursor2TextColor;
-                if (dialog.ShowDialog() == DialogResult.OK)
-                {
-                    Option.Cursor2TextColor = btCursor2TextColor.BackColor = dialog.Color;
-                }
-            }
+            btCursor2TextColor.BackColor = PickColor(btCursor2TextColor.BackColor);
         }
 
         private void UpdateSeriesSettings()
@@ -166,14 +156,8 @@ namespace System.Windows.Forms.DataVisualization.Charting
         {
             if (e.ColumnIndex == colSelectColor.Index)
             {
-                using (ColorPickerDialog dialog = new ColorPickerDialog())
-                {
-                    dialog.Color = SeriesGrid.Rows[e.RowIndex].Cells[e.ColumnIndex - 1].Style.BackColor;
-                    if (dialog.ShowDialog() == DialogResult.OK)
-                    {
-                        SeriesGrid.Rows[e.RowIndex].Cells[e.ColumnIndex - 1].Style.BackColor = dialog.Color;
-                    }
-                }
+                DataGridViewCell ptrCell = SeriesGrid.Rows[e.RowIndex].Cells[e.ColumnIndex - 1];
+                ptrCell.Style.BackColor = PickColor(ptrCell.Style.BackColor);
             }
         }
 

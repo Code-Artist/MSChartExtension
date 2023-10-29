@@ -10,6 +10,11 @@ namespace System.Windows.Forms.DataVisualization.Charting
     {
         internal static PointD[] DownsampleLTTB(PointD[] array, int length, bool dynamicX = true)
         {
+            //Sanity Check
+            if (array == null) return null;
+            if (array.Length < length) return array;
+            if (length < 2) return array;
+
             //Largest-Triangle-Three Bucket Downsampling 
             //Technical Reference: https://github.com/sveinn-steinarsson/highcharts-downsample
             //Code Reference: https://gist.github.com/adrianseeley/264417d295ccd006e7fd
@@ -19,9 +24,9 @@ namespace System.Windows.Forms.DataVisualization.Charting
             //With dynamicX, Actual data size returned might be less, Handle data point with no data by not returning 0,0. Use Dynamic List
             PointD[] window = new PointD[length];
             int w = 0;
-            int bucket_size_less_start_and_end = length - 2;
+            int data_size_less_start_and_end = length - 2;
 
-            double bucket_size = (double)(array.Length - 2) / bucket_size_less_start_and_end;
+            double bucket_size = (double)(array.Length - 2) / data_size_less_start_and_end;
             int a = 0;
             int next_a = 0;
             PointD max_area_point = new PointD();
@@ -30,9 +35,11 @@ namespace System.Windows.Forms.DataVisualization.Charting
             int start = 0, end = 0;
             int bucket_start = 1, bucket_end = 1;
 
-            //Dynamic X Values (For data points where X incremental is not constant)
-            double bucketSizeX = (array[array.Length - 2].X - array[1].X) / bucket_size_less_start_and_end; //Calculate bucket X width exclude first and last points
-            double bucketBoundary = array[0].X + bucketSizeX;   //Next bucket boundary
+            //Dynamic X Parameters (For data points where X incremental is not constant)
+            double xStart = (array[1].X + array[0].X) / 2; //Mid X point for first 2 points
+            double xEnd = (array[array.Length - 1].X + array[array.Length - 2].X) / 2; //Mid X point for last 2 points
+            double bucketSizeX = (xEnd - xStart) / data_size_less_start_and_end; //Calculate bucket X width exclude first and last points
+            double bucketBoundary = xStart + bucketSizeX;   //Next bucket boundary
 
             if (dynamicX)
             {
@@ -47,14 +54,18 @@ namespace System.Windows.Forms.DataVisualization.Charting
             }
             //Debug.WriteLine("Bucket Start: " + bucket_start + ", " + bucket_end);
 
-            for (int i = 0; i < bucket_size_less_start_and_end; i++)
+            for (int i = 0; i < data_size_less_start_and_end; i++)
             {
                 // Calculate point average for next bucket (containing c)
                 double avg_x = 0;
                 double avg_y = 0;
                 if (dynamicX)
                 {
-                    while (array[start].X < bucketBoundary) { start++; }
+                    while (array[start].X < bucketBoundary)
+                    {
+                        start++;
+                        if (start == array.Length) break;
+                    }
                     bucketBoundary += bucketSizeX;
                     end = start;
                     if (end <= (array.Length - 1)) //Prevent buffer overrun
@@ -120,6 +131,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 bucket_start = start;
                 bucket_end = end;
                 start = end;
+                if (end >= array.Length) break;
             }
 
             window[w++] = array[array.Length - 1]; // Always add last

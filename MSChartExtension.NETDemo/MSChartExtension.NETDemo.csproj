@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <StartupObject>MSChartExtensionDemo.Program</StartupObject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Form1.cs" />
+    <Compile Remove="Form1.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="Form1.resx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\MSChartExtensionDemo\ChartForm.cs" Link="ChartForm.cs" />
+    <Compile Include="..\MSChartExtensionDemo\ChartForm.Designer.cs" Link="ChartForm.Designer.cs" />
+    <Compile Include="..\MSChartExtensionDemo\Form1.cs" Link="Form1.cs" />
+    <Compile Include="..\MSChartExtensionDemo\Form1.Designer.cs" Link="Form1.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\MSChartExtensionDemo\ChartForm.resx" Link="ChartForm.resx" />
+    <EmbeddedResource Include="..\MSChartExtensionDemo\Form1.resx" Link="Form1.resx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MSChartExtension.NET\MSChartExtension.NET.csproj" />
+  </ItemGroup>
+
+</Project>

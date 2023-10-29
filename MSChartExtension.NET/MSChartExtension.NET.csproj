@@ -1,0 +1,98 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net6.0-windows;net7.0-windows</TargetFrameworks>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>System.Windows.Forms.DataVisualization.Charting</RootNamespace>
+    <Authors>Code Artist</Authors>
+    <Company>Code Art Engineering</Company>
+    <Copyright>Copyright © Code Art Engineering 2012 - 2023</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Description>MSChart Extension for .NET Core. Build with WinForms.DataVisualization by Kirsan</Description>
+    <PackageProjectUrl>https://www.codearteng.com/search/label/MSChartExtension</PackageProjectUrl>
+    <PackageIcon>MSChartExtensionLogo.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/Code-Artist/MSChartExtension</RepositoryUrl>
+    <RepositoryType>GitHub</RepositoryType>
+    <PackageTags>chart;data-visualization;winfors;net6</PackageTags>
+    <PackageReleaseNotes>First Release</PackageReleaseNotes>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Version>3.10.1</Version>
+    <ApplicationIcon>MSChartExtensionLogo.ico</ApplicationIcon>
+    <Title>MSChart Extension for .NET Core</Title>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\MSChartExtension\AboutDialog.cs" Link="AboutDialog.cs" />
+    <Compile Include="..\MSChartExtension\AboutDialog.Designer.cs" Link="AboutDialog.Designer.cs" />
+    <Compile Include="..\MSChartExtension\ChartCursor.cs" Link="ChartCursor.cs" />
+    <Compile Include="..\MSChartExtension\ChartCursorLabel.cs" Link="ChartCursorLabel.cs" />
+    <Compile Include="..\MSChartExtension\ChartData.cs" Link="ChartData.cs" />
+    <Compile Include="..\MSChartExtension\ChartOption.cs" Link="ChartOption.cs" />
+    <Compile Include="..\MSChartExtension\ConfigurationDialog.cs" Link="ConfigurationDialog.cs" />
+    <Compile Include="..\MSChartExtension\ConfigurationDialog.Designer.cs" Link="ConfigurationDialog.Designer.cs" />
+    <Compile Include="..\MSChartExtension\DownSampling.cs" Link="DownSampling.cs" />
+    <Compile Include="..\MSChartExtension\Extensions.cs" Link="Extensions.cs" />
+    <Compile Include="..\MSChartExtension\LabelFormatControl.cs" Link="LabelFormatControl.cs" />
+    <Compile Include="..\MSChartExtension\LabelFormatControl.Designer.cs" Link="LabelFormatControl.Designer.cs" />
+    <Compile Include="..\MSChartExtension\MSChartExtension.cs" Link="MSChartExtension.cs" />
+    <Compile Include="..\MSChartExtension\MSChartExtensionZoomDialog.cs" Link="MSChartExtensionZoomDialog.cs" />
+    <Compile Include="..\MSChartExtension\MSChartExtensionZoomDialog.Designer.cs" Link="MSChartExtensionZoomDialog.Designer.cs" />
+    <Compile Include="..\MSChartExtension\SeriesDataBuffer.cs" Link="SeriesDataBuffer.cs" />
+    <Compile Include="..\MSChartExtension\Theme\DarkTheme.cs" Link="DarkTheme.cs" />
+    <Compile Include="..\MSChartExtension\Theme\Futuristic.cs" Link="Theme\Futuristic.cs" />
+    <Compile Include="..\MSChartExtension\Theme\NightVision.cs" Link="Theme\NightVision.cs" />
+    <Compile Include="..\MSChartExtension\Theme\ThemeBase.cs" Link="Theme\ThemeBase.cs" />
+    <Compile Include="..\MSChartExtension\Theme\ThemeManager.cs" Link="Theme\ThemeManager.cs" />
+    <Compile Include="..\MSChartExtension\Theme\WindowsTheme.cs" Link="Theme\WindowsTheme.cs" />
+    <Compile Include="..\MSChartExtension\WindowMessagesNativeMethods.cs" Link="WindowMessagesNativeMethods.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="MSChartExtensionLogo.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\MSChartExtension\AboutDialog.resx" Link="AboutDialog.resx" />
+    <EmbeddedResource Include="..\MSChartExtension\ConfigurationDialog.resx" Link="ConfigurationDialog.resx" />
+    <EmbeddedResource Include="..\MSChartExtension\LabelFormatControl.resx" Link="LabelFormatControl.resx" />
+    <EmbeddedResource Include="..\MSChartExtension\MSChartExtensionZoomDialog.resx" Link="MSChartExtensionZoomDialog.resx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Theme\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\MSChartExtension\Resources\MSChartExtensionLogo.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WinForms.DataVisualization" Version="1.9.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

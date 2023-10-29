@@ -1623,13 +1623,14 @@ namespace System.Windows.Forms.DataVisualization.Charting
         {
             while (sender.Points.Count > 0)
                 sender.Points.RemoveAt(sender.Points.Count - 1);
-            sender.Points.Clear(); //Force refresh.
 
             if (clearDataBuffer)
             {
                 if (sender.GetChartData().Option.BufferedMode)
                     sender.GetSeriesDataBuffer(true).Clear();
             }
+
+            sender.Points.Clear(); //Force refresh.
         }
 
 
@@ -1700,7 +1701,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
             if (!sender.Option.BufferedMode) return;
 
             //Cleanup old SeriesData if series had been removed from Chart
-            for(int x=0; x < sender.SeriesData.Count; )
+            for (int x = 0; x < sender.SeriesData.Count;)
             {
                 if (!sender.Source.Series.Contains(sender.SeriesData[x].Series))
                     sender.SeriesData.RemoveAt(x);
@@ -1719,7 +1720,8 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// Plot chart using data buffer. Only applicable for <see cref="ChartOption.BufferedMode"/>
         /// </summary>
         /// <param name="sender"></param>
-        public static void PlotBufferedData(this Series sender)
+        /// <param name="dynamicX">Enable / Disable dynamic X Value calculation</param>
+        public static void PlotBufferedData(this Series sender, bool dynamicX = true)
         {
             ChartData ptrChartData = GetChartData(sender);
             if (!ptrChartData.Option.BufferedMode) throw new InvalidOperationException("Buffered mode not enabled.");
@@ -1761,7 +1763,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
             ChartOption ptrOption = GetChartData(sender).Option;
             if (VisibleDatas.Count > ptrOption.DisplayDataSize * 2)
             {
-                VisibleDatas = DownSampling.DownsampleLTTB(VisibleDatas.ToArray(), ptrOption.DisplayDataSize);
+                VisibleDatas = DownSampling.DownsampleLTTB(VisibleDatas.ToArray(), ptrOption.DisplayDataSize, dynamicX);
             }
 
             //Plot Min Point if out of sight

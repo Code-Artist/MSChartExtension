@@ -1,9 +1,15 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34031.279
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSChartExtension", "MSChartExtension\MSChartExtension.csproj", "{D865F90F-8498-4D31-BEAF-21A7D5EA0212}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSChartExtensionDemo", "MSChartExtensionDemo\MSChartExtensionDemo.csproj", "{4BF8A3F7-DE4C-4675-976C-4CD5952ABB77}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSChartExtension.NET", "MSChartExtension.NET\MSChartExtension.NET.csproj", "{EB439318-C24A-40F0-9738-3E22A2823F0C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSChartExtension.NETDemo", "MSChartExtension.NETDemo\MSChartExtension.NETDemo.csproj", "{DE1F7C68-634F-49A2-B747-80DD11D3730E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,8 +41,35 @@ Global
 		{4BF8A3F7-DE4C-4675-976C-4CD5952ABB77}.Release|Mixed Platforms.Build.0 = Release|x86
 		{4BF8A3F7-DE4C-4675-976C-4CD5952ABB77}.Release|x86.ActiveCfg = Release|x86
 		{4BF8A3F7-DE4C-4675-976C-4CD5952ABB77}.Release|x86.Build.0 = Release|x86
+		{EB439318-C24A-40F0-9738-3E22A2823F0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB439318-C24A-40F0-9738-3E22A2823F0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB439318-C24A-40F0-9738-3E22A2823F0C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{EB439318-C24A-40F0-9738-3E22A2823F0C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{EB439318-C24A-40F0-9738-3E22A2823F0C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EB439318-C24A-40F0-9738-3E22A2823F0C}.Debug|x86.Build.0 = Debug|Any CPU
+		{EB439318-C24A-40F0-9738-3E22A2823F0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB439318-C24A-40F0-9738-3E22A2823F0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB439318-C24A-40F0-9738-3E22A2823F0C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{EB439318-C24A-40F0-9738-3E22A2823F0C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{EB439318-C24A-40F0-9738-3E22A2823F0C}.Release|x86.ActiveCfg = Release|Any CPU
+		{EB439318-C24A-40F0-9738-3E22A2823F0C}.Release|x86.Build.0 = Release|Any CPU
+		{DE1F7C68-634F-49A2-B747-80DD11D3730E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE1F7C68-634F-49A2-B747-80DD11D3730E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE1F7C68-634F-49A2-B747-80DD11D3730E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{DE1F7C68-634F-49A2-B747-80DD11D3730E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{DE1F7C68-634F-49A2-B747-80DD11D3730E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DE1F7C68-634F-49A2-B747-80DD11D3730E}.Debug|x86.Build.0 = Debug|Any CPU
+		{DE1F7C68-634F-49A2-B747-80DD11D3730E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE1F7C68-634F-49A2-B747-80DD11D3730E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE1F7C68-634F-49A2-B747-80DD11D3730E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{DE1F7C68-634F-49A2-B747-80DD11D3730E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{DE1F7C68-634F-49A2-B747-80DD11D3730E}.Release|x86.ActiveCfg = Release|Any CPU
+		{DE1F7C68-634F-49A2-B747-80DD11D3730E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8E6FC6C9-8D4D-4545-9315-FACFCB48A73E}
 	EndGlobalSection
 EndGlobal
