@@ -1,9 +1,11 @@
 ﻿using EventHandlerSupport;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 
 namespace System.Windows.Forms.DataVisualization.Charting
@@ -216,25 +218,40 @@ namespace System.Windows.Forms.DataVisualization.Charting
             ChartData ptrChartData = ChartTool[ptrChart];
             if (ptrChartData == null) return;
 
+            //Find parent Form
+            Control parent = sender;
+            do
+            {
+                parent = parent.Parent;
+                if (parent is Form pForm)
+                {
+                    if (pForm.WindowState == FormWindowState.Minimized) return;
+                    else if (!pForm.Visible) return;
+                }
+            } while (parent != null);
+
             foreach (ChartArea ptrChartArea in ptrChart.ChartAreas)
             {
-                TextAnnotation ptrCurosr1Label = ptrChart.Annotations.FindByName(ptrChartArea.Name + Cursor1LabelName) as TextAnnotation;
-                if (ptrCurosr1Label != null)
+                try
                 {
-                    Annotation xCursor = ptrChart.Annotations.FindByName(ptrChartArea.Name + Cursor1XName);
-                    Annotation yCursor = ptrChart.Annotations.FindByName(ptrChartArea.Name + Cursor1YName);
-                    CheckAndUpdateTextAnnotationLocation(ptrChart, ptrCurosr1Label, xCursor.X, yCursor.Y);
-                    AddTextBackground(ptrChart, ptrCurosr1Label.Name, ptrChartData.Option.Cursor1Color);
-                }
+                    TextAnnotation ptrCurosr1Label = ptrChart.Annotations.FindByName(ptrChartArea.Name + Cursor1LabelName) as TextAnnotation;
+                    if (ptrCurosr1Label != null)
+                    {
+                        Annotation xCursor = ptrChart.Annotations.FindByName(ptrChartArea.Name + Cursor1XName);
+                        Annotation yCursor = ptrChart.Annotations.FindByName(ptrChartArea.Name + Cursor1YName);
+                        CheckAndUpdateTextAnnotationLocation(ptrChart, ptrCurosr1Label, xCursor.X, yCursor.Y);
+                        AddTextBackground(ptrChart, ptrCurosr1Label.Name, ptrChartData.Option.Cursor1Color);
+                    }
 
-                TextAnnotation ptrCursor2Label = ptrChart.Annotations.FindByName(ptrChartArea.Name + Cursor2LabelName) as TextAnnotation;
-                if (ptrCursor2Label != null)
-                {
-                    Annotation xCursor = ptrChart.Annotations.FindByName(ptrChartArea.Name + Cursor2XName);
-                    Annotation yCursor = ptrChart.Annotations.FindByName(ptrChartArea.Name + Cursor2YName);
-                    CheckAndUpdateTextAnnotationLocation(ptrChart, ptrCursor2Label, xCursor.X, yCursor.Y);
-                    AddTextBackground(ptrChart, ptrCursor2Label.Name, ptrChartData.Option.Cursor2Color);
-                }
+                    TextAnnotation ptrCursor2Label = ptrChart.Annotations.FindByName(ptrChartArea.Name + Cursor2LabelName) as TextAnnotation;
+                    if (ptrCursor2Label != null)
+                    {
+                        Annotation xCursor = ptrChart.Annotations.FindByName(ptrChartArea.Name + Cursor2XName);
+                        Annotation yCursor = ptrChart.Annotations.FindByName(ptrChartArea.Name + Cursor2YName);
+                        CheckAndUpdateTextAnnotationLocation(ptrChart, ptrCursor2Label, xCursor.X, yCursor.Y);
+                        AddTextBackground(ptrChart, ptrCursor2Label.Name, ptrChartData.Option.Cursor2Color);
+                    }
+                }catch(Exception ex) { Trace.WriteLine("WARNING: Unable to show Cursor Label. " + ex.Message); }
             }
         }
 
