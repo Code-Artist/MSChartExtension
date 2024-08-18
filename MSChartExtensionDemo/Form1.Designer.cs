@@ -149,7 +149,7 @@
             this.chart1.Series.Add(series1);
             this.chart1.Series.Add(series2);
             this.chart1.Series.Add(series3);
-            this.chart1.Size = new System.Drawing.Size(923, 471);
+            this.chart1.Size = new System.Drawing.Size(923, 473);
             this.chart1.TabIndex = 0;
             this.chart1.Text = "chart1";
             title1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
@@ -233,7 +233,7 @@
             this.toolStripButton4});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(937, 27);
+            this.toolStrip1.Size = new System.Drawing.Size(937, 25);
             this.toolStrip1.TabIndex = 1;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -245,7 +245,7 @@
             this.randomDataToolStripMenuItem});
             this.btnPlot.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnPlot.Name = "btnPlot";
-            this.btnPlot.Size = new System.Drawing.Size(71, 24);
+            this.btnPlot.Size = new System.Drawing.Size(71, 22);
             this.btnPlot.Text = "Plot Data";
             this.btnPlot.ButtonClick += new System.EventHandler(this.btnPlot_Click);
             // 
@@ -268,7 +268,7 @@
             this.btnClearDataFast.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.btnClearDataFast.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnClearDataFast.Name = "btnClearDataFast";
-            this.btnClearDataFast.Size = new System.Drawing.Size(97, 24);
+            this.btnClearDataFast.Size = new System.Drawing.Size(97, 22);
             this.btnClearDataFast.Text = "Clear Data (Fast)";
             this.btnClearDataFast.Click += new System.EventHandler(this.btnClearDataFast_Click);
             // 
@@ -277,7 +277,7 @@
             this.btnClearDataSlow.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.btnClearDataSlow.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnClearDataSlow.Name = "btnClearDataSlow";
-            this.btnClearDataSlow.Size = new System.Drawing.Size(101, 24);
+            this.btnClearDataSlow.Size = new System.Drawing.Size(101, 22);
             this.btnClearDataSlow.Text = "Clear Data (Slow)";
             this.btnClearDataSlow.Click += new System.EventHandler(this.btnClearDataSlow_Click);
             // 
@@ -286,7 +286,7 @@
             this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(94, 24);
+            this.toolStripButton1.Size = new System.Drawing.Size(94, 22);
             this.toolStripButton1.Text = "Annotation Test";
             this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
@@ -295,7 +295,7 @@
             this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(106, 24);
+            this.toolStripButton2.Size = new System.Drawing.Size(106, 22);
             this.toolStripButton2.Text = "Clear Annotations";
             this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
             // 
@@ -304,7 +304,7 @@
             this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton3.Name = "toolStripButton3";
-            this.toolStripButton3.Size = new System.Drawing.Size(51, 24);
+            this.toolStripButton3.Size = new System.Drawing.Size(51, 22);
             this.toolStripButton3.Text = "LogTest";
             this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
             // 
@@ -315,7 +315,7 @@
             this.btnUpdateVisibleExtents});
             this.btnViewChartExtents.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnViewChartExtents.Name = "btnViewChartExtents";
-            this.btnViewChartExtents.Size = new System.Drawing.Size(89, 24);
+            this.btnViewChartExtents.Size = new System.Drawing.Size(89, 22);
             this.btnViewChartExtents.Text = "View &Extents";
             this.btnViewChartExtents.ToolTipText = "Extents are the boundaries (left, right, top, bottom) of the data";
             this.btnViewChartExtents.ButtonClick += new System.EventHandler(this.btnViewChartExtents_ButtonClick);
@@ -330,12 +330,12 @@
             // 
             // toolStripButton4
             // 
-            this.toolStripButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton4.Image")));
             this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton4.Name = "toolStripButton4";
-            this.toolStripButton4.Size = new System.Drawing.Size(24, 24);
-            this.toolStripButton4.Text = "toolStripButton4";
+            this.toolStripButton4.Size = new System.Drawing.Size(112, 22);
+            this.toolStripButton4.Text = "Adjust Axis Interval";
             this.toolStripButton4.Click += new System.EventHandler(this.toolStripButton4_Click);
             // 
             // statusStrip1
@@ -391,10 +391,10 @@
             this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl1.Location = new System.Drawing.Point(0, 27);
+            this.tabControl1.Location = new System.Drawing.Point(0, 25);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(937, 503);
+            this.tabControl1.Size = new System.Drawing.Size(937, 505);
             this.tabControl1.TabIndex = 12;
             // 
             // tabPage1
@@ -403,7 +403,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(929, 477);
+            this.tabPage1.Size = new System.Drawing.Size(929, 479);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Line Chart";
             this.tabPage1.UseVisualStyleBackColor = true;

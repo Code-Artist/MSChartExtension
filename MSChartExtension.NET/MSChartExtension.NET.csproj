@@ -4,7 +4,7 @@
     <TargetFrameworks>net6.0-windows;net7.0-windows</TargetFrameworks>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
     <RootNamespace>System.Windows.Forms.DataVisualization.Charting</RootNamespace>
     <Authors>Code Artist</Authors>
     <Company>Code Art Engineering</Company>
@@ -17,9 +17,9 @@
     <RepositoryUrl>https://github.com/Code-Artist/MSChartExtension</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>chart;data-visualization;winfors;net6</PackageTags>
-    <PackageReleaseNotes>First Release</PackageReleaseNotes>
+    <PackageReleaseNotes>Added Resource Utilization Chart</PackageReleaseNotes>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>3.10.2</Version>
+    <Version>3.11.0</Version>
     <ApplicationIcon>MSChartExtensionLogo.ico</ApplicationIcon>
     <Title>MSChart Extension for .NET Core</Title>
   </PropertyGroup>
@@ -40,6 +40,7 @@
     <Compile Include="..\MSChartExtension\MSChartExtension.cs" Link="MSChartExtension.cs" />
     <Compile Include="..\MSChartExtension\MSChartExtensionZoomDialog.cs" Link="MSChartExtensionZoomDialog.cs" />
     <Compile Include="..\MSChartExtension\MSChartExtensionZoomDialog.Designer.cs" Link="MSChartExtensionZoomDialog.Designer.cs" />
+    <Compile Include="..\MSChartExtension\ResourceSeries.cs" Link="ResourceSeries.cs" />
     <Compile Include="..\MSChartExtension\SeriesDataBuffer.cs" Link="SeriesDataBuffer.cs" />
     <Compile Include="..\MSChartExtension\Theme\DarkTheme.cs" Link="DarkTheme.cs" />
     <Compile Include="..\MSChartExtension\Theme\Futuristic.cs" Link="Theme\Futuristic.cs" />
@@ -77,7 +78,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="WinForms.DataVisualization" Version="1.9.0" />
+    <PackageReference Include="CodeArtEng.Extensions" Version="2.5.2" />
+    <PackageReference Include="WinForms.DataVisualization" Version="1.9.2" />
   </ItemGroup>
 
   <ItemGroup>

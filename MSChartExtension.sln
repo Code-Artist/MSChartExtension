@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSChartExtensionDemo", "MSC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSChartExtension.NET", "MSChartExtension.NET\MSChartExtension.NET.csproj", "{EB439318-C24A-40F0-9738-3E22A2823F0C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSChartExtension.NETDemo", "MSChartExtension.NETDemo\MSChartExtension.NETDemo.csproj", "{DE1F7C68-634F-49A2-B747-80DD11D3730E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSChartExtension.NETDemo", "MSChartExtension.NETDemo\MSChartExtension.NETDemo.csproj", "{DE1F7C68-634F-49A2-B747-80DD11D3730E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

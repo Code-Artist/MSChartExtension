@@ -43,10 +43,14 @@ namespace System.Windows.Forms.DataVisualization.Charting
         public List<ChartArea> SupportedChartArea { get; set; }
         public bool Enabled { get; set; } = true;
         public ChartArea ActiveChartArea { get; set; }
+        /// <summary>
+        /// Some series type have X-Axis on vertical bar. Positioning for these axis should be handle in different way.
+        /// </summary>
+        internal bool InvertedAxis { get; set; }
         public ChartCursor Cursor1 { get; private set; }
         public ChartCursor Cursor2 { get; private set; }
-
         public List<SeriesDataBuffer> SeriesData { get; set; } = new List<SeriesDataBuffer>();
+        public List<ResourceSeries> ResourceSeries { get; set; } = null;
 
         private void CreateChartContextMenu()
         {

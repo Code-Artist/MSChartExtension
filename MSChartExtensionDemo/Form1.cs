@@ -31,7 +31,7 @@ namespace MSChartExtensionDemo
         public Form1()
         {
             InitializeComponent();
-            //new ChartForm().Show();
+            new ChartForm().Show();
         }
 
         private void Form1_Shown(object sender, EventArgs e)
@@ -66,6 +66,7 @@ namespace MSChartExtensionDemo
 
         private void PlotChartDate()
         {
+            ChartDate.ChartAreas[0].AxisX.IntervalType = DateTimeIntervalType.Days;
             Series ptrSeries = ChartDate.Series[0];
             DateTime StartDate = new DateTime(2020, 1, 1);
             Random r = new Random((int)DateTime.Now.Ticks);

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace System.Windows.Forms.DataVisualization.Charting
 {
@@ -18,7 +14,6 @@ namespace System.Windows.Forms.DataVisualization.Charting
             //Largest-Triangle-Three Bucket Downsampling 
             //Technical Reference: https://github.com/sveinn-steinarsson/highcharts-downsample
             //Code Reference: https://gist.github.com/adrianseeley/264417d295ccd006e7fd
-
             //Implementation: https://www.codearteng.com/2020/08/implementation-of-downsampling.html
 
             //With dynamicX, Actual data size returned might be less, Handle data point with no data by not returning 0,0. Use Dynamic List
