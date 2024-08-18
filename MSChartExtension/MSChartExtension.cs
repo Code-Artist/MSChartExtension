@@ -1,13 +1,9 @@
 ﻿using EventHandlerSupport;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace System.Windows.Forms.DataVisualization.Charting
 {
@@ -2386,7 +2382,6 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// Setup chart area as resource allocation chart using <see cref="ChartTypes.RangeBarChart"/> series.
         /// This method will remove all existing series.
         /// </summary>
-        /// <param name="sender"></param>
         /// <param name="chartArea"></param>
         public static ResourceSeries SetupResourceAllocationChart(this ChartArea chartArea)
         {

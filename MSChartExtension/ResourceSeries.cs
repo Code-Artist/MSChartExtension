@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace System.Windows.Forms.DataVisualization.Charting
 {
@@ -64,6 +60,9 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// Data Row name
         /// </summary>
         public string Name { get; private set; }
+        /// <summary>
+        /// Associated XValue of current row instance.
+        /// </summary>
         public int RowIndex { get; private set; }
         internal Series Series { get; private set; }
         internal ResourceRow(string name, Series series, int rowIndex)
@@ -77,14 +76,16 @@ namespace System.Windows.Forms.DataVisualization.Charting
         /// Add data to current data row.
         /// </summary>
         /// <param name="blocks"></param>
-        public void AddTimeBlocks(params TimeBlock[] blocks)
+        public DataPoint[] AddTimeBlocks(params TimeBlock[] blocks)
         {
+            List<DataPoint> results = new List<DataPoint>();
             foreach (TimeBlock t in blocks)
             {
-                int d = Series.Points.AddXY(RowIndex, t.StartTime, t.EndTime);
-                Series.Points[d].AxisLabel = Name;
-                
+                DataPoint p = Series.Points.AddXYWithObject(t, RowIndex, t.StartTime, t.EndTime);
+                p.AxisLabel = Name;
+                results.Add(p);
             }
+            return results.ToArray();
         }
 
     }

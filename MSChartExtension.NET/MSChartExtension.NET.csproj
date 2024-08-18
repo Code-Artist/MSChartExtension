@@ -33,6 +33,7 @@
     <Compile Include="..\MSChartExtension\ChartOption.cs" Link="ChartOption.cs" />
     <Compile Include="..\MSChartExtension\ConfigurationDialog.cs" Link="ConfigurationDialog.cs" />
     <Compile Include="..\MSChartExtension\ConfigurationDialog.Designer.cs" Link="ConfigurationDialog.Designer.cs" />
+    <Compile Include="..\MSChartExtension\DataPointCollectionExtension.cs" Link="DataPointCollectionExtension.cs" />
     <Compile Include="..\MSChartExtension\DownSampling.cs" Link="DownSampling.cs" />
     <Compile Include="..\MSChartExtension\Extensions.cs" Link="Extensions.cs" />
     <Compile Include="..\MSChartExtension\LabelFormatControl.cs" Link="LabelFormatControl.cs" />
