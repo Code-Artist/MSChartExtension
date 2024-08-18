@@ -219,3 +219,5 @@ pip-log.txt
 .hg*
 NUGet Packages/MSChartExtension.1.4.1.nupkg
 .vs/
+Reference/AlexeyKuryakin.txt
+Reference/_crw_lttb.pas
