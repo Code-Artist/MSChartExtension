@@ -1248,11 +1248,6 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
                     if (ptrChartData.ActiveChartArea != null)
                     {
-                        //Evaluate first series to check if X Axis is located at Vertical scale.
-                        //No need to evaluate all series as mixing series with different X-Axis layout is not possible.
-                        Series activeAreaSeries = ptrChart.Series.FirstOrDefault(n => n.ChartArea.Equals(hitArea.Name));
-                        ptrChartData.InvertedAxis = SeriesWithInvertedAxis.Contains(activeAreaSeries.ChartType);
-
                         if (!ptrChartData.SupportedChartArea.Contains(ptrChartData.ActiveChartArea))
                         {
                             Debug.WriteLine(ptrChartData.ActiveChartArea.Name + ": Zoom and Pan Control not supported.");
@@ -1272,6 +1267,13 @@ namespace System.Windows.Forms.DataVisualization.Charting
                         else
                         {
                             ptrChartData.Enabled = true;
+
+                            //Evaluate first series to check if X Axis is located at Vertical scale.
+                            //No need to evaluate all series as mixing series with different X-Axis layout is not possible.
+                            Series activeAreaSeries = ptrChart.Series.FirstOrDefault(n => n.ChartArea.Equals(hitArea.Name));
+                            if (activeAreaSeries == null) ptrChartData.InvertedAxis = false;
+                            else ptrChartData.InvertedAxis = SeriesWithInvertedAxis.Contains(activeAreaSeries.ChartType);
+
                             UpdateChartControlState((Chart)sender);
                         }
                     }

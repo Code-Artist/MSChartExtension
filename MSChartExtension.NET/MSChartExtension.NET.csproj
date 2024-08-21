@@ -19,7 +19,7 @@
     <PackageTags>chart;data-visualization;winfors;net6</PackageTags>
     <PackageReleaseNotes>Added Resource Utilization Chart</PackageReleaseNotes>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>3.11.0</Version>
+    <Version>3.11.1</Version>
     <ApplicationIcon>MSChartExtensionLogo.ico</ApplicationIcon>
     <Title>MSChart Extension for .NET Core</Title>
   </PropertyGroup>
