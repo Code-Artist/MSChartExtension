@@ -32,6 +32,10 @@ namespace MSChartExtensionDemo
         {
             InitializeComponent();
             new ChartForm().Show();
+            tabControl1.SelectedTab = tabPage4;
+
+            propertyGrid1.SelectedObject = ChartDate.Series[0];
+            propertyGrid2.SelectedObject = ChartDate.ChartAreas[0].AxisX;
         }
 
         private void Form1_Shown(object sender, EventArgs e)
@@ -66,20 +70,27 @@ namespace MSChartExtensionDemo
 
         private void PlotChartDate()
         {
-            ChartDate.ChartAreas[0].AxisX.IntervalType = DateTimeIntervalType.Days;
+            ChartArea ptrChartArea = ChartDate.ChartAreas[0];
+            ptrChartArea.AxisX.Interval = 2;
             Series ptrSeries = ChartDate.Series[0];
+            ptrSeries.IsXValueIndexed = true;
+            ptrSeries.ClearPoints();
             DateTime StartDate = new DateTime(2020, 1, 1);
             Random r = new Random((int)DateTime.Now.Ticks);
             for (int x = 0; x < 20; x++)
             {
-                int id = ptrSeries.Points.AddXY(StartDate.AddDays(x), r.Next(0, 100));
-                ptrSeries.Points[id].Label = StartDate.AddDays(x).ToShortDateString();
+                DateTime xDate = StartDate.AddDays(x).AddHours(6);
+                int id = ptrSeries.Points.AddXY(xDate, r.Next(0, 100));
+                ptrSeries.Points[id].Label = xDate.ToShortDateString();
             }
             ChartOption chartOption = new ChartOption();
             chartOption.CursorLabelFormatX1.StringFormat = "MMM-dd";
-            ChartDate.EnableZoomAndPanControls(null, null, option: chartOption);
+            ChartDate.EnableZoomAndPanControls(null, null, zoomChanged: chartDateZoomChanged, option: chartOption);
         }
 
+        private void chartDateZoomChanged(Chart sender)
+        {
+        }
 
         private void PlotData(bool reverse = false)
         {
@@ -436,6 +447,10 @@ Visible data: {3}
             axis.MinorTickMark.IntervalOffset = minor_offset;
         }
 
+        private void button1_Click(object sender, EventArgs e)
+        {
+            PlotChartDate();
+        }
     }
 
     public static class RectangleExtensions

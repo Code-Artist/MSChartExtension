@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace System.Windows.Forms.DataVisualization.Charting
 {
@@ -2297,15 +2298,10 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
         private static void ResetAxisIntervalForAllAxes(this ChartArea sender)
         {
+            Chart ptrChart = GetChart(sender);
+            ChartData ptrChartData = ChartTool[ptrChart];
             foreach (Axis a in sender.Axes)
-            {
-                a.Interval = 0;
-                a.IntervalAutoMode = IntervalAutoMode.FixedCount;
-                a.IntervalOffset = 0;
-                a.IntervalOffsetType = DateTimeIntervalType.Auto;
-                a.MajorTickMark.IntervalOffset = 0;
-                a.MinorTickMark.IntervalOffset = 0;
-            }
+                ptrChartData.ResetAxisSettings(a);
         }
 
         private static void AdjustAxisIntervalForAllAxes(this ChartArea sender)

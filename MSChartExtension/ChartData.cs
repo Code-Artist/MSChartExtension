@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
+using System.Collections.Generic;
 
 namespace System.Windows.Forms.DataVisualization.Charting
 {
@@ -51,7 +52,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
         public ChartCursor Cursor2 { get; private set; }
         public List<SeriesDataBuffer> SeriesData { get; set; } = new List<SeriesDataBuffer>();
         public List<ResourceSeries> ResourceSeries { get; set; } = null;
-
+        public List<AxisSettings> AxisSettings { get; set; } = new List<AxisSettings>();
         private void CreateChartContextMenu()
         {
             ChartToolZoomOut = new ToolStripMenuItem("Zoom Out");
@@ -101,12 +102,19 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 };
         }
 
+        public void ResetAxisSettings(Axis axis)
+        {
+            AxisSettings ptrSettings = AxisSettings.FirstOrDefault(n => n.Axis == axis);
+            ptrSettings?.Restore();
+        }
+
         /// <summary>
         /// Backtup properties for all Chart Area
         /// </summary>
         public void Backup()
         {
             ContextMenuStrip = Source.ContextMenuStrip;
+            AxisSettings.Clear();
             int x = 0;
             foreach (ChartArea ptrChartArea in Source.ChartAreas)
             {
@@ -124,7 +132,14 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 ScrollBarXPositionInside[x] = ptrChartArea.AxisX.ScrollBar.IsPositionedInside;
                 ScrollBarX2PositionInside[x] = ptrChartArea.AxisX2.ScrollBar.IsPositionedInside;
                 x++;
+
+                AxisSettings.Add(new AxisSettings(ptrChartArea.AxisX));
+                AxisSettings.Add(new AxisSettings(ptrChartArea.AxisY));
+                AxisSettings.Add(new AxisSettings(ptrChartArea.AxisX2));
+                AxisSettings.Add(new AxisSettings(ptrChartArea.AxisY2));
             }
+
+            foreach (AxisSettings s in AxisSettings) s.Backup();
         }
 
         /// <summary>
@@ -151,6 +166,7 @@ namespace System.Windows.Forms.DataVisualization.Charting
                 ptrChartArea.AxisX2.ScrollBar.IsPositionedInside = ScrollBarX2PositionInside[x];
                 x++;
             }
+            foreach (AxisSettings s in AxisSettings) s.Restore();
         }
         public void UncheckAllMenuItems()
         {
@@ -197,6 +213,44 @@ namespace System.Windows.Forms.DataVisualization.Charting
 
         #endregion
 
+    }
+
+    internal class AxisSettings
+    {
+        public Axis Axis { get; private set; }
+
+        public double Interval { get; set; }
+        public IntervalAutoMode IntervalAutoMode { get; set; }
+        public double IntervalOffset { get; set; }
+        public DateTimeIntervalType IntervalOffsetType { get; set; }
+        public double MajorTickMarkOffset { get; set; }
+        public double MinorTickMarkOffset { get; set; }
+
+        public AxisSettings(Axis axis)
+        {
+            Axis = axis;
+            Backup();
+        }
+
+        public void Backup()
+        {
+            Interval = Axis.Interval;
+            IntervalAutoMode = Axis.IntervalAutoMode;
+            IntervalOffset = Axis.IntervalOffset;
+            IntervalOffsetType = Axis.IntervalOffsetType;
+            MajorTickMarkOffset = Axis.MajorTickMark.IntervalOffset;
+            MinorTickMarkOffset = Axis.MinorTickMark.IntervalOffset;
+        }
+
+        public void Restore()
+        {
+            Axis.Interval = Interval;
+            Axis.IntervalAutoMode = IntervalAutoMode;
+            Axis.IntervalOffset = IntervalOffset;
+            Axis.IntervalOffsetType = IntervalOffsetType;
+            Axis.MajorTickMark.IntervalOffset = MajorTickMarkOffset;
+            Axis.MinorTickMark.IntervalOffset = MinorTickMarkOffset;
+        }
     }
 
 }
